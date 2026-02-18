@@ -1,0 +1,534 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01D9D3C61B8D0E7CBD6814C6 /* WhoopRecoveryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038495B4B9F05271B818202D /* WhoopRecoveryResponse.swift */; };
+		061ADEB91823509602DA95DD /* JournalEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5004EFE2BD9DB358C74FB902 /* JournalEntry.swift */; };
+		0C7953E11319A530AA655BB6 /* ParticleScatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36B8AD6E08E3B6A9E267FAD /* ParticleScatter.swift */; };
+		0E0298651DDD47C81F0452B0 /* HabitToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5BF811B359AA54648143B /* HabitToggleButton.swift */; };
+		0E430526D07934E403D47786 /* OverwatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988A88B1E8C933B0AE95BE01 /* OverwatchApp.swift */; };
+		0EB8451F32100B9B9320BC53 /* ReportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E79C1AFF14F74EEBE6C170 /* ReportsView.swift */; };
+		1467BBD9EE3FE9AFCD6DA32D /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3477ADE4A5C09FD6B0EFB52B /* AppState.swift */; };
+		178BD51803DE91DE284A3B7D /* WhoopCycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF2EC2A80EE32A3DF16AA74 /* WhoopCycle.swift */; };
+		1DCAB98672B7CD01F7E13225 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71DA861027FA05AEE054EFCD /* Typography.swift */; };
+		25FC1DE90DC6A4B46DDCE07D /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A80366065F062A710C5BB2 /* Animations.swift */; };
+		2BA7A0673C3BA1C3C71ED5C5 /* WhoopSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6A78F28CF7CFD4E826AA2B /* WhoopSyncManager.swift */; };
+		3550A0B44C1425487C15E95B /* WarRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67576DDBFC8041CBA1950A42 /* WarRoomView.swift */; };
+		3D9B6CECB7AE3A269F31DAA6 /* DataStreamTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF76266B236312993044564 /* DataStreamTexture.swift */; };
+		42420AA7A660D4BBC967F7AE /* WhoopClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22367B9DC9FDD11F311153AF /* WhoopClient.swift */; };
+		4CD1F93FEA9F02AC61BF6187 /* HabitPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43F1BAA99FADB77694B6DC0 /* HabitPanelView.swift */; };
+		57CFB93CEECF6BF7380B65F7 /* WhoopAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */; };
+		6736B570946DCAA68C6AEEA9 /* TacticalDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A121813D31B812A1E550B303 /* TacticalDashboardView.swift */; };
+		69A6A1478EA399924343FA5C /* TacticalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F535001D5F621BE93CF888A4 /* TacticalCard.swift */; };
+		7041330AFA84163E0240C9D8 /* Habit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CC088689BB1DCBA4FA88C5C /* Habit.swift */; };
+		75CEDC2B6AECB64893C1C1F9 /* QuickInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466A01AC1CCA896B92624221 /* QuickInputView.swift */; };
+		7AA447E96FAB4AC500722AF3 /* StubHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB7C46D8AE24468D1455DF2 /* StubHeader.swift */; };
+		7AFB40DD9D867EBA9D2ED41B /* AnimationPatterns.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A27E5D06DF5E810A94D93 /* AnimationPatterns.swift */; };
+		8F23F028E7F27D0495C8FAB8 /* OverwatchTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4009C1C722C5DE7EC54F987 /* OverwatchTheme.swift */; };
+		985EA365DC947A274D499C09 /* HabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7ABB6234FF1CC69AC9F799 /* HabitsView.swift */; };
+		990EA6264F4B6067FBFCDE78 /* OverwatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60D341F5FA4171AACBAA405 /* OverwatchTests.swift */; };
+		A0A83159E03AAB58EAE0D83D /* WhoopStrainResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6AAB10F4961A04F1893631 /* WhoopStrainResponse.swift */; };
+		A97C4855352448D97C882281 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */; };
+		B396C490B0160DD98593030A /* HabitModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FF738A252B6A88996B4D8A /* HabitModelTests.swift */; };
+		B4F2EA42FE71DCA2ECFE61A3 /* WireframeTrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 714A4B9CC98EB7E7A724A23B /* WireframeTrace.swift */; };
+		BB07D8188583B249F3883AF7 /* ArcGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165ACC738C194AAF49E33C92 /* ArcGauge.swift */; };
+		BB5A3E1D6B72AA5E5C2D3BF1 /* MetricTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5922A1BA228E3CCE8AC742 /* MetricTile.swift */; };
+		BB8C13DF618E98594468C256 /* NavigationShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44B6452B8B7B194C410CE09 /* NavigationShell.swift */; };
+		C01926889B58ECB230A863B9 /* HabitEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9E839258021D1C68FCE6B4 /* HabitEntry.swift */; };
+		C219048FFC448BE7AEA82FAC /* HUDProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9BF0B64646A8744C672C70 /* HUDProgressBar.swift */; };
+		C4662B7BFD694759E29A4CF6 /* WhoopClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D328C6DF4C0AFA8CF6D7E95 /* WhoopClientTests.swift */; };
+		C6EF1E7653F6ABBFDCDD416B /* HUDEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE1A95B75F22EEC7A75A2345 /* HUDEffects.swift */; };
+		D087BA1BAB543E77A39FCCBB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F90B02DAAA023021218FD5 /* SettingsView.swift */; };
+		D880E58BABACB03EA45C5BAF /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 75BD2B3F0D61164207AFFC35 /* GoogleGenerativeAI */; };
+		E8B3C36F4A219E3EFB91D013 /* CompactWhoopStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = F099802A82E69FCEE952DD2A /* CompactWhoopStrip.swift */; };
+		E9108F36A34A1927B60A8395 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A278CEACA6CADE5AE7D4EB /* KeychainHelper.swift */; };
+		F1701305A48D43D75CB511C0 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1260AFFBF301BCA773350C /* DateFormatters.swift */; };
+		F42DBD126093307D5779CB1D /* WhoopAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC4AA737F93F001A27472CD3 /* WhoopAuthManager.swift */; };
+		F7DD63F80E1E30294BBC9864 /* WhoopModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7405BC17131493408758DD /* WhoopModelTests.swift */; };
+		FF94ABFC8180A44AAA5E6979 /* WhoopSleepResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58868E9C31BCD15B961AF0E /* WhoopSleepResponse.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1DB987ECA9FFFCDAC4B28E8B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9B0A8E29813B53D106A79A9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 460779F20EE1BBBC507704B2;
+			remoteInfo = Overwatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		038495B4B9F05271B818202D /* WhoopRecoveryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopRecoveryResponse.swift; sourceTree = "<group>"; };
+		0BF76266B236312993044564 /* DataStreamTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStreamTexture.swift; sourceTree = "<group>"; };
+		165ACC738C194AAF49E33C92 /* ArcGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcGauge.swift; sourceTree = "<group>"; };
+		17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopAuthTests.swift; sourceTree = "<group>"; };
+		1F5A27E5D06DF5E810A94D93 /* AnimationPatterns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationPatterns.swift; sourceTree = "<group>"; };
+		22367B9DC9FDD11F311153AF /* WhoopClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopClient.swift; sourceTree = "<group>"; };
+		27A80366065F062A710C5BB2 /* Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animations.swift; sourceTree = "<group>"; };
+		2B7ABB6234FF1CC69AC9F799 /* HabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsView.swift; sourceTree = "<group>"; };
+		2E6AAB10F4961A04F1893631 /* WhoopStrainResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopStrainResponse.swift; sourceTree = "<group>"; };
+		3477ADE4A5C09FD6B0EFB52B /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		38A278CEACA6CADE5AE7D4EB /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		3CC088689BB1DCBA4FA88C5C /* Habit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Habit.swift; sourceTree = "<group>"; };
+		3D328C6DF4C0AFA8CF6D7E95 /* WhoopClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopClientTests.swift; sourceTree = "<group>"; };
+		466A01AC1CCA896B92624221 /* QuickInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickInputView.swift; sourceTree = "<group>"; };
+		4AB7C46D8AE24468D1455DF2 /* StubHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubHeader.swift; sourceTree = "<group>"; };
+		5004EFE2BD9DB358C74FB902 /* JournalEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalEntry.swift; sourceTree = "<group>"; };
+		5D1260AFFBF301BCA773350C /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
+		61E79C1AFF14F74EEBE6C170 /* ReportsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsView.swift; sourceTree = "<group>"; };
+		67576DDBFC8041CBA1950A42 /* WarRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarRoomView.swift; sourceTree = "<group>"; };
+		6C6A78F28CF7CFD4E826AA2B /* WhoopSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopSyncManager.swift; sourceTree = "<group>"; };
+		714A4B9CC98EB7E7A724A23B /* WireframeTrace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WireframeTrace.swift; sourceTree = "<group>"; };
+		71DA861027FA05AEE054EFCD /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		7B9E839258021D1C68FCE6B4 /* HabitEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitEntry.swift; sourceTree = "<group>"; };
+		813599CAA4BB0F136BBC28AD /* Overwatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Overwatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		95FF738A252B6A88996B4D8A /* HabitModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitModelTests.swift; sourceTree = "<group>"; };
+		988A88B1E8C933B0AE95BE01 /* OverwatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchApp.swift; sourceTree = "<group>"; };
+		9CF2EC2A80EE32A3DF16AA74 /* WhoopCycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopCycle.swift; sourceTree = "<group>"; };
+		A121813D31B812A1E550B303 /* TacticalDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TacticalDashboardView.swift; sourceTree = "<group>"; };
+		A2F90B02DAAA023021218FD5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A7C00E9FAE6DBAB0595BE470 /* OverwatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OverwatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA7405BC17131493408758DD /* WhoopModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopModelTests.swift; sourceTree = "<group>"; };
+		B9C5BF811B359AA54648143B /* HabitToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitToggleButton.swift; sourceTree = "<group>"; };
+		C33BC17B143424849ADC1F6E /* Overwatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Overwatch.entitlements; sourceTree = "<group>"; };
+		C58868E9C31BCD15B961AF0E /* WhoopSleepResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopSleepResponse.swift; sourceTree = "<group>"; };
+		C60D341F5FA4171AACBAA405 /* OverwatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchTests.swift; sourceTree = "<group>"; };
+		D241FBA13BD74117BF2F377F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D4009C1C722C5DE7EC54F987 /* OverwatchTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchTheme.swift; sourceTree = "<group>"; };
+		DD5922A1BA228E3CCE8AC742 /* MetricTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricTile.swift; sourceTree = "<group>"; };
+		DD9BF0B64646A8744C672C70 /* HUDProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDProgressBar.swift; sourceTree = "<group>"; };
+		E44B6452B8B7B194C410CE09 /* NavigationShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationShell.swift; sourceTree = "<group>"; };
+		F099802A82E69FCEE952DD2A /* CompactWhoopStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactWhoopStrip.swift; sourceTree = "<group>"; };
+		F36B8AD6E08E3B6A9E267FAD /* ParticleScatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleScatter.swift; sourceTree = "<group>"; };
+		F43F1BAA99FADB77694B6DC0 /* HabitPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitPanelView.swift; sourceTree = "<group>"; };
+		F535001D5F621BE93CF888A4 /* TacticalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TacticalCard.swift; sourceTree = "<group>"; };
+		FC4AA737F93F001A27472CD3 /* WhoopAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopAuthManager.swift; sourceTree = "<group>"; };
+		FE1A95B75F22EEC7A75A2345 /* HUDEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDEffects.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4A697E97FC4DF1ED8EF83C50 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D880E58BABACB03EA45C5BAF /* GoogleGenerativeAI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		15026A7C6237FFD41A023C1D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				813599CAA4BB0F136BBC28AD /* Overwatch.app */,
+				A7C00E9FAE6DBAB0595BE470 /* OverwatchTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D773426C52F70D9B499B9E5 = {
+			isa = PBXGroup;
+			children = (
+				757D7C4B052EF27FCF139163 /* App */,
+				693953449E92A226A624267A /* Models */,
+				C7D7F6C90533005941252A1B /* OverwatchTests */,
+				72F243DC8D88E56E9EE8E79D /* Services */,
+				45E63C0D751045D9701A83E4 /* Theme */,
+				E3290D7670D67687838F1879 /* Utilities */,
+				B5E4A71A934BF0DBCD66842F /* ViewModels */,
+				F4622C16DE834D7200AE53E6 /* Views */,
+				15026A7C6237FFD41A023C1D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		45E63C0D751045D9701A83E4 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				1F5A27E5D06DF5E810A94D93 /* AnimationPatterns.swift */,
+				27A80366065F062A710C5BB2 /* Animations.swift */,
+				0BF76266B236312993044564 /* DataStreamTexture.swift */,
+				FE1A95B75F22EEC7A75A2345 /* HUDEffects.swift */,
+				D4009C1C722C5DE7EC54F987 /* OverwatchTheme.swift */,
+				F36B8AD6E08E3B6A9E267FAD /* ParticleScatter.swift */,
+				71DA861027FA05AEE054EFCD /* Typography.swift */,
+				714A4B9CC98EB7E7A724A23B /* WireframeTrace.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		693953449E92A226A624267A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3CC088689BB1DCBA4FA88C5C /* Habit.swift */,
+				7B9E839258021D1C68FCE6B4 /* HabitEntry.swift */,
+				5004EFE2BD9DB358C74FB902 /* JournalEntry.swift */,
+				9CF2EC2A80EE32A3DF16AA74 /* WhoopCycle.swift */,
+				038495B4B9F05271B818202D /* WhoopRecoveryResponse.swift */,
+				C58868E9C31BCD15B961AF0E /* WhoopSleepResponse.swift */,
+				2E6AAB10F4961A04F1893631 /* WhoopStrainResponse.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		72F243DC8D88E56E9EE8E79D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				FC4AA737F93F001A27472CD3 /* WhoopAuthManager.swift */,
+				22367B9DC9FDD11F311153AF /* WhoopClient.swift */,
+				6C6A78F28CF7CFD4E826AA2B /* WhoopSyncManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		757D7C4B052EF27FCF139163 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				3477ADE4A5C09FD6B0EFB52B /* AppState.swift */,
+				D241FBA13BD74117BF2F377F /* Info.plist */,
+				C33BC17B143424849ADC1F6E /* Overwatch.entitlements */,
+				988A88B1E8C933B0AE95BE01 /* OverwatchApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		790F75743B8FE965A266ECA2 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				F099802A82E69FCEE952DD2A /* CompactWhoopStrip.swift */,
+				F43F1BAA99FADB77694B6DC0 /* HabitPanelView.swift */,
+				B9C5BF811B359AA54648143B /* HabitToggleButton.swift */,
+				466A01AC1CCA896B92624221 /* QuickInputView.swift */,
+				A121813D31B812A1E550B303 /* TacticalDashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		7E69D608812030742C56520A /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				165ACC738C194AAF49E33C92 /* ArcGauge.swift */,
+				DD9BF0B64646A8744C672C70 /* HUDProgressBar.swift */,
+				DD5922A1BA228E3CCE8AC742 /* MetricTile.swift */,
+				4AB7C46D8AE24468D1455DF2 /* StubHeader.swift */,
+				F535001D5F621BE93CF888A4 /* TacticalCard.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		B5E4A71A934BF0DBCD66842F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		C7D7F6C90533005941252A1B /* OverwatchTests */ = {
+			isa = PBXGroup;
+			children = (
+				95FF738A252B6A88996B4D8A /* HabitModelTests.swift */,
+				C60D341F5FA4171AACBAA405 /* OverwatchTests.swift */,
+				17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */,
+				3D328C6DF4C0AFA8CF6D7E95 /* WhoopClientTests.swift */,
+				AA7405BC17131493408758DD /* WhoopModelTests.swift */,
+			);
+			path = OverwatchTests;
+			sourceTree = "<group>";
+		};
+		E3290D7670D67687838F1879 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				5D1260AFFBF301BCA773350C /* DateFormatters.swift */,
+				38A278CEACA6CADE5AE7D4EB /* KeychainHelper.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		F4622C16DE834D7200AE53E6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2B7ABB6234FF1CC69AC9F799 /* HabitsView.swift */,
+				E44B6452B8B7B194C410CE09 /* NavigationShell.swift */,
+				61E79C1AFF14F74EEBE6C170 /* ReportsView.swift */,
+				A2F90B02DAAA023021218FD5 /* SettingsView.swift */,
+				67576DDBFC8041CBA1950A42 /* WarRoomView.swift */,
+				7E69D608812030742C56520A /* Components */,
+				790F75743B8FE965A266ECA2 /* Dashboard */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		460779F20EE1BBBC507704B2 /* Overwatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F73FEEC7938C37E19BA265A7 /* Build configuration list for PBXNativeTarget "Overwatch" */;
+			buildPhases = (
+				0993297A60C406F5B189B399 /* Sources */,
+				4A697E97FC4DF1ED8EF83C50 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Overwatch;
+			packageProductDependencies = (
+				75BD2B3F0D61164207AFFC35 /* GoogleGenerativeAI */,
+			);
+			productName = Overwatch;
+			productReference = 813599CAA4BB0F136BBC28AD /* Overwatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CEEA800ED9571CC9C2FEA67D /* OverwatchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F336613363AF211B6FAA99AF /* Build configuration list for PBXNativeTarget "OverwatchTests" */;
+			buildPhases = (
+				94D382F3929535FC1B12DE7E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DBE54736F09A50F774564D3B /* PBXTargetDependency */,
+			);
+			name = OverwatchTests;
+			packageProductDependencies = (
+			);
+			productName = OverwatchTests;
+			productReference = A7C00E9FAE6DBAB0595BE470 /* OverwatchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C9B0A8E29813B53D106A79A9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = DB7DA128A0680142FDE87DA7 /* Build configuration list for PBXProject "Overwatch" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 3D773426C52F70D9B499B9E5;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F5A24752017F344FE920EDEB /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				460779F20EE1BBBC507704B2 /* Overwatch */,
+				CEEA800ED9571CC9C2FEA67D /* OverwatchTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0993297A60C406F5B189B399 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7AFB40DD9D867EBA9D2ED41B /* AnimationPatterns.swift in Sources */,
+				25FC1DE90DC6A4B46DDCE07D /* Animations.swift in Sources */,
+				1467BBD9EE3FE9AFCD6DA32D /* AppState.swift in Sources */,
+				BB07D8188583B249F3883AF7 /* ArcGauge.swift in Sources */,
+				E8B3C36F4A219E3EFB91D013 /* CompactWhoopStrip.swift in Sources */,
+				A97C4855352448D97C882281 /* DashboardViewModel.swift in Sources */,
+				3D9B6CECB7AE3A269F31DAA6 /* DataStreamTexture.swift in Sources */,
+				F1701305A48D43D75CB511C0 /* DateFormatters.swift in Sources */,
+				C6EF1E7653F6ABBFDCDD416B /* HUDEffects.swift in Sources */,
+				C219048FFC448BE7AEA82FAC /* HUDProgressBar.swift in Sources */,
+				7041330AFA84163E0240C9D8 /* Habit.swift in Sources */,
+				C01926889B58ECB230A863B9 /* HabitEntry.swift in Sources */,
+				4CD1F93FEA9F02AC61BF6187 /* HabitPanelView.swift in Sources */,
+				0E0298651DDD47C81F0452B0 /* HabitToggleButton.swift in Sources */,
+				985EA365DC947A274D499C09 /* HabitsView.swift in Sources */,
+				061ADEB91823509602DA95DD /* JournalEntry.swift in Sources */,
+				E9108F36A34A1927B60A8395 /* KeychainHelper.swift in Sources */,
+				BB5A3E1D6B72AA5E5C2D3BF1 /* MetricTile.swift in Sources */,
+				BB8C13DF618E98594468C256 /* NavigationShell.swift in Sources */,
+				0E430526D07934E403D47786 /* OverwatchApp.swift in Sources */,
+				8F23F028E7F27D0495C8FAB8 /* OverwatchTheme.swift in Sources */,
+				0C7953E11319A530AA655BB6 /* ParticleScatter.swift in Sources */,
+				75CEDC2B6AECB64893C1C1F9 /* QuickInputView.swift in Sources */,
+				0EB8451F32100B9B9320BC53 /* ReportsView.swift in Sources */,
+				D087BA1BAB543E77A39FCCBB /* SettingsView.swift in Sources */,
+				7AA447E96FAB4AC500722AF3 /* StubHeader.swift in Sources */,
+				69A6A1478EA399924343FA5C /* TacticalCard.swift in Sources */,
+				6736B570946DCAA68C6AEEA9 /* TacticalDashboardView.swift in Sources */,
+				1DCAB98672B7CD01F7E13225 /* Typography.swift in Sources */,
+				3550A0B44C1425487C15E95B /* WarRoomView.swift in Sources */,
+				F42DBD126093307D5779CB1D /* WhoopAuthManager.swift in Sources */,
+				42420AA7A660D4BBC967F7AE /* WhoopClient.swift in Sources */,
+				178BD51803DE91DE284A3B7D /* WhoopCycle.swift in Sources */,
+				01D9D3C61B8D0E7CBD6814C6 /* WhoopRecoveryResponse.swift in Sources */,
+				FF94ABFC8180A44AAA5E6979 /* WhoopSleepResponse.swift in Sources */,
+				A0A83159E03AAB58EAE0D83D /* WhoopStrainResponse.swift in Sources */,
+				2BA7A0673C3BA1C3C71ED5C5 /* WhoopSyncManager.swift in Sources */,
+				B4F2EA42FE71DCA2ECFE61A3 /* WireframeTrace.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94D382F3929535FC1B12DE7E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B396C490B0160DD98593030A /* HabitModelTests.swift in Sources */,
+				990EA6264F4B6067FBFCDE78 /* OverwatchTests.swift in Sources */,
+				57CFB93CEECF6BF7380B65F7 /* WhoopAuthTests.swift in Sources */,
+				C4662B7BFD694759E29A4CF6 /* WhoopClientTests.swift in Sources */,
+				F7DD63F80E1E30294BBC9864 /* WhoopModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DBE54736F09A50F774564D3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 460779F20EE1BBBC507704B2 /* Overwatch */;
+			targetProxy = 1DB987ECA9FFFCDAC4B28E8B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		06E7E6B0F528771DC90B420C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		1877B4979C8E922242825F0E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		3FD1B531A2A8B476501C3437 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = App/Overwatch.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Info.plist;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.overwatch.app;
+				PRODUCT_NAME = Overwatch;
+			};
+			name = Release;
+		};
+		4C2445383603B4068BDF8DA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = App/Overwatch.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Info.plist;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.overwatch.app;
+				PRODUCT_NAME = Overwatch;
+			};
+			name = Debug;
+		};
+		543584F52EFD7A24F693CC20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.overwatch.app.tests;
+				PRODUCT_MODULE_NAME = OverwatchTests;
+				PRODUCT_NAME = OverwatchTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Overwatch.app/Contents/MacOS/Overwatch";
+			};
+			name = Debug;
+		};
+		A774C12378B455676BFBB188 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.overwatch.app.tests;
+				PRODUCT_MODULE_NAME = OverwatchTests;
+				PRODUCT_NAME = OverwatchTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Overwatch.app/Contents/MacOS/Overwatch";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DB7DA128A0680142FDE87DA7 /* Build configuration list for PBXProject "Overwatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1877B4979C8E922242825F0E /* Debug */,
+				06E7E6B0F528771DC90B420C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F336613363AF211B6FAA99AF /* Build configuration list for PBXNativeTarget "OverwatchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				543584F52EFD7A24F693CC20 /* Debug */,
+				A774C12378B455676BFBB188 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F73FEEC7938C37E19BA265A7 /* Build configuration list for PBXNativeTarget "Overwatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C2445383603B4068BDF8DA8 /* Debug */,
+				3FD1B531A2A8B476501C3437 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F5A24752017F344FE920EDEB /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google-gemini/generative-ai-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		75BD2B3F0D61164207AFFC35 /* GoogleGenerativeAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F5A24752017F344FE920EDEB /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
+			productName = GoogleGenerativeAI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C9B0A8E29813B53D106A79A9 /* Project object */;
+}

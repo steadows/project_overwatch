@@ -66,7 +66,8 @@ Use UTC or the user's local date — whichever is apparent from system context.
 - ALWAYS journal silently as part of your workflow. Do not ask "should I journal this?" — just do it.
 - If you're unsure whether something is journal-worthy, journal it. Better to have too much than too little.
 - Never skip journaling because the user didn't explicitly ask for it. This is a standing instruction.
-- The journal file should be treated as append-only. Never delete or overwrite previous entries.
+- The journal file is **strictly append-only**. NEVER overwrite or delete previous entries — even if they're rough or redundant. Multiple entries on the same day are expected and fine. Use timestamps in the `## {HH:MM}` headers to distinguish them.
+- When appending, always use the Edit tool to add content after the last `---` separator, or use Bash with `>>` to append. Never use the Write tool on an existing journal file.
 - If the `~/dev-journal/` directory doesn't exist, create it.
 
 ---

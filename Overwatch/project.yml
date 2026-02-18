@@ -1,0 +1,77 @@
+name: Overwatch
+options:
+  bundleIdPrefix: com.overwatch
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  defaultConfig: Debug
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+
+packages:
+  GoogleGenerativeAI:
+    url: https://github.com/google-gemini/generative-ai-swift.git
+    from: "0.5.0"
+
+schemes:
+  Overwatch:
+    build:
+      targets:
+        Overwatch: all
+        OverwatchTests: [test]
+    test:
+      targets:
+        - OverwatchTests
+
+targets:
+  Overwatch:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+      - path: Models
+      - path: Services
+      - path: Views
+      - path: ViewModels
+      - path: Theme
+      - path: Utilities
+    resources:
+      - path: Resources
+    dependencies:
+      - package: GoogleGenerativeAI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.overwatch.app
+        INFOPLIST_FILE: App/Info.plist
+        CODE_SIGN_ENTITLEMENTS: App/Overwatch.entitlements
+        PRODUCT_NAME: Overwatch
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: false
+        ENABLE_TESTABILITY: true
+    entitlements:
+      path: App/Overwatch.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+
+  OverwatchTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: OverwatchTests
+    dependencies:
+      - target: Overwatch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.overwatch.app.tests
+        PRODUCT_NAME: OverwatchTests
+        PRODUCT_MODULE_NAME: OverwatchTests
+        GENERATE_INFOPLIST_FILE: true
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Overwatch.app/Contents/MacOS/Overwatch
+        BUNDLE_LOADER: $(TEST_HOST)
