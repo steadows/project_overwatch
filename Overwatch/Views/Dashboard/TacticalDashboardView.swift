@@ -1,8 +1,10 @@
 import SwiftUI
 import SwiftData
+import Charts
 
 struct TacticalDashboardView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.navigateToSection) private var navigateToSection
     @State private var viewModel = DashboardViewModel()
     @State private var sectionsVisible = false
     @State private var showingAddHabit = false
@@ -19,11 +21,14 @@ struct TacticalDashboardView: View {
                 biometricStatusSection
                     .materializeEffect(isVisible: sectionsVisible, delay: 0.24)
 
+                sentimentPulseSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.30)
+
                 heatMapPreview
-                    .materializeEffect(isVisible: sectionsVisible, delay: 0.36)
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.42)
 
                 fieldLogSection
-                    .materializeEffect(isVisible: sectionsVisible, delay: 0.48)
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.54)
             }
             .padding(OverwatchTheme.Spacing.xl)
         }
@@ -244,6 +249,120 @@ struct TacticalDashboardView: View {
                 hasData: viewModel.hasWhoopData,
                 isExpanded: $viewModel.isWhoopExpanded
             )
+        }
+    }
+
+    // MARK: - SENTIMENT PULSE
+
+    private var sentimentPulseSection: some View {
+        VStack(spacing: OverwatchTheme.Spacing.sm) {
+            sectionLabel("SENTIMENT PULSE")
+
+            Button {
+                navigateToSection(.journal)
+            } label: {
+                TacticalCard {
+                    HStack(spacing: OverwatchTheme.Spacing.lg) {
+                        // Today's sentiment
+                        if viewModel.sentimentPulse.hasEntriesToday {
+                            HStack(spacing: OverwatchTheme.Spacing.sm) {
+                                SentimentDot(label: viewModel.sentimentPulse.todayLabel, size: 10)
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(String(format: "%+.2f", viewModel.sentimentPulse.todayScore))
+                                        .font(Typography.metricMedium)
+                                        .foregroundStyle(sentimentPulseColor)
+                                        .monospacedDigit()
+                                    Text("TODAY")
+                                        .font(Typography.metricTiny)
+                                        .foregroundStyle(OverwatchTheme.textSecondary)
+                                        .tracking(1)
+                                }
+                            }
+                        } else {
+                            HStack(spacing: OverwatchTheme.Spacing.sm) {
+                                Circle()
+                                    .fill(OverwatchTheme.textSecondary.opacity(0.2))
+                                    .frame(width: 10, height: 10)
+
+                                Text("NO ENTRIES TODAY")
+                                    .font(Typography.hudLabel)
+                                    .foregroundStyle(OverwatchTheme.textSecondary.opacity(0.4))
+                                    .tracking(2)
+                            }
+                        }
+
+                        Spacer()
+
+                        // 7-day sparkline
+                        if viewModel.sentimentPulse.sparklineData.contains(where: { $0 != 0 }) {
+                            sentimentSparkline
+                                .frame(width: 120, height: 32)
+                        }
+
+                        // Journal link
+                        HStack(spacing: 4) {
+                            Text("JOURNAL")
+                                .font(Typography.hudLabel)
+                                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
+                                .tracking(1)
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.4))
+                        }
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var sentimentSparkline: some View {
+        let sparkData = viewModel.sentimentPulse.sparklineData
+        return Chart {
+            ForEach(Array(sparkData.enumerated()), id: \.offset) { index, value in
+                LineMark(
+                    x: .value("Day", index),
+                    y: .value("Score", value)
+                )
+                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.7))
+                .lineStyle(StrokeStyle(lineWidth: 1.5))
+                .interpolationMethod(.catmullRom)
+            }
+
+            ForEach(Array(sparkData.enumerated()), id: \.offset) { index, value in
+                AreaMark(
+                    x: .value("Day", index),
+                    yStart: .value("Base", 0),
+                    yEnd: .value("Score", value)
+                )
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            OverwatchTheme.accentCyan.opacity(0.1),
+                            OverwatchTheme.accentCyan.opacity(0.0),
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .interpolationMethod(.catmullRom)
+            }
+
+            RuleMark(y: .value("Neutral", 0))
+                .foregroundStyle(OverwatchTheme.textSecondary.opacity(0.2))
+                .lineStyle(StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+        }
+        .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
+        .chartYScale(domain: -1.0...1.0)
+    }
+
+    private var sentimentPulseColor: Color {
+        switch viewModel.sentimentPulse.todayLabel {
+        case "positive": OverwatchTheme.accentSecondary
+        case "negative": OverwatchTheme.alert
+        default: OverwatchTheme.textSecondary
         }
     }
 

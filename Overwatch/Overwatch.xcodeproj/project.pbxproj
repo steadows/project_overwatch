@@ -30,6 +30,7 @@
 		4315DBD1A4DA69E93136F028 /* NaturalLanguageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B192B699787526E491D288 /* NaturalLanguageParser.swift */; };
 		4410B6AE413EDBB82F724705 /* NaturalLanguageParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8BBF59AA6745540784B6F2 /* NaturalLanguageParserTests.swift */; };
 		485687BC91EE6DAB0DDB8DEC /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9184036D0C048716B2D07C01 /* JournalView.swift */; };
+		A1B2C3D4E5F60718A9BCDE01 /* MonthlyAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A9BCDE02 /* MonthlyAnalysisView.swift */; };
 		4B8496038AF8E3EAFAF0CDCB /* SentimentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */; };
 		4CD1F93FEA9F02AC61BF6187 /* HabitPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43F1BAA99FADB77694B6DC0 /* HabitPanelView.swift */; };
 		4F1B0F42078A0C30B6F3B06D /* JournalTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8451A512F411B3CD74CD5D43 /* JournalTimelineView.swift */; };
@@ -134,6 +135,7 @@
 		84E522582AD7C35D7848DA8F /* JournalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewModel.swift; sourceTree = "<group>"; };
 		8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		9184036D0C048716B2D07C01 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718A9BCDE02 /* MonthlyAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyAnalysisView.swift; sourceTree = "<group>"; };
 		95FF738A252B6A88996B4D8A /* HabitModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitModelTests.swift; sourceTree = "<group>"; };
 		988A88B1E8C933B0AE95BE01 /* OverwatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchApp.swift; sourceTree = "<group>"; };
 		9CF2EC2A80EE32A3DF16AA74 /* WhoopCycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopCycle.swift; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				9184036D0C048716B2D07C01 /* JournalView.swift */,
+				A1B2C3D4E5F60718A9BCDE02 /* MonthlyAnalysisView.swift */,
 			);
 			path = Journal;
 			sourceTree = "<group>";
@@ -479,6 +482,7 @@
 				4F1B0F42078A0C30B6F3B06D /* JournalTimelineView.swift in Sources */,
 				7906207756190B9609198881 /* JournalTimelineViewModel.swift in Sources */,
 				485687BC91EE6DAB0DDB8DEC /* JournalView.swift in Sources */,
+				A1B2C3D4E5F60718A9BCDE01 /* MonthlyAnalysisView.swift in Sources */,
 				D414F02D6BB0EB7D12C03C4E /* JournalViewModel.swift in Sources */,
 				E9108F36A34A1927B60A8395 /* KeychainHelper.swift in Sources */,
 				BB5A3E1D6B72AA5E5C2D3BF1 /* MetricTile.swift in Sources */,

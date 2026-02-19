@@ -902,27 +902,49 @@ Current flow (Phase 6.5 onward):
   - [x] HUD chart styling, animated transitions on date range switch
 - [x] Integrate trend chart into JournalView right panel below editor
 
-### 6.5.9: Monthly Analysis UI
+### 6.5.9: Monthly Analysis UI ✅
 > **Depends on:** 6.5.8, 6.5.4
 
-- [ ] Create `MonthlyAnalysisView.swift` — collapsible "MONTHLY INTELLIGENCE" section in JournalView
-  - [ ] Gemini narrative summary at top (or template fallback)
-  - [ ] Force multiplier habit highlighted with accent glow + emoji
-  - [ ] Horizontal bar chart of habit coefficients (green right for positive, red left for negative, sorted by |coefficient|)
-  - [ ] Model quality indicators: R², entry count, average sentiment
-  - [ ] "GENERATE ANALYSIS" / "REGENERATE" button
-  - [ ] Loading: "COMPUTING REGRESSION..." | Insufficient data: "NEED MORE DATA — Log at least 14 entries"
-  - [ ] Month selector for historical viewing
-- [ ] Auto-trigger on first app open after month end (if >= 14 entries for prior month)
+- [x] Create `MonthlyAnalysisView.swift` — collapsible "MONTHLY INTELLIGENCE" section in JournalView
+  - [x] Gemini narrative summary at top (or template fallback)
+  - [x] Force multiplier habit highlighted with accent glow + emoji
+  - [x] Horizontal bar chart of habit coefficients (green right for positive, red left for negative, sorted by |coefficient|)
+  - [x] Model quality indicators: R², entry count, average sentiment
+  - [x] "GENERATE ANALYSIS" / "REGENERATE" button
+  - [x] Loading: "COMPUTING REGRESSION..." | Insufficient data: "NEED MORE DATA — Log at least 14 entries"
+  - [x] Month selector for historical viewing
+- [x] Auto-trigger on first app open after month end (if >= 14 entries for prior month)
 
-### 6.5.10: Dashboard Integration — Sentiment Pulse
+### 6.5.10: Dashboard Integration — Sentiment Pulse ✅
 > **Depends on:** 6.5.8
 
-- [ ] Add compact "SENTIMENT PULSE" `TacticalCard` to `TacticalDashboardView` (below WHOOP strip)
-  - [ ] Today's sentiment dot + 7-day sparkline + "JOURNAL" link
-  - [ ] Tap navigates to Journal page
-  - [ ] No entries: dimmed "NO ENTRIES TODAY"
-- [ ] Add `sentimentPulse` computed property to `DashboardViewModel`
+- [x] Add compact "SENTIMENT PULSE" `TacticalCard` to `TacticalDashboardView` (below WHOOP strip)
+  - [x] Today's sentiment dot + 7-day sparkline + "JOURNAL" link
+  - [x] Tap navigates to Journal page
+  - [x] No entries: dimmed "NO ENTRIES TODAY"
+- [x] Add `sentimentPulse` computed property to `DashboardViewModel`
+
+### 6.5.10a: Sentiment Engine Upgrade — Gemini Replacement ✅
+> **Depends on:** 6.5.2, 6.2 (GeminiService exists) | **Priority: HIGH — NLTagger fails on negation/context**
+
+**Rationale:** NLTagger scores "Today has not been that bad" as -0.60 NEGATIVE. It's a bag-of-words scorer with no understanding of negation, sarcasm, or contextual nuance. Gemini replaces it for save-time scoring. The live typing indicator is removed entirely — it biases writing.
+
+- [x] **GeminiService: Add `analyzeSentiment` method**
+  - [x] RISEN-structured prompt: role (sentiment analyst), instructions (score text -1.0 to 1.0), steps (read title + content, assess tone accounting for negation/sarcasm/context, score), expectations (JSON with `score` and `label`), narrowing (no invented context, only analyze provided text)
+  - [x] Send both title and content together for full context
+  - [x] Parse JSON response into `SentimentResult` (reuse existing struct)
+  - [x] Handle Gemini errors gracefully — return nil to trigger fallback
+- [x] **JournalViewModel: Replace save-time scoring**
+  - [x] Inject `GeminiService?` as optional dependency (nil when no API key)
+  - [x] In `saveEntry()`: call Gemini first, fall back to NLTagger if Gemini unavailable/fails
+  - [x] Remove `analyzeSentimentLive()` method and `sentimentDebounceTask`
+  - [x] Remove `currentSentiment` state property
+- [x] **JournalView: Remove live sentiment indicator**
+  - [x] Remove `liveSentimentBadge` from active editor header row
+  - [x] Remove `.onChange(of: editorContent)` that triggers live analysis
+  - [x] Keep sentiment display on saved entries (read-only detail view, entry list dots)
+- [x] `SentimentAnalysisService` retained as offline/fallback — not deleted
+- [x] Verify build + all 118 tests pass
 
 ### 6.5.11: Synthetic Dataset & NLP Pipeline Testing
 > **Depends on:** 6.5.6, 6.5.3, 6.5.2
@@ -975,7 +997,7 @@ Current flow (Phase 6.5 onward):
 
 ## Phase 7 — Intelligence Layer & War Room
 
-> **Design context:** AI persona is a **performance coach** — encouraging, data-driven, motivational + actionable. Names specific habits, gives concrete recommendations, celebrates wins. Reports auto-generate weekly AND can be triggered on-demand for any date range. Reports now include **sentiment analysis data** from Phase 6.5 (journal entries scored by NLTagger, monthly regression results).
+> **Design context:** AI persona is a **performance coach** — encouraging, data-driven, motivational + actionable. Names specific habits, gives concrete recommendations, celebrates wins. Reports auto-generate weekly AND can be triggered on-demand for any date range. Reports now include **sentiment analysis data** from Phase 6.5 (journal entries scored by Gemini at save time, NLTagger as offline fallback, monthly regression results).
 >
 > The War Room is a **split-pane** layout: AI briefing panel (left) + interactive charts (right). Both visible simultaneously, cross-linked so insights reference chart data. **Sentiment charts** (time series + wellbeing gauge) from Phase 6.5.12 are integrated as chart type options.
 >
@@ -1314,8 +1336,8 @@ Current flow (Phase 6.5 onward):
 | Data sources | WHOOP only | No abstraction layer. Add provider protocol when second source is built |
 | Settings depth | Moderate | Connections, API keys, schedule, categories, notifications, export, accent color |
 | Habits page | Full deep-dive | CRUD + heat maps + journal timeline + trend charts |
-| Journal | AI-powered freeform + sentiment regression | New 6th sidebar item. NLTagger for sentiment, Accelerate/LAPACK for linear regression, Gemini for narrative |
-| Sentiment engine | Apple NLTagger (local) | Offline, instant, free. Gemini reserved for monthly narrative only |
+| Journal | AI-powered freeform + sentiment regression | New 6th sidebar item. Gemini for save-time sentiment (NLTagger offline fallback), Accelerate/LAPACK for linear regression, Gemini for narrative |
+| Sentiment engine | Gemini (primary) + NLTagger (fallback) | Gemini scores at save time with negation/context awareness. NLTagger retained as offline fallback when no API key |
 | Regression type | Linear (not logistic) | Continuous sentiment (-1.0 to 1.0) preserves information. Via Accelerate `dgels_` |
 | ML engine | Native Swift (Accelerate) | No Python dependency. Self-contained, zero external runtime |
 | Monthly analysis | Auto on month end + on-demand | Min 14 journal entries. Identifies force multiplier habit |

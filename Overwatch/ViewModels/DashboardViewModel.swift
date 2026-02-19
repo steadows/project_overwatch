@@ -61,6 +61,19 @@ final class DashboardViewModel {
     /// Pre-computed 30-day heat map data for the dashboard compact preview.
     var compactHeatMapDays: [HeatMapDay] = []
 
+    // MARK: - Sentiment Pulse
+
+    struct SentimentPulse: Equatable {
+        var todayScore: Double = 0
+        var todayLabel: String = "neutral"
+        var hasEntriesToday: Bool = false
+        var sparklineData: [Double] = []
+
+        static let empty = SentimentPulse()
+    }
+
+    var sentimentPulse = SentimentPulse.empty
+
     // MARK: - Dashboard Interaction State
 
     /// Which habit's expand panel is currently open (nil = all collapsed)
@@ -82,6 +95,7 @@ final class DashboardViewModel {
         loadHabitSummary(from: context)
         loadTrackedHabits(from: context)
         loadHeatMapData(from: context)
+        loadSentimentPulse(from: context)
     }
 
     private func loadWhoopMetrics(from context: ModelContext) {
@@ -184,6 +198,64 @@ final class DashboardViewModel {
             return
         }
         compactHeatMapDays = HeatMapDataBuilder.buildAggregate(habits: habits, dayCount: 35)
+    }
+
+    // MARK: - Sentiment Pulse Data
+
+    private func loadSentimentPulse(from context: ModelContext) {
+        let calendar = Calendar.current
+        let todayStart = calendar.startOfDay(for: .now)
+        let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
+        let weekStart = calendar.date(byAdding: .day, value: -7, to: todayStart)!
+
+        let descriptor = FetchDescriptor<JournalEntry>(
+            sortBy: [SortDescriptor(\.date)]
+        )
+        guard let allEntries = try? context.fetch(descriptor) else {
+            sentimentPulse = .empty
+            return
+        }
+
+        let todayEntries = allEntries.filter { $0.date >= todayStart && $0.date < todayEnd }
+        let weekEntries = allEntries.filter { $0.date >= weekStart && $0.date < todayEnd }
+
+        let hasToday = !todayEntries.isEmpty
+        let todayAvg = hasToday
+            ? todayEntries.map(\.sentimentScore).reduce(0, +) / Double(todayEntries.count)
+            : 0.0
+
+        let todayLabel: String
+        if !hasToday {
+            todayLabel = "neutral"
+        } else if todayAvg > 0.1 {
+            todayLabel = "positive"
+        } else if todayAvg < -0.1 {
+            todayLabel = "negative"
+        } else {
+            todayLabel = "neutral"
+        }
+
+        // Build 7-day sparkline: one value per day (average sentiment, 0 if no entries)
+        var sparkline: [Double] = []
+        for offset in (0..<7).reversed() {
+            let dayStart = calendar.date(byAdding: .day, value: -offset, to: todayStart)!
+            let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+            let dayEntries = weekEntries.filter { $0.date >= dayStart && $0.date < dayEnd }
+            if dayEntries.isEmpty {
+                sparkline.append(0)
+            } else {
+                sparkline.append(
+                    dayEntries.map(\.sentimentScore).reduce(0, +) / Double(dayEntries.count)
+                )
+            }
+        }
+
+        sentimentPulse = SentimentPulse(
+            todayScore: todayAvg,
+            todayLabel: todayLabel,
+            hasEntriesToday: hasToday,
+            sparklineData: sparkline
+        )
     }
 
     // MARK: - Habit Actions

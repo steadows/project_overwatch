@@ -1,5 +1,18 @@
 import SwiftUI
 
+// MARK: - Navigation Environment Key
+
+private struct NavigateToSectionKey: EnvironmentKey {
+    nonisolated(unsafe) static let defaultValue: (NavigationSection) -> Void = { _ in }
+}
+
+extension EnvironmentValues {
+    var navigateToSection: (NavigationSection) -> Void {
+        get { self[NavigateToSectionKey.self] }
+        set { self[NavigateToSectionKey.self] = newValue }
+    }
+}
+
 // MARK: - Section Enum
 
 /// The six sidebar navigation sections.
@@ -182,6 +195,11 @@ struct NavigationShell: View {
                 .animation(.easeInOut(duration: 0.2), value: selectedSection)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .environment(\.navigateToSection) { section in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                self.selectedSection = section
+            }
+        }
     }
 
     @ViewBuilder

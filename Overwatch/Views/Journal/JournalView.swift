@@ -4,7 +4,7 @@ import SwiftData
 // MARK: - Journal View
 
 /// Full journal page — master-detail layout with entry list, inline editor,
-/// sentiment filtering, live sentiment scoring, and tag management.
+/// sentiment filtering, and tag management. Sentiment is scored at save time via Gemini.
 struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = JournalViewModel()
@@ -35,8 +35,10 @@ struct JournalView: View {
         .onAppear {
             viewModel.loadEntries(from: modelContext)
             viewModel.loadSentimentTrend(from: modelContext)
+            viewModel.loadAvailableMonths(from: modelContext)
             viewModel.loadLatestAnalysis(from: modelContext)
             sectionsVisible = true
+            Task { await viewModel.checkAutoTrigger(from: modelContext) }
         }
         .alert(
             "PURGE ENTRY?",
@@ -229,6 +231,27 @@ struct JournalView: View {
                             isVisible: sectionsVisible, delay: 0.16
                         )
                     }
+
+                    TacticalCard {
+                        MonthlyAnalysisView(
+                            analysis: viewModel.latestAnalysis,
+                            isGenerating: viewModel.isGeneratingAnalysis,
+                            availableMonths: viewModel.availableMonths,
+                            currentMonthEntryCount: viewModel.currentMonthEntryCount,
+                            selectedMonthIndex: $viewModel.selectedMonthIndex,
+                            onGenerate: {
+                                Task {
+                                    await viewModel.generateAnalysisForSelectedMonth(from: modelContext)
+                                }
+                            },
+                            onSelectMonth: { index in
+                                viewModel.selectMonth(at: index, from: modelContext)
+                            }
+                        )
+                    }
+                    .materializeEffect(
+                        isVisible: sectionsVisible, delay: 0.24
+                    )
                 }
                 .padding(.bottom, OverwatchTheme.Spacing.xl)
             }
@@ -264,8 +287,6 @@ struct JournalView: View {
                 )
 
                 Spacer()
-
-                liveSentimentBadge
 
                 Button {
                     Task {
@@ -339,9 +360,6 @@ struct JournalView: View {
                         HUDFrameShape(chamferSize: 8)
                             .stroke(OverwatchTheme.accentCyan.opacity(0.3), lineWidth: 1)
                     )
-                    .onChange(of: viewModel.editorContent) { _, _ in
-                        Task { await viewModel.analyzeSentimentLive() }
-                    }
             }
 
             HUDDivider()
@@ -408,15 +426,6 @@ struct JournalView: View {
                 }
             }
         }
-    }
-
-    // MARK: - Live Sentiment Badge
-
-    private var liveSentimentBadge: some View {
-        SentimentBadge(
-            score: viewModel.currentSentiment.score,
-            label: viewModel.currentSentiment.label.rawValue
-        )
     }
 
     // MARK: - Entry Detail (Read-Only)

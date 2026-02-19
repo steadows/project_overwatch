@@ -101,6 +101,95 @@ actor GeminiService {
         """
     }
 
+    // MARK: - Sentiment Analysis
+
+    /// Analyzes sentiment of journal text using Gemini, accounting for negation, sarcasm, and context.
+    /// Returns nil if Gemini fails so the caller can fall back to NLTagger.
+    func analyzeSentiment(title: String, content: String) async -> SentimentResult? {
+        let prompt = buildSentimentPrompt(title: title, content: content)
+
+        do {
+            let response = try await model.generateContent(prompt)
+            guard let text = response.text else { return nil }
+            return parseSentimentResponse(text)
+        } catch {
+            return nil
+        }
+    }
+
+    // MARK: - Sentiment Prompt (RISEN)
+
+    private func buildSentimentPrompt(title: String, content: String) -> String {
+        """
+        <role>
+        You are a sentiment analyst specializing in personal journal entries. You understand nuance, \
+        negation, sarcasm, understatement, and contextual tone. You score text on a continuous scale \
+        from -1.0 (very negative) to 1.0 (very positive).
+        </role>
+
+        <instructions>
+        Analyze the sentiment of the following journal entry (title + content provided together). \
+        Return a JSON object with "score" (number, -1.0 to 1.0) and "label" (string: "positive", \
+        "negative", or "neutral").
+        </instructions>
+
+        <steps>
+        1. Read the title and full content as a unified piece of writing.
+        2. Assess the overall emotional tone, paying close attention to negation ("not bad" = mildly positive), \
+        sarcasm, hedging, and mixed sentiments.
+        3. Assign a continuous score from -1.0 to 1.0 reflecting the dominant emotional tone.
+        4. Assign a label: "positive" if score > 0.1, "negative" if score < -0.1, "neutral" otherwise.
+        </steps>
+
+        <expectations>
+        Respond with ONLY a JSON object. No markdown fences, no explanation — just raw JSON. \
+        Format: {"score": <number>, "label": "<string>"}. \
+        The score must be between -1.0 and 1.0. The label must be one of: "positive", "negative", "neutral".
+        </expectations>
+
+        <narrowing>
+        Do not invent context not present in the text. Do not provide commentary or advice. \
+        Do not wrap the JSON in code fences or add any text before or after the JSON object. \
+        Analyze only what is written — not what you think the author should feel.
+        </narrowing>
+
+        <journal_entry>
+        Title: \(title)
+
+        \(content)
+        </journal_entry>
+        """
+    }
+
+    private func parseSentimentResponse(_ text: String) -> SentimentResult? {
+        var cleaned = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if cleaned.hasPrefix("```json") {
+            cleaned = String(cleaned.dropFirst(7))
+        } else if cleaned.hasPrefix("```") {
+            cleaned = String(cleaned.dropFirst(3))
+        }
+        if cleaned.hasSuffix("```") {
+            cleaned = String(cleaned.dropLast(3))
+        }
+        cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard let data = cleaned.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let score = json["score"] as? Double,
+              let labelStr = json["label"] as? String,
+              let label = SentimentResult.SentimentLabel(rawValue: labelStr) else {
+            return nil
+        }
+
+        let clampedScore = min(max(score, -1.0), 1.0)
+        return SentimentResult(
+            score: clampedScore,
+            label: label,
+            magnitude: abs(clampedScore)
+        )
+    }
+
     // MARK: - Regression Narrative
 
     /// Sends regression results to Gemini for a narrative summary using the RISEN framework.

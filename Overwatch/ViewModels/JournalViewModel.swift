@@ -2,8 +2,9 @@ import Foundation
 import Observation
 import SwiftData
 
-/// ViewModel for the Journal page — entry CRUD, live sentiment scoring,
-/// trend visualization, filtering, and monthly regression analysis.
+/// ViewModel for the Journal page — entry CRUD, save-time sentiment scoring
+/// (Gemini-first with NLTagger fallback), trend visualization, filtering,
+/// and monthly regression analysis.
 @MainActor
 @Observable
 final class JournalViewModel {
@@ -42,6 +43,14 @@ final class JournalViewModel {
         let generatedAt: Date
     }
 
+    struct MonthOption: Identifiable, Equatable {
+        let month: Int
+        let year: Int
+        let label: String
+        let shortLabel: String
+        var id: String { "\(year)-\(month)" }
+    }
+
     // MARK: - Filter
 
     enum DateFilter: String, CaseIterable, Identifiable {
@@ -74,6 +83,7 @@ final class JournalViewModel {
     // MARK: - Dependencies
 
     private let sentimentService: SentimentAnalysisService
+    private let geminiService: GeminiService?
     private let regressionService: RegressionService
 
     // MARK: - State
@@ -86,7 +96,6 @@ final class JournalViewModel {
     var isEditing: Bool = false
     var editingEntryID: UUID?
 
-    var currentSentiment: SentimentResult = .neutral
     var sentimentTrend: [SentimentDataPoint] = []
 
     var dateFilter: DateFilter = .all
@@ -95,8 +104,9 @@ final class JournalViewModel {
 
     var latestAnalysis: MonthlyAnalysisItem?
     var isGeneratingAnalysis: Bool = false
-
-    private var sentimentDebounceTask: Task<Void, Never>?
+    var availableMonths: [MonthOption] = []
+    var selectedMonthIndex: Int = 0
+    var currentMonthEntryCount: Int = 0
 
     // MARK: - Computed
 
@@ -141,9 +151,11 @@ final class JournalViewModel {
 
     init(
         sentimentService: SentimentAnalysisService = SentimentAnalysisService(),
+        geminiService: GeminiService? = GeminiService.create(),
         regressionService: RegressionService = RegressionService()
     ) {
         self.sentimentService = sentimentService
+        self.geminiService = geminiService
         self.regressionService = regressionService
     }
 
@@ -201,7 +213,6 @@ final class JournalViewModel {
         editorTitle = ""
         editorContent = ""
         editorTags = []
-        currentSentiment = .neutral
         isEditing = true
     }
 
@@ -211,7 +222,6 @@ final class JournalViewModel {
         editorTitle = ""
         editorContent = ""
         editorTags = []
-        currentSentiment = .neutral
     }
 
     func selectEntry(_ id: UUID, from context: ModelContext) {
@@ -225,11 +235,6 @@ final class JournalViewModel {
         editorTitle = entry.title
         editorContent = entry.content
         editorTags = entry.tags
-        currentSentiment = SentimentResult(
-            score: entry.sentimentScore,
-            label: SentimentResult.SentimentLabel(rawValue: entry.sentimentLabel) ?? .neutral,
-            magnitude: entry.sentimentMagnitude
-        )
         isEditing = true
     }
 
@@ -237,13 +242,19 @@ final class JournalViewModel {
         let content = editorContent.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !content.isEmpty else { return }
 
-        // Analyze sentiment
-        let sentiment = await sentimentService.analyzeSentiment(content)
-        let wordCount = content.split(separator: " ").count
         let title = editorTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        let wordCount = content.split(separator: " ").count
+
+        // Gemini-first sentiment: try Gemini, fall back to NLTagger if unavailable/fails
+        let sentiment: SentimentResult
+        if let gemini = geminiService,
+           let geminiResult = await gemini.analyzeSentiment(title: title, content: content) {
+            sentiment = geminiResult
+        } else {
+            sentiment = await sentimentService.analyzeSentiment(content)
+        }
 
         if let existingID = editingEntryID {
-            // Update existing entry
             let descriptor = FetchDescriptor<JournalEntry>()
             guard let allEntries = try? context.fetch(descriptor),
                   let entry = allEntries.first(where: { $0.id == existingID }) else { return }
@@ -257,7 +268,6 @@ final class JournalViewModel {
             entry.tags = editorTags
             entry.updatedAt = .now
         } else {
-            // Create new entry
             let entry = JournalEntry(
                 content: content,
                 sentimentScore: sentiment.score,
@@ -273,7 +283,6 @@ final class JournalViewModel {
 
         isEditing = false
         editingEntryID = nil
-        currentSentiment = .neutral
         loadEntries(from: context)
         loadSentimentTrend(from: context)
     }
@@ -293,21 +302,6 @@ final class JournalViewModel {
 
         loadEntries(from: context)
         loadSentimentTrend(from: context)
-    }
-
-    // MARK: - Live Sentiment Analysis (Debounced)
-
-    func analyzeSentimentLive() async {
-        sentimentDebounceTask?.cancel()
-
-        let content = editorContent
-        sentimentDebounceTask = Task {
-            try? await Task.sleep(for: .seconds(1))
-            guard !Task.isCancelled else { return }
-            let result = await sentimentService.analyzeSentiment(content)
-            guard !Task.isCancelled else { return }
-            currentSentiment = result
-        }
     }
 
     // MARK: - Monthly Analysis
@@ -479,6 +473,154 @@ final class JournalViewModel {
             coefficients: latest.habitCoefficients,
             generatedAt: latest.generatedAt
         )
+    }
+
+    // MARK: - Month Selection & Available Months
+
+    func loadAvailableMonths(from context: ModelContext) {
+        let calendar = Calendar.current
+        let now = Date.now
+        let currentComponents = calendar.dateComponents([.month, .year], from: now)
+
+        var months: [MonthOption] = []
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        let shortFormatter = DateFormatter()
+        shortFormatter.dateFormat = "MMM yy"
+
+        // Current month + up to 11 previous months that have journal entries
+        for offset in 0..<12 {
+            guard let date = calendar.date(byAdding: .month, value: -offset, to: now) else { continue }
+            let comps = calendar.dateComponents([.month, .year], from: date)
+            guard let month = comps.month, let year = comps.year else { continue }
+
+            let startOfMonth = calendar.date(from: DateComponents(year: year, month: month, day: 1))!
+            guard let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) else { continue }
+
+            let descriptor = FetchDescriptor<JournalEntry>(
+                predicate: #Predicate<JournalEntry> { entry in
+                    entry.date >= startOfMonth && entry.date < endOfMonth
+                }
+            )
+            let count = (try? context.fetchCount(descriptor)) ?? 0
+            if count > 0 || (month == currentComponents.month && year == currentComponents.year) {
+                months.append(MonthOption(
+                    month: month,
+                    year: year,
+                    label: formatter.string(from: startOfMonth),
+                    shortLabel: shortFormatter.string(from: startOfMonth).uppercased()
+                ))
+            }
+        }
+
+        availableMonths = months
+        if selectedMonthIndex >= months.count {
+            selectedMonthIndex = 0
+        }
+
+        loadCurrentMonthEntryCount(from: context)
+    }
+
+    func selectMonth(at index: Int, from context: ModelContext) {
+        guard index >= 0 && index < availableMonths.count else { return }
+        selectedMonthIndex = index
+        let option = availableMonths[index]
+        loadAnalysis(month: option.month, year: option.year, from: context)
+        loadCurrentMonthEntryCount(from: context)
+    }
+
+    func loadAnalysis(month: Int, year: Int, from context: ModelContext) {
+        let descriptor = FetchDescriptor<MonthlyAnalysis>()
+        guard let analyses = try? context.fetch(descriptor) else {
+            latestAnalysis = nil
+            return
+        }
+
+        guard let match = analyses.first(where: { $0.month == month && $0.year == year }) else {
+            latestAnalysis = nil
+            return
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+
+        latestAnalysis = MonthlyAnalysisItem(
+            id: match.id,
+            month: match.month,
+            year: match.year,
+            monthLabel: formatter.string(from: match.startDate),
+            averageSentiment: match.averageSentiment,
+            entryCount: match.entryCount,
+            forceMultiplierHabit: match.forceMultiplierHabit,
+            modelR2: match.modelR2,
+            summary: match.summary,
+            coefficients: match.habitCoefficients,
+            generatedAt: match.generatedAt
+        )
+    }
+
+    func generateAnalysisForSelectedMonth(from context: ModelContext) async {
+        guard !availableMonths.isEmpty, selectedMonthIndex < availableMonths.count else { return }
+        let option = availableMonths[selectedMonthIndex]
+        let calendar = Calendar.current
+        guard let date = calendar.date(
+            from: DateComponents(year: option.year, month: option.month, day: 15)
+        ) else { return }
+        await generateMonthlyAnalysis(for: date, from: context)
+    }
+
+    func checkAutoTrigger(from context: ModelContext) async {
+        let calendar = Calendar.current
+        let now = Date.now
+        guard let lastMonth = calendar.date(byAdding: .month, value: -1, to: now) else { return }
+        let comps = calendar.dateComponents([.month, .year], from: lastMonth)
+        guard let month = comps.month, let year = comps.year else { return }
+
+        let analysisDescriptor = FetchDescriptor<MonthlyAnalysis>()
+        let existing = (try? context.fetch(analysisDescriptor))?.first {
+            $0.month == month && $0.year == year
+        }
+        guard existing == nil else { return }
+
+        let startOfMonth = calendar.date(from: DateComponents(year: year, month: month, day: 1))!
+        guard let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) else { return }
+
+        let entryDescriptor = FetchDescriptor<JournalEntry>(
+            predicate: #Predicate<JournalEntry> { entry in
+                entry.date >= startOfMonth && entry.date < endOfMonth
+            }
+        )
+        let count = (try? context.fetchCount(entryDescriptor)) ?? 0
+        guard count >= 14 else { return }
+
+        guard let midMonth = calendar.date(
+            from: DateComponents(year: year, month: month, day: 15)
+        ) else { return }
+        await generateMonthlyAnalysis(for: midMonth, from: context)
+    }
+
+    private func loadCurrentMonthEntryCount(from context: ModelContext) {
+        guard !availableMonths.isEmpty, selectedMonthIndex < availableMonths.count else {
+            currentMonthEntryCount = 0
+            return
+        }
+
+        let option = availableMonths[selectedMonthIndex]
+        let calendar = Calendar.current
+        let startOfMonth = calendar.date(
+            from: DateComponents(year: option.year, month: option.month, day: 1)
+        )!
+        guard let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) else {
+            currentMonthEntryCount = 0
+            return
+        }
+
+        let descriptor = FetchDescriptor<JournalEntry>(
+            predicate: #Predicate<JournalEntry> { entry in
+                entry.date >= startOfMonth && entry.date < endOfMonth
+            }
+        )
+        currentMonthEntryCount = (try? context.fetchCount(descriptor)) ?? 0
     }
 
     // MARK: - Report Data Packaging (Phase 7.2)
