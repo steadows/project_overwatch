@@ -829,78 +829,78 @@ Current flow (Phase 6.5 onward):
 ### 6.5.2: SentimentAnalysisService
 > **Depends on:** 6.5.1 | **Parallel with:** 6.5.3, 6.5.5
 
-- [ ] Create `SentimentAnalysisService.swift` — `actor` using Apple `NaturalLanguage` framework
-- [ ] Implement `analyzeSentiment(_ text: String) -> SentimentResult` using `NLTagger` with `.sentimentScore` scheme
-  - [ ] Score: -1.0 to 1.0 | Label: > 0.1 = positive, < -0.1 = negative, else neutral | Magnitude: abs(score)
-- [ ] Create `SentimentResult` struct (Sendable): `score`, `label`, `magnitude`
-- [ ] Handle edge cases: empty text → neutral, short text (< 10 chars) → neutral with magnitude 0
-- [ ] Write unit tests: known positive phrases, known negative, neutral, empty string, emoji-only, multi-paragraph
+- [x] Create `SentimentAnalysisService.swift` — `actor` using Apple `NaturalLanguage` framework
+- [x] Implement `analyzeSentiment(_ text: String) -> SentimentResult` using `NLTagger` with `.sentimentScore` scheme
+  - [x] Score: -1.0 to 1.0 | Label: > 0.1 = positive, < -0.1 = negative, else neutral | Magnitude: abs(score)
+- [x] Create `SentimentResult` struct (Sendable): `score`, `label`, `magnitude`
+- [x] Handle edge cases: empty text → neutral, short text (< 10 chars) → neutral with magnitude 0
+- [x] Write unit tests: known positive phrases, known negative, neutral, empty string, emoji-only, multi-paragraph
 
 ### 6.5.3: RegressionService
 > **Depends on:** 6.5.1 | **Parallel with:** 6.5.2, 6.5.5
 
-- [ ] Create `RegressionService.swift` — `final class RegressionService: Sendable` using `import Accelerate`
-- [ ] Define `RegressionInput` struct: `habitNames`, `habitEmojis`, `featureMatrix` ([days × habits]), `targetVector` ([days])
-- [ ] Define `RegressionOutput` struct: `coefficients: [HabitCoefficient]`, `r2: Double`, `intercept: Double`
-- [ ] Implement `computeRegression(_ input:) -> RegressionOutput?` via LAPACK `dgels_` least-squares
-  - [ ] Compute R-squared from residuals / total sum of squares
-  - [ ] Compute t-statistics and approximate p-values per coefficient
-  - [ ] Guard: return nil if < 14 observations or < 2 habits with variance
-- [ ] Write unit tests: synthetic data with known correlations, insufficient data → nil, zero variance, single habit
+- [x] Create `RegressionService.swift` — `final class RegressionService: Sendable` using `import Accelerate`
+- [x] Define `RegressionInput` struct: `habitNames`, `habitEmojis`, `featureMatrix` ([days × habits]), `targetVector` ([days])
+- [x] Define `RegressionOutput` struct: `coefficients: [HabitCoefficient]`, `r2: Double`, `intercept: Double`
+- [x] Implement `computeRegression(_ input:) -> RegressionOutput?` via normal equation (X'X)^(-1)X'y with Gaussian elimination
+  - [x] Compute R-squared from residuals / total sum of squares
+  - [x] Compute t-statistics and approximate p-values per coefficient
+  - [x] Guard: return nil if < 14 observations or < 2 habits with variance
+- [x] Write unit tests: synthetic data with known correlations, insufficient data → nil, zero variance, single habit
 
 ### 6.5.4: GeminiService Extension — Regression Narrative
 > **Depends on:** 6.5.3, 6.2 (GeminiService exists)
 
-- [ ] Add `interpretRegressionResults(coefficients:averageSentiment:monthName:entryCount:) async throws -> String` to `GeminiService`
-- [ ] Build prompt with performance coach persona: encouraging, data-driven, actionable
-- [ ] Output: 2-3 paragraph narrative summarizing wellbeing drivers + force multiplier callout + recommendation
-- [ ] Graceful fallback when Gemini unavailable: template-based summary from coefficients alone
+- [x] Add `interpretRegressionResults(coefficients:averageSentiment:monthName:entryCount:) async throws -> String` to `GeminiService`
+- [x] Build prompt with performance coach persona: encouraging, data-driven, actionable
+- [x] Output: 2-3 paragraph narrative summarizing wellbeing drivers + force multiplier callout + recommendation
+- [x] Graceful fallback when Gemini unavailable: template-based summary from coefficients alone
 - [ ] Write tests with mock Gemini response
 
 ### 6.5.5: Navigation Update — Journal Sidebar
 > **Depends on:** 4.2 (NavigationShell) | **Parallel with:** 6.5.2, 6.5.3
 
-- [ ] Add `.journal` case to `NavigationSection` enum between `.habits` and `.warRoom`
-- [ ] Icon: `"book.pages"`, label: `"Journal"`
-- [ ] Add case to `detailContent(for:)` switch → render `JournalView`
-- [ ] Verify sidebar renders correctly with 6 items
+- [x] Add `.journal` case to `NavigationSection` enum between `.habits` and `.warRoom`
+- [x] Icon: `"book.pages"`, label: `"Journal"`
+- [x] Add case to `detailContent(for:)` switch → render `JournalView`
+- [x] Verify sidebar renders correctly with 6 items
 
 ### 6.5.6: JournalViewModel
 > **Depends on:** 6.5.2, 6.5.3
 
-- [ ] Create `JournalViewModel.swift` — `@Observable @MainActor`, inject `SentimentAnalysisService` + `RegressionService` via init
-- [ ] Display types: `JournalItem` (id, date, title, contentPreview, wordCount, sentimentScore, sentimentLabel, tags, createdAt), `SentimentDataPoint` (date, score), `MonthlyAnalysisItem`
-- [ ] State: entries, selectedEntryID, editorContent/Title/Tags, isEditing, editingEntryID, currentSentiment, sentimentTrend, filters, latestAnalysis, isGeneratingAnalysis
-- [ ] Implement `loadEntries(from:)`, `saveEntry(in:)` async (with sentiment analysis), `deleteEntry`, `selectEntry`, `startNewEntry`
-- [ ] Implement `analyzeSentimentLive()` async — debounced 1s for live indicator
-- [ ] Implement `loadSentimentTrend(from:)` — build SentimentDataPoint array
-- [ ] Implement `generateMonthlyAnalysis(for:from:)` async — build regression input, call services, save MonthlyAnalysis
-- [ ] Implement `sentimentDataForReport(startDate:endDate:from:)` — packages data for Phase 7.2 integration
-- [ ] Filter/search logic
+- [x] Create `JournalViewModel.swift` — `@Observable @MainActor`, inject `SentimentAnalysisService` + `RegressionService` via init
+- [x] Display types: `JournalItem` (id, date, title, contentPreview, wordCount, sentimentScore, sentimentLabel, tags, createdAt), `SentimentDataPoint` (date, score), `MonthlyAnalysisItem`
+- [x] State: entries, selectedEntryID, editorContent/Title/Tags, isEditing, editingEntryID, currentSentiment, sentimentTrend, filters, latestAnalysis, isGeneratingAnalysis
+- [x] Implement `loadEntries(from:)`, `saveEntry(in:)` async (with sentiment analysis), `deleteEntry`, `selectEntry`, `startNewEntry`
+- [x] Implement `analyzeSentimentLive()` async — debounced 1s for live indicator
+- [x] Implement `loadSentimentTrend(from:)` — build SentimentDataPoint array
+- [x] Implement `generateMonthlyAnalysis(for:from:)` async — build regression input, call services, save MonthlyAnalysis
+- [x] Implement `sentimentDataForReport(startDate:endDate:from:)` — packages data for Phase 7.2 integration
+- [x] Filter/search logic
 - [ ] Write unit tests: entry CRUD, sentiment integration, filter logic, monthly analysis flow
 
 ### 6.5.7: Journal UI — Entry List & Editor
 > **Depends on:** 6.5.5, 6.5.6
 
-- [ ] Create `Views/Journal/` directory
-- [ ] Create `JournalView.swift` — master-detail layout matching `HabitsView` pattern
-  - [ ] Left panel (~40%): scrollable entry list with `TacticalCard`-styled rows (date, title, sentiment dot, word count, preview)
-  - [ ] Search field at top (HUD-styled), filter chips (7D / 30D / 90D / ALL, sentiment ALL / + / - / ~)
-  - [ ] Right panel (~60%): title field + `TextEditor` + tag input + live sentiment badge + SAVE / CANCEL
-  - [ ] "NEW ENTRY" button in header
-  - [ ] Empty state: "BEGIN YOUR FIELD LOG — Record thoughts, reflections, and daily observations"
-  - [ ] Entry deletion with "PURGE ENTRY?" confirmation
-  - [ ] Materialize/Dissolve animation patterns
+- [x] Create `Views/Journal/` directory
+- [x] Create `JournalView.swift` — master-detail layout matching `HabitsView` pattern
+  - [x] Left panel (~40%): scrollable entry list with `TacticalCard`-styled rows (date, title, sentiment dot, word count, preview)
+  - [x] Search field at top (HUD-styled), filter chips (7D / 30D / 90D / ALL, sentiment ALL / + / - / ~)
+  - [x] Right panel (~60%): title field + `TextEditor` + tag input + live sentiment badge + SAVE / CANCEL
+  - [x] "NEW ENTRY" button in header
+  - [x] Empty state: "BEGIN YOUR FIELD LOG — Record thoughts, reflections, and daily observations"
+  - [x] Entry deletion with "PURGE ENTRY?" confirmation
+  - [x] Materialize/Dissolve animation patterns
 
 ### 6.5.8: Sentiment Visualization Components
 > **Depends on:** 6.5.7
 
-- [ ] Create `SentimentIndicator.swift` — `SentimentDot` (6pt, color-coded, glow) + `SentimentBadge` (score + arrow + label)
-- [ ] Create `SentimentTrendChart.swift` — SwiftUI Charts line chart (following `HabitTrendChartView` pattern)
-  - [ ] X: dates, Y: sentiment score (-1.0 to 1.0)
-  - [ ] Green zone above 0, red zone below 0 (gradient area fill), neutral baseline
-  - [ ] HUD chart styling, animated transitions on date range switch
-- [ ] Integrate trend chart into JournalView right panel below editor
+- [x] Create `SentimentIndicator.swift` — `SentimentDot` (6pt, color-coded, glow) + `SentimentBadge` (score + arrow + label)
+- [x] Create `SentimentTrendChart.swift` — SwiftUI Charts line chart (following `HabitTrendChartView` pattern)
+  - [x] X: dates, Y: sentiment score (-1.0 to 1.0)
+  - [x] Green zone above 0, red zone below 0 (gradient area fill), neutral baseline
+  - [x] HUD chart styling, animated transitions on date range switch
+- [x] Integrate trend chart into JournalView right panel below editor
 
 ### 6.5.9: Monthly Analysis UI
 > **Depends on:** 6.5.8, 6.5.4
@@ -984,25 +984,25 @@ Current flow (Phase 6.5 onward):
 ### 7.1: Intelligence Manager & Persona
 > **Depends on:** 6.2 (Gemini service exists), 6.5.1 (JournalEntry sentiment fields + MonthlyAnalysis model)
 
-- [ ] Create `IntelligenceManager.swift` — uses `GeminiService`, owns all report generation logic
-- [ ] Define performance coach persona prompt using **RISEN/XML structure** (per CLAUDE.md):
-  - [ ] `<role>`: Performance coach — encouraging but honest, data-driven, actionable
-  - [ ] `<instructions>`: Analyze habit, biometric, and sentiment data. Produce narrative + recommendations.
-  - [ ] `<steps>`: 1) Review habit completion rates, 2) Correlate with WHOOP recovery, 3) Factor in journal sentiment trends, 4) Identify force multiplier, 5) Generate recommendations
-  - [ ] `<expectations>`: 2-3 paragraph narrative, reference specific numbers, end with actionable items
-  - [ ] `<narrowing>`: No medical advice, no invented data, only reference habits/metrics in input
-  - [ ] Example tone: "Strong week overall. Your hydration consistency (6/7 days) is clearly paying off — recovery averaged 71%, up from 63% last week. Your journal sentiment tracked positive (+0.42 avg), aligning with your meditation streak. One area to watch: sleep duration dropped below 7h three nights. Try setting a 10pm wind-down alarm."
-- [ ] Define `WeeklyInsight` SwiftData `@Model`:
-  - [ ] `id: UUID`
-  - [ ] `dateRangeStart: Date`, `dateRangeEnd: Date`
-  - [ ] `summary: String` — 2-3 paragraph narrative overview
-  - [ ] `forceMultiplierHabit: String` — the habit with highest positive correlation to recovery AND/OR sentiment
-  - [ ] `recommendations: [String]` — 3-5 actionable items
-  - [ ] `correlations: [HabitCoefficient]` — **reuse `HabitCoefficient` from Phase 6.5.1** (not a new struct)
-  - [ ] `averageSentiment: Double?` — weekly average sentiment score (nil if no journal entries)
-  - [ ] `sentimentTrend: String?` — "improving", "declining", "stable" (nil if no entries)
-  - [ ] `generatedAt: Date`
-- [ ] Register `WeeklyInsight` in `OverwatchApp.swift` ModelContainer
+- [x] Create `IntelligenceManager.swift` — uses `GeminiService`, owns all report generation logic
+- [x] Define performance coach persona prompt using **RISEN/XML structure** (per CLAUDE.md):
+  - [x] `<role>`: Performance coach — encouraging but honest, data-driven, actionable
+  - [x] `<instructions>`: Analyze habit, biometric, and sentiment data. Produce narrative + recommendations.
+  - [x] `<steps>`: 1) Review habit completion rates, 2) Correlate with WHOOP recovery, 3) Factor in journal sentiment trends, 4) Identify force multiplier, 5) Generate recommendations
+  - [x] `<expectations>`: 2-3 paragraph narrative, reference specific numbers, end with actionable items
+  - [x] `<narrowing>`: No medical advice, no invented data, only reference habits/metrics in input
+  - [x] Example tone: "Strong week overall. Your hydration consistency (6/7 days) is clearly paying off — recovery averaged 71%, up from 63% last week. Your journal sentiment tracked positive (+0.42 avg), aligning with your meditation streak. One area to watch: sleep duration dropped below 7h three nights. Try setting a 10pm wind-down alarm."
+- [x] Define `WeeklyInsight` SwiftData `@Model`:
+  - [x] `id: UUID`
+  - [x] `dateRangeStart: Date`, `dateRangeEnd: Date`
+  - [x] `summary: String` — 2-3 paragraph narrative overview
+  - [x] `forceMultiplierHabit: String` — the habit with highest positive correlation to recovery AND/OR sentiment
+  - [x] `recommendations: [String]` — 3-5 actionable items
+  - [x] `correlations: [HabitCoefficient]` — **reuse `HabitCoefficient` from Phase 6.5.1** (not a new struct)
+  - [x] `averageSentiment: Double?` — weekly average sentiment score (nil if no journal entries)
+  - [x] `sentimentTrend: String?` — "improving", "declining", "stable" (nil if no entries)
+  - [x] `generatedAt: Date`
+- [x] Register `WeeklyInsight` in `OverwatchApp.swift` ModelContainer
 
 ### 7.2: Weekly Report Generation
 > **Depends on:** 7.1, 6.5.13 (sentiment data packaging method)
@@ -1124,28 +1124,28 @@ Current flow (Phase 6.5 onward):
 ### 8.2: Guided Setup (First Launch Only)
 > **Depends on:** 8.1
 
-- [ ] After boot sequence, present `OnboardingView.swift` — only shown once (first launch)
-- [ ] **Step 1: Welcome**
-  - [ ] "WELCOME, OPERATOR" header with HUD glow
-  - [ ] Brief app overview: "Overwatch tracks your habits, syncs your biometrics, and delivers AI-powered performance insights."
-  - [ ] "BEGIN SETUP" button
-- [ ] **Step 2: Connect WHOOP** (optional)
-  - [ ] "LINK BIOMETRIC SOURCE" header
-  - [ ] "Connect WHOOP" button → triggers OAuth flow
-  - [ ] "SKIP FOR NOW" option — can connect later in Settings
-  - [ ] Success state: "WHOOP LINKED — Biometric data will sync automatically"
-- [ ] **Step 3: Add First Habits**
-  - [ ] "ESTABLISH OPERATIONS" header
-  - [ ] Pre-populated suggestions as tappable chips: 💧 Water, 🏋️ Exercise, 😴 Sleep 8h, 🧘 Meditation, 📖 Reading
-  - [ ] Tap to add, tap again to remove
+- [x] After boot sequence, present `OnboardingView.swift` — only shown once (first launch)
+- [x] **Step 1: Welcome**
+  - [x] "WELCOME, OPERATOR" header with HUD glow
+  - [x] Brief app overview: "Overwatch tracks your habits, syncs your biometrics, and delivers AI-powered performance insights."
+  - [x] "BEGIN SETUP" button
+- [x] **Step 2: Connect WHOOP** (optional)
+  - [x] "LINK BIOMETRIC SOURCE" header
+  - [x] "Connect WHOOP" button → triggers OAuth flow
+  - [x] "SKIP FOR NOW" option — can connect later in Settings
+  - [x] Success state: "WHOOP LINKED — Biometric data will sync automatically"
+- [x] **Step 3: Add First Habits**
+  - [x] "ESTABLISH OPERATIONS" header
+  - [x] Pre-populated suggestions as tappable chips: 💧 Water, 🏋️ Exercise, 😴 Sleep 8h, 🧘 Meditation, 📖 Reading
+  - [x] Tap to add, tap again to remove
   - [ ] "ADD CUSTOM" button → habit creation form
-  - [ ] At least 1 habit required to proceed (or skip)
-- [ ] **Step 4: Operational**
-  - [ ] "YOU ARE NOW OPERATIONAL" **Materialize**s with expanded **Glow Bloom** (32pt radius), **Particle Scatter** burst from center
-  - [ ] Hold 1s, then **Dissolve** entire onboarding → **Materialize** NavigationShell with dashboard **Stagger** entrance
-- [ ] Each step transition: outgoing panel uses **Dissolve** (0.2s), incoming panel uses **Materialize** (0.3s) with content **Stagger** for sub-elements. Direction: left-to-right progression feel
-- [ ] Store `hasCompletedOnboarding` in UserDefaults
-- [ ] Progress indicator: 4 dots at bottom showing current step
+  - [x] At least 1 habit required to proceed (or skip)
+- [x] **Step 4: Operational**
+  - [x] "YOU ARE NOW OPERATIONAL" **Materialize**s with expanded **Glow Bloom** (32pt radius), **Particle Scatter** burst from center
+  - [x] Hold 1s, then **Dissolve** entire onboarding → **Materialize** NavigationShell with dashboard **Stagger** entrance
+- [x] Each step transition: outgoing panel uses **Dissolve** (0.2s), incoming panel uses **Materialize** (0.3s) with content **Stagger** for sub-elements. Direction: left-to-right progression feel
+- [x] Store `hasCompletedOnboarding` in UserDefaults
+- [x] Progress indicator: 4 dots at bottom showing current step
 
 ---
 
@@ -1323,7 +1323,7 @@ Current flow (Phase 6.5 onward):
 
 ---
 
-> **Current Phase:** 6.5.1 (AI-Powered Journal — model layer first)
-> **Completed:** 0.1, 0.3, 1.1.1–1.3.2, 2.1.1–2.2.3, 3.1.1–3.3.2 (except manual WHOOP test), 4.0, 4.1.1–4.1.6, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.3.1, 5.4, 6.1, 6.2, 8.1, 9.1
-> **Next steps:** 6.5.1 (models) → 6.5.2/6.5.3/6.5.5 (services + nav, parallel) → 6.5.6 (VM) → 6.5.7+ (UI) | Then: 7.1 ‖ 8.2
+> **Current Phase:** 6.5 (AI-Powered Journal — sentiment viz done, monthly analysis + dashboard next)
+> **Completed:** 0.1, 0.3, 1.1.1–1.3.2, 2.1.1–2.2.3, 3.1.1–3.3.2 (except manual WHOOP test), 4.0, 4.1.1–4.1.6, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.3.1, 5.4, 6.1, 6.2, 6.5.1, 6.5.2, 6.5.3, 6.5.4, 6.5.5, 6.5.6, 6.5.7, 6.5.8, 8.1, 9.1
+> **Next steps:** 6.5.10 (Dashboard Pulse) ‖ 6.5.9 (Monthly Analysis UI) | Then: 6.5.11, 7.1 ‖ 8.2
 > **Design decisions:** Locked (see Design Decisions Log + Visual Design Specification above)

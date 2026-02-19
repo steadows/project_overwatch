@@ -359,7 +359,7 @@ struct HabitTrendChartView: View {
 
 // MARK: - Chart Styling Modifier
 
-private extension View {
+extension View {
     /// Applies consistent HUD styling to a SwiftUI Chart.
     func chartStyling() -> some View {
         self

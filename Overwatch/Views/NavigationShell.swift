@@ -2,10 +2,11 @@ import SwiftUI
 
 // MARK: - Section Enum
 
-/// The five sidebar navigation sections.
+/// The six sidebar navigation sections.
 enum NavigationSection: String, CaseIterable, Identifiable {
     case dashboard = "Dashboard"
     case habits = "Habits"
+    case journal = "Journal"
     case warRoom = "War Room"
     case reports = "Reports"
     case settings = "Settings"
@@ -16,6 +17,7 @@ enum NavigationSection: String, CaseIterable, Identifiable {
         switch self {
         case .dashboard: "square.grid.2x2"
         case .habits: "target"
+        case .journal: "book.pages"
         case .warRoom: "chart.bar.xaxis"
         case .reports: "doc.text.magnifyingglass"
         case .settings: "gearshape"
@@ -189,6 +191,8 @@ struct NavigationShell: View {
             TacticalDashboardView()
         case .habits:
             HabitsView()
+        case .journal:
+            JournalView()
         case .warRoom:
             WarRoomView()
         case .reports:
@@ -304,14 +308,14 @@ private struct SidebarItem: View {
 
 #Preview("Navigation Shell") {
     NavigationShell()
-        .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, WhoopCycle.self],
+        .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, MonthlyAnalysis.self, WhoopCycle.self],
                         inMemory: true)
         .frame(width: 1100, height: 700)
 }
 
 #Preview("Sidebar Collapsed") {
     NavigationShell()
-        .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, WhoopCycle.self],
+        .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, MonthlyAnalysis.self, WhoopCycle.self],
                         inMemory: true)
         .frame(width: 900, height: 600)
 }

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01D9D3C61B8D0E7CBD6814C6 /* WhoopRecoveryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038495B4B9F05271B818202D /* WhoopRecoveryResponse.swift */; };
 		021B8365A37421875AEE4E8E /* JournalModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0442FDEA242E1F3B0FF687F /* JournalModelTests.swift */; };
+		023002557CDA63B070BCB1F2 /* RegressionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74AE8BCD9BD4C243FC8FCE0F /* RegressionService.swift */; };
 		061ADEB91823509602DA95DD /* JournalEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5004EFE2BD9DB358C74FB902 /* JournalEntry.swift */; };
 		0756F64A928CF3CDB5B636CC /* HabitTrendChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239D4A6572D3DB45643A4698 /* HabitTrendChartView.swift */; };
 		0A1851F3CE22AF668D0A72D1 /* GeminiServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86127A83B6F01D1310BC605 /* GeminiServiceTests.swift */; };
@@ -28,10 +29,14 @@
 		42420AA7A660D4BBC967F7AE /* WhoopClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22367B9DC9FDD11F311153AF /* WhoopClient.swift */; };
 		4315DBD1A4DA69E93136F028 /* NaturalLanguageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B192B699787526E491D288 /* NaturalLanguageParser.swift */; };
 		4410B6AE413EDBB82F724705 /* NaturalLanguageParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8BBF59AA6745540784B6F2 /* NaturalLanguageParserTests.swift */; };
+		485687BC91EE6DAB0DDB8DEC /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9184036D0C048716B2D07C01 /* JournalView.swift */; };
+		4B8496038AF8E3EAFAF0CDCB /* SentimentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */; };
 		4CD1F93FEA9F02AC61BF6187 /* HabitPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43F1BAA99FADB77694B6DC0 /* HabitPanelView.swift */; };
 		4F1B0F42078A0C30B6F3B06D /* JournalTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8451A512F411B3CD74CD5D43 /* JournalTimelineView.swift */; };
 		57CFB93CEECF6BF7380B65F7 /* WhoopAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */; };
 		589DA96D46E586B3AD92D091 /* MonthlyAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611FC9802035E17031862784 /* MonthlyAnalysis.swift */; };
+		5AE698166A712F4672F48B02 /* IntelligenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD0097DED30321A532C5E43 /* IntelligenceManager.swift */; };
+		5DEEDFEBAE5C0D56EBCD4DE3 /* WeeklyInsight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26120CD1E8A3D99E9CD465A6 /* WeeklyInsight.swift */; };
 		64AE3ECD1977BC93DC025577 /* HabitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F784AE552D2236B0B9A583 /* HabitsViewModel.swift */; };
 		6736B570946DCAA68C6AEEA9 /* TacticalDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A121813D31B812A1E550B303 /* TacticalDashboardView.swift */; };
 		69A6A1478EA399924343FA5C /* TacticalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F535001D5F621BE93CF888A4 /* TacticalCard.swift */; };
@@ -43,9 +48,11 @@
 		822FB66DA892D80770DC8E53 /* HabitHeatMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92258C596710BD37FB499AE /* HabitHeatMapView.swift */; };
 		8B253BBBCF305B4B25063E1E /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5905D0F736AE611329C52DB6 /* GeminiService.swift */; };
 		8F23F028E7F27D0495C8FAB8 /* OverwatchTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4009C1C722C5DE7EC54F987 /* OverwatchTheme.swift */; };
+		903F0C743F8BE9A4CEE09ECD /* SentimentAnalysisServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B427BE69916E77C65EC5939 /* SentimentAnalysisServiceTests.swift */; };
 		985EA365DC947A274D499C09 /* HabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7ABB6234FF1CC69AC9F799 /* HabitsView.swift */; };
 		990EA6264F4B6067FBFCDE78 /* OverwatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60D341F5FA4171AACBAA405 /* OverwatchTests.swift */; };
 		A0A83159E03AAB58EAE0D83D /* WhoopStrainResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6AAB10F4961A04F1893631 /* WhoopStrainResponse.swift */; };
+		A9618CB35A985FA80379511F /* SentimentAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CBD21FC89C72CBD79E06D1 /* SentimentAnalysisService.swift */; };
 		A97C4855352448D97C882281 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */; };
 		B396C490B0160DD98593030A /* HabitModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FF738A252B6A88996B4D8A /* HabitModelTests.swift */; };
 		B4F2EA42FE71DCA2ECFE61A3 /* WireframeTrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 714A4B9CC98EB7E7A724A23B /* WireframeTrace.swift */; };
@@ -58,6 +65,8 @@
 		C4662B7BFD694759E29A4CF6 /* WhoopClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D328C6DF4C0AFA8CF6D7E95 /* WhoopClientTests.swift */; };
 		C6EF1E7653F6ABBFDCDD416B /* HUDEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE1A95B75F22EEC7A75A2345 /* HUDEffects.swift */; };
 		D087BA1BAB543E77A39FCCBB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F90B02DAAA023021218FD5 /* SettingsView.swift */; };
+		D414F02D6BB0EB7D12C03C4E /* JournalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E522582AD7C35D7848DA8F /* JournalViewModel.swift */; };
+		D5BA2EA0DD1D1CCA827CBCA5 /* RegressionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB49ADBC7D150C60DAE49DC /* RegressionServiceTests.swift */; };
 		D880E58BABACB03EA45C5BAF /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 75BD2B3F0D61164207AFFC35 /* GoogleGenerativeAI */; };
 		E8B3C36F4A219E3EFB91D013 /* CompactWhoopStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = F099802A82E69FCEE952DD2A /* CompactWhoopStrip.swift */; };
 		E9108F36A34A1927B60A8395 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A278CEACA6CADE5AE7D4EB /* KeychainHelper.swift */; };
@@ -65,6 +74,8 @@
 		F1701305A48D43D75CB511C0 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1260AFFBF301BCA773350C /* DateFormatters.swift */; };
 		F42DBD126093307D5779CB1D /* WhoopAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC4AA737F93F001A27472CD3 /* WhoopAuthManager.swift */; };
 		F7DD63F80E1E30294BBC9864 /* WhoopModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7405BC17131493408758DD /* WhoopModelTests.swift */; };
+		FBF3BDF1041BF9D0FC528011 /* SentimentTrendChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3845B4FA7E854754FB3C2B83 /* SentimentTrendChart.swift */; };
+		FF91BEBACFEA10CFCE2481FE /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ED63C543382778534650C11 /* OnboardingView.swift */; };
 		FF94ABFC8180A44AAA5E6979 /* WhoopSleepResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58868E9C31BCD15B961AF0E /* WhoopSleepResponse.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,21 +94,27 @@
 		0BF76266B236312993044564 /* DataStreamTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStreamTexture.swift; sourceTree = "<group>"; };
 		165ACC738C194AAF49E33C92 /* ArcGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcGauge.swift; sourceTree = "<group>"; };
 		17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopAuthTests.swift; sourceTree = "<group>"; };
+		1AB49ADBC7D150C60DAE49DC /* RegressionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegressionServiceTests.swift; sourceTree = "<group>"; };
 		1F5A27E5D06DF5E810A94D93 /* AnimationPatterns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationPatterns.swift; sourceTree = "<group>"; };
 		2094192137728E75FB55835A /* BootSequenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootSequenceView.swift; sourceTree = "<group>"; };
 		22367B9DC9FDD11F311153AF /* WhoopClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopClient.swift; sourceTree = "<group>"; };
 		239D4A6572D3DB45643A4698 /* HabitTrendChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitTrendChartView.swift; sourceTree = "<group>"; };
+		26120CD1E8A3D99E9CD465A6 /* WeeklyInsight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyInsight.swift; sourceTree = "<group>"; };
 		27A80366065F062A710C5BB2 /* Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animations.swift; sourceTree = "<group>"; };
 		2B7ABB6234FF1CC69AC9F799 /* HabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsView.swift; sourceTree = "<group>"; };
 		2E6AAB10F4961A04F1893631 /* WhoopStrainResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopStrainResponse.swift; sourceTree = "<group>"; };
 		3477ADE4A5C09FD6B0EFB52B /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		3845B4FA7E854754FB3C2B83 /* SentimentTrendChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentTrendChart.swift; sourceTree = "<group>"; };
 		38A278CEACA6CADE5AE7D4EB /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		3CC088689BB1DCBA4FA88C5C /* Habit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Habit.swift; sourceTree = "<group>"; };
 		3D328C6DF4C0AFA8CF6D7E95 /* WhoopClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopClientTests.swift; sourceTree = "<group>"; };
 		466A01AC1CCA896B92624221 /* QuickInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickInputView.swift; sourceTree = "<group>"; };
 		4AB7C46D8AE24468D1455DF2 /* StubHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubHeader.swift; sourceTree = "<group>"; };
+		4B427BE69916E77C65EC5939 /* SentimentAnalysisServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentAnalysisServiceTests.swift; sourceTree = "<group>"; };
+		4DD0097DED30321A532C5E43 /* IntelligenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceManager.swift; sourceTree = "<group>"; };
 		5004EFE2BD9DB358C74FB902 /* JournalEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalEntry.swift; sourceTree = "<group>"; };
 		51E6BE3B5E7F4447DDA92939 /* HabitCoefficient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCoefficient.swift; sourceTree = "<group>"; };
+		5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentIndicator.swift; sourceTree = "<group>"; };
 		5905D0F736AE611329C52DB6 /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
 		5D1260AFFBF301BCA773350C /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
 		611FC9802035E17031862784 /* MonthlyAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyAnalysis.swift; sourceTree = "<group>"; };
@@ -106,18 +123,23 @@
 		6578E697E3C44E2FAE90062B /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		67576DDBFC8041CBA1950A42 /* WarRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarRoomView.swift; sourceTree = "<group>"; };
 		6C6A78F28CF7CFD4E826AA2B /* WhoopSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopSyncManager.swift; sourceTree = "<group>"; };
+		6ED63C543382778534650C11 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		714A4B9CC98EB7E7A724A23B /* WireframeTrace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WireframeTrace.swift; sourceTree = "<group>"; };
 		71DA861027FA05AEE054EFCD /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		74AE8BCD9BD4C243FC8FCE0F /* RegressionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegressionService.swift; sourceTree = "<group>"; };
 		7B9E839258021D1C68FCE6B4 /* HabitEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitEntry.swift; sourceTree = "<group>"; };
 		813599CAA4BB0F136BBC28AD /* Overwatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Overwatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		83B192B699787526E491D288 /* NaturalLanguageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaturalLanguageParser.swift; sourceTree = "<group>"; };
 		8451A512F411B3CD74CD5D43 /* JournalTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalTimelineView.swift; sourceTree = "<group>"; };
+		84E522582AD7C35D7848DA8F /* JournalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewModel.swift; sourceTree = "<group>"; };
 		8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		9184036D0C048716B2D07C01 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
 		95FF738A252B6A88996B4D8A /* HabitModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitModelTests.swift; sourceTree = "<group>"; };
 		988A88B1E8C933B0AE95BE01 /* OverwatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchApp.swift; sourceTree = "<group>"; };
 		9CF2EC2A80EE32A3DF16AA74 /* WhoopCycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopCycle.swift; sourceTree = "<group>"; };
 		A121813D31B812A1E550B303 /* TacticalDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TacticalDashboardView.swift; sourceTree = "<group>"; };
 		A2F90B02DAAA023021218FD5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A4CBD21FC89C72CBD79E06D1 /* SentimentAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentAnalysisService.swift; sourceTree = "<group>"; };
 		A7C00E9FAE6DBAB0595BE470 /* OverwatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OverwatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A86127A83B6F01D1310BC605 /* GeminiServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiServiceTests.swift; sourceTree = "<group>"; };
 		AA7405BC17131493408758DD /* WhoopModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopModelTests.swift; sourceTree = "<group>"; };
@@ -164,6 +186,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1F3B17FB88604EA9A7CFF242 /* Journal */ = {
+			isa = PBXGroup;
+			children = (
+				9184036D0C048716B2D07C01 /* JournalView.swift */,
+			);
+			path = Journal;
+			sourceTree = "<group>";
+		};
 		3D773426C52F70D9B499B9E5 = {
 			isa = PBXGroup;
 			children = (
@@ -202,6 +232,7 @@
 				7B9E839258021D1C68FCE6B4 /* HabitEntry.swift */,
 				5004EFE2BD9DB358C74FB902 /* JournalEntry.swift */,
 				611FC9802035E17031862784 /* MonthlyAnalysis.swift */,
+				26120CD1E8A3D99E9CD465A6 /* WeeklyInsight.swift */,
 				9CF2EC2A80EE32A3DF16AA74 /* WhoopCycle.swift */,
 				038495B4B9F05271B818202D /* WhoopRecoveryResponse.swift */,
 				C58868E9C31BCD15B961AF0E /* WhoopSleepResponse.swift */,
@@ -214,7 +245,10 @@
 			isa = PBXGroup;
 			children = (
 				5905D0F736AE611329C52DB6 /* GeminiService.swift */,
+				4DD0097DED30321A532C5E43 /* IntelligenceManager.swift */,
 				83B192B699787526E491D288 /* NaturalLanguageParser.swift */,
+				74AE8BCD9BD4C243FC8FCE0F /* RegressionService.swift */,
+				A4CBD21FC89C72CBD79E06D1 /* SentimentAnalysisService.swift */,
 				FC4AA737F93F001A27472CD3 /* WhoopAuthManager.swift */,
 				22367B9DC9FDD11F311153AF /* WhoopClient.swift */,
 				6C6A78F28CF7CFD4E826AA2B /* WhoopSyncManager.swift */,
@@ -254,6 +288,8 @@
 				DD9BF0B64646A8744C672C70 /* HUDProgressBar.swift */,
 				8451A512F411B3CD74CD5D43 /* JournalTimelineView.swift */,
 				DD5922A1BA228E3CCE8AC742 /* MetricTile.swift */,
+				5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */,
+				3845B4FA7E854754FB3C2B83 /* SentimentTrendChart.swift */,
 				4AB7C46D8AE24468D1455DF2 /* StubHeader.swift */,
 				F535001D5F621BE93CF888A4 /* TacticalCard.swift */,
 			);
@@ -266,6 +302,7 @@
 				8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */,
 				E5F784AE552D2236B0B9A583 /* HabitsViewModel.swift */,
 				63793EDC19B80E2FDE3CD4FC /* JournalTimelineViewModel.swift */,
+				84E522582AD7C35D7848DA8F /* JournalViewModel.swift */,
 				6578E697E3C44E2FAE90062B /* SettingsViewModel.swift */,
 			);
 			path = ViewModels;
@@ -279,6 +316,8 @@
 				D0442FDEA242E1F3B0FF687F /* JournalModelTests.swift */,
 				AF8BBF59AA6745540784B6F2 /* NaturalLanguageParserTests.swift */,
 				C60D341F5FA4171AACBAA405 /* OverwatchTests.swift */,
+				1AB49ADBC7D150C60DAE49DC /* RegressionServiceTests.swift */,
+				4B427BE69916E77C65EC5939 /* SentimentAnalysisServiceTests.swift */,
 				17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */,
 				3D328C6DF4C0AFA8CF6D7E95 /* WhoopClientTests.swift */,
 				AA7405BC17131493408758DD /* WhoopModelTests.swift */,
@@ -302,11 +341,13 @@
 				2094192137728E75FB55835A /* BootSequenceView.swift */,
 				2B7ABB6234FF1CC69AC9F799 /* HabitsView.swift */,
 				E44B6452B8B7B194C410CE09 /* NavigationShell.swift */,
+				6ED63C543382778534650C11 /* OnboardingView.swift */,
 				61E79C1AFF14F74EEBE6C170 /* ReportsView.swift */,
 				A2F90B02DAAA023021218FD5 /* SettingsView.swift */,
 				67576DDBFC8041CBA1950A42 /* WarRoomView.swift */,
 				7E69D608812030742C56520A /* Components */,
 				790F75743B8FE965A266ECA2 /* Dashboard */,
+				1F3B17FB88604EA9A7CFF242 /* Journal */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -433,19 +474,27 @@
 				0756F64A928CF3CDB5B636CC /* HabitTrendChartView.swift in Sources */,
 				985EA365DC947A274D499C09 /* HabitsView.swift in Sources */,
 				64AE3ECD1977BC93DC025577 /* HabitsViewModel.swift in Sources */,
+				5AE698166A712F4672F48B02 /* IntelligenceManager.swift in Sources */,
 				061ADEB91823509602DA95DD /* JournalEntry.swift in Sources */,
 				4F1B0F42078A0C30B6F3B06D /* JournalTimelineView.swift in Sources */,
 				7906207756190B9609198881 /* JournalTimelineViewModel.swift in Sources */,
+				485687BC91EE6DAB0DDB8DEC /* JournalView.swift in Sources */,
+				D414F02D6BB0EB7D12C03C4E /* JournalViewModel.swift in Sources */,
 				E9108F36A34A1927B60A8395 /* KeychainHelper.swift in Sources */,
 				BB5A3E1D6B72AA5E5C2D3BF1 /* MetricTile.swift in Sources */,
 				589DA96D46E586B3AD92D091 /* MonthlyAnalysis.swift in Sources */,
 				4315DBD1A4DA69E93136F028 /* NaturalLanguageParser.swift in Sources */,
 				BB8C13DF618E98594468C256 /* NavigationShell.swift in Sources */,
+				FF91BEBACFEA10CFCE2481FE /* OnboardingView.swift in Sources */,
 				0E430526D07934E403D47786 /* OverwatchApp.swift in Sources */,
 				8F23F028E7F27D0495C8FAB8 /* OverwatchTheme.swift in Sources */,
 				0C7953E11319A530AA655BB6 /* ParticleScatter.swift in Sources */,
 				75CEDC2B6AECB64893C1C1F9 /* QuickInputView.swift in Sources */,
+				023002557CDA63B070BCB1F2 /* RegressionService.swift in Sources */,
 				0EB8451F32100B9B9320BC53 /* ReportsView.swift in Sources */,
+				A9618CB35A985FA80379511F /* SentimentAnalysisService.swift in Sources */,
+				4B8496038AF8E3EAFAF0CDCB /* SentimentIndicator.swift in Sources */,
+				FBF3BDF1041BF9D0FC528011 /* SentimentTrendChart.swift in Sources */,
 				D087BA1BAB543E77A39FCCBB /* SettingsView.swift in Sources */,
 				C2D510A6733ACA1CB58D8DFE /* SettingsViewModel.swift in Sources */,
 				7AA447E96FAB4AC500722AF3 /* StubHeader.swift in Sources */,
@@ -453,6 +502,7 @@
 				6736B570946DCAA68C6AEEA9 /* TacticalDashboardView.swift in Sources */,
 				1DCAB98672B7CD01F7E13225 /* Typography.swift in Sources */,
 				3550A0B44C1425487C15E95B /* WarRoomView.swift in Sources */,
+				5DEEDFEBAE5C0D56EBCD4DE3 /* WeeklyInsight.swift in Sources */,
 				F42DBD126093307D5779CB1D /* WhoopAuthManager.swift in Sources */,
 				42420AA7A660D4BBC967F7AE /* WhoopClient.swift in Sources */,
 				178BD51803DE91DE284A3B7D /* WhoopCycle.swift in Sources */,
@@ -473,6 +523,8 @@
 				021B8365A37421875AEE4E8E /* JournalModelTests.swift in Sources */,
 				4410B6AE413EDBB82F724705 /* NaturalLanguageParserTests.swift in Sources */,
 				990EA6264F4B6067FBFCDE78 /* OverwatchTests.swift in Sources */,
+				D5BA2EA0DD1D1CCA827CBCA5 /* RegressionServiceTests.swift in Sources */,
+				903F0C743F8BE9A4CEE09ECD /* SentimentAnalysisServiceTests.swift in Sources */,
 				57CFB93CEECF6BF7380B65F7 /* WhoopAuthTests.swift in Sources */,
 				C4662B7BFD694759E29A4CF6 /* WhoopClientTests.swift in Sources */,
 				F7DD63F80E1E30294BBC9864 /* WhoopModelTests.swift in Sources */,

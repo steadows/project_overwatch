@@ -330,16 +330,24 @@ private enum BootPhase: Int, Comparable {
 
 // MARK: - Root View (manages boot → app transition)
 
-/// Wraps the boot sequence and NavigationShell, handling first-launch vs subsequent.
+/// Wraps the boot sequence, onboarding, and NavigationShell.
+/// Flow: Boot → Onboarding (first launch only) → NavigationShell
 struct RootView: View {
     @AppStorage("hasCompletedFirstBoot") private var hasCompletedFirstBoot = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var bootComplete = false
+    @State private var showOnboarding = false
     @State private var showApp = false
 
     var body: some View {
         ZStack {
             if showApp {
                 NavigationShell()
+                    .transition(.opacity)
+            }
+
+            if showOnboarding {
+                OnboardingView(onComplete: finishOnboarding)
                     .transition(.opacity)
             }
 
@@ -352,15 +360,34 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.15), value: bootComplete)
+        .animation(.easeInOut(duration: 0.3), value: showOnboarding)
     }
 
     private func finishBoot() {
-        showApp = true
-        withAnimation(.easeIn(duration: 0.15)) {
-            bootComplete = true
-        }
         if !hasCompletedFirstBoot {
             hasCompletedFirstBoot = true
+        }
+
+        if hasCompletedOnboarding {
+            // Returning user — go straight to app
+            showApp = true
+            withAnimation(.easeIn(duration: 0.15)) {
+                bootComplete = true
+            }
+        } else {
+            // First launch — show onboarding
+            showOnboarding = true
+            withAnimation(.easeIn(duration: 0.15)) {
+                bootComplete = true
+            }
+        }
+    }
+
+    private func finishOnboarding() {
+        hasCompletedOnboarding = true
+        showApp = true
+        withAnimation(.easeIn(duration: 0.3)) {
+            showOnboarding = false
         }
     }
 }

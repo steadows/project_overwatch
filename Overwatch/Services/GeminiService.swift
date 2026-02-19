@@ -101,6 +101,194 @@ actor GeminiService {
         """
     }
 
+    // MARK: - Regression Narrative
+
+    /// Sends regression results to Gemini for a narrative summary using the RISEN framework.
+    ///
+    /// Returns a 2-3 paragraph narrative summarizing wellbeing drivers, highlighting
+    /// the force multiplier habit, and providing an actionable recommendation.
+    /// Falls back to a template-based summary when Gemini is unavailable.
+    func interpretRegressionResults(
+        coefficients: [HabitCoefficient],
+        averageSentiment: Double,
+        monthName: String,
+        entryCount: Int
+    ) async throws -> String {
+        let prompt = buildRegressionNarrativePrompt(
+            coefficients: coefficients,
+            averageSentiment: averageSentiment,
+            monthName: monthName,
+            entryCount: entryCount
+        )
+
+        do {
+            let response = try await model.generateContent(prompt)
+            guard let text = response.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                return Self.templateFallback(
+                    coefficients: coefficients,
+                    averageSentiment: averageSentiment,
+                    monthName: monthName,
+                    entryCount: entryCount
+                )
+            }
+            return text.trimmingCharacters(in: .whitespacesAndNewlines)
+        } catch {
+            return Self.templateFallback(
+                coefficients: coefficients,
+                averageSentiment: averageSentiment,
+                monthName: monthName,
+                entryCount: entryCount
+            )
+        }
+    }
+
+    // MARK: - Regression Narrative Prompt (RISEN)
+
+    private func buildRegressionNarrativePrompt(
+        coefficients: [HabitCoefficient],
+        averageSentiment: Double,
+        monthName: String,
+        entryCount: Int
+    ) -> String {
+        let coeffJSON = coefficients.map { coeff in
+            """
+            {"habitName": "\(coeff.habitName)", "emoji": "\(coeff.habitEmoji)", \
+            "coefficient": \(String(format: "%.4f", coeff.coefficient)), \
+            "pValue": \(String(format: "%.4f", coeff.pValue)), \
+            "completionRate": \(String(format: "%.2f", coeff.completionRate)), \
+            "direction": "\(coeff.direction.rawValue)"}
+            """
+        }.joined(separator: ",\n")
+
+        let forceMultiplier = coefficients
+            .filter { $0.direction == .positive }
+            .max(by: { $0.coefficient < $1.coefficient })
+
+        let forceMultiplierName = forceMultiplier?.habitName ?? "none identified"
+
+        return """
+        <role>
+        You are a performance coach who analyzes habit and wellbeing data. You are encouraging \
+        but honest, data-driven, and always actionable. You speak directly to the user as "you."
+        </role>
+
+        <instructions>
+        Analyze the following monthly habit-sentiment regression results. Produce a 2-3 paragraph \
+        narrative summary. Highlight the force multiplier habit (the habit with the strongest positive \
+        impact on mood). End with one concrete, actionable recommendation for next month.
+        </instructions>
+
+        <steps>
+        1. Review the habit coefficients and identify the strongest positive and negative drivers of sentiment.
+        2. Summarize the overall sentiment trend for \(monthName) using the average score and entry count.
+        3. Call out the force multiplier habit ("\(forceMultiplierName)") with its specific coefficient value.
+        4. Note any habits with negative coefficients that may be dragging mood down.
+        5. Provide one concrete, actionable recommendation for improving wellbeing next month.
+        </steps>
+
+        <expectations>
+        Respond in 2-3 paragraphs of narrative prose. Use a motivational but data-grounded tone. \
+        Reference specific habit names and their coefficient values. Do not use bullet points or \
+        numbered lists — narrative prose only. Do not use markdown formatting. Keep the total \
+        response under 300 words.
+        </expectations>
+
+        <narrowing>
+        Do not invent data points not present in the input. Do not provide medical advice. \
+        Do not reference habits not included in the data. Do not use generic platitudes — \
+        every sentence should reference specific data from the input.
+        </narrowing>
+
+        <habit_coefficients>
+        [\(coeffJSON)]
+        </habit_coefficients>
+
+        <sentiment_summary>
+        {"averageScore": \(String(format: "%.3f", averageSentiment)), "entryCount": \(entryCount), "month": "\(monthName)"}
+        </sentiment_summary>
+
+        <force_multiplier>
+        \(forceMultiplierName)
+        </force_multiplier>
+        """
+    }
+
+    // MARK: - Template Fallback
+
+    /// Generates a template-based narrative when Gemini is unavailable.
+    static func templateFallback(
+        coefficients: [HabitCoefficient],
+        averageSentiment: Double,
+        monthName: String,
+        entryCount: Int
+    ) -> String {
+        let sorted = coefficients.sorted { $0.coefficient > $1.coefficient }
+        let forceMultiplier = sorted.first(where: { $0.direction == .positive })
+        let detractor = sorted.last(where: { $0.direction == .negative })
+
+        let sentimentLabel: String
+        if averageSentiment > 0.2 { sentimentLabel = "positive" }
+        else if averageSentiment > 0.05 { sentimentLabel = "slightly positive" }
+        else if averageSentiment > -0.05 { sentimentLabel = "neutral" }
+        else if averageSentiment > -0.2 { sentimentLabel = "slightly negative" }
+        else { sentimentLabel = "negative" }
+
+        var paragraphs: [String] = []
+
+        // Paragraph 1: Overview
+        paragraphs.append(
+            "Your \(monthName) analysis is based on \(entryCount) journal entries. " +
+            "Your average sentiment score was \(String(format: "%.2f", averageSentiment)), " +
+            "reflecting an overall \(sentimentLabel) month."
+        )
+
+        // Paragraph 2: Force multiplier + detractor
+        var p2 = ""
+        if let fm = forceMultiplier {
+            p2 += "\(fm.habitEmoji) \(fm.habitName) was your force multiplier this month " +
+                  "with a coefficient of \(String(format: "+%.3f", fm.coefficient)), " +
+                  "meaning days you completed it tended to have noticeably higher mood scores. "
+        }
+        if let det = detractor {
+            p2 += "On the flip side, \(det.habitEmoji) \(det.habitName) showed a negative correlation " +
+                  "(\(String(format: "%.3f", det.coefficient))), suggesting it may be worth examining " +
+                  "how this habit affects your day."
+        }
+        if p2.isEmpty {
+            p2 = "No single habit stood out as a dominant driver this month. " +
+                 "Consistency across your routines is likely contributing to a stable baseline."
+        }
+        paragraphs.append(p2)
+
+        // Paragraph 3: Recommendation
+        if let fm = forceMultiplier {
+            paragraphs.append(
+                "Recommendation: prioritize \(fm.habitName) next month. " +
+                "Your completion rate was \(Int(fm.completionRate * 100))% — " +
+                "even a small increase in consistency could meaningfully boost your wellbeing."
+            )
+        } else {
+            paragraphs.append(
+                "Recommendation: experiment with increasing the frequency of one habit " +
+                "you enjoy and see if it shifts your sentiment scores upward next month."
+            )
+        }
+
+        return paragraphs.joined(separator: "\n\n")
+    }
+
+    // MARK: - Weekly Briefing
+
+    /// Sends a pre-built RISEN prompt to Gemini and returns the raw response text.
+    /// Used by IntelligenceManager for weekly intelligence briefings.
+    func generateWeeklyBriefing(prompt: String) async throws -> String {
+        let response = try await model.generateContent(prompt)
+        guard let text = response.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw GeminiError.emptyResponse
+        }
+        return text
+    }
+
     // MARK: - Response Decoding
 
     private func decodeParseResponse(_ text: String) throws -> GeminiParsedResponse {

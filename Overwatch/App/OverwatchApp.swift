@@ -14,6 +14,7 @@ struct OverwatchApp: App {
             JournalEntry.self,
             MonthlyAnalysis.self,
             WhoopCycle.self,
+            WeeklyInsight.self,
         ])
     }
 }
