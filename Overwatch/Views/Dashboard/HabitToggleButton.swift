@@ -99,21 +99,15 @@ struct HabitToggleButton: View {
         )
         .contentShape(HUDFrameShape(chamferSize: 10))
         .onTapGesture {
+            let wasComplete = isComplete
             onToggle()
-            if !isComplete {
-                // Becoming complete — fire celebration
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                    checkmarkScale = 1
-                }
+            // Fire celebration effects when completing (not uncompleting).
+            // Checkmark animation is handled by onChange(of: habit.completedToday).
+            if !wasComplete {
                 particleTrigger = true
                 glowTrigger = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                     glowTrigger = false
-                }
-            } else {
-                // Uncompleting
-                withAnimation(.spring(response: 0.2, dampingFraction: 0.8)) {
-                    checkmarkScale = 0
                 }
             }
         }

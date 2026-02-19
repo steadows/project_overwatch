@@ -12,6 +12,8 @@ struct JournalView: View {
     @State private var showingDeleteAlert = false
     @State private var entryToDelete: JournalViewModel.JournalItem?
     @State private var newTagText = ""
+    /// Sentiment data filtered to the trend chart's current window — drives the gauge.
+    @State private var gaugeData: [JournalViewModel.SentimentDataPoint] = []
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,6 +37,7 @@ struct JournalView: View {
         .onAppear {
             viewModel.loadEntries(from: modelContext)
             viewModel.loadSentimentTrend(from: modelContext)
+            viewModel.loadHabitCompletionData(from: modelContext)
             viewModel.loadAvailableMonths(from: modelContext)
             viewModel.loadLatestAnalysis(from: modelContext)
             sectionsVisible = true
@@ -221,14 +224,33 @@ struct JournalView: View {
                 VStack(spacing: OverwatchTheme.Spacing.lg) {
                     editorPanel
 
-                    if !viewModel.sentimentTrend.isEmpty {
+                    // Global month picker — controls charts + analysis
+                    if !viewModel.availableMonths.isEmpty {
+                        globalMonthPicker
+                            .materializeEffect(
+                                isVisible: sectionsVisible, delay: 0.14
+                            )
+                    }
+
+                    if !viewModel.filteredSentimentTrend.isEmpty {
                         TacticalCard {
                             SentimentTrendChart(
-                                data: viewModel.sentimentTrend
+                                data: viewModel.filteredSentimentTrend,
+                                habitCompletionData: viewModel.filteredHabitCompletionData,
+                                onWindowChanged: { gaugeData = $0 }
                             )
                         }
                         .materializeEffect(
                             isVisible: sectionsVisible, delay: 0.16
+                        )
+
+                        TacticalCard {
+                            SentimentGauge(
+                                sentimentData: gaugeData
+                            )
+                        }
+                        .materializeEffect(
+                            isVisible: sectionsVisible, delay: 0.20
                         )
                     }
 
@@ -236,16 +258,14 @@ struct JournalView: View {
                         MonthlyAnalysisView(
                             analysis: viewModel.latestAnalysis,
                             isGenerating: viewModel.isGeneratingAnalysis,
-                            availableMonths: viewModel.availableMonths,
                             currentMonthEntryCount: viewModel.currentMonthEntryCount,
-                            selectedMonthIndex: $viewModel.selectedMonthIndex,
+                            selectedMonthLabel: viewModel.selectedMonthLabel,
+                            isRangeMode: viewModel.isRangeMode,
+                            analysisError: viewModel.analysisError,
                             onGenerate: {
                                 Task {
                                     await viewModel.generateAnalysisForSelectedMonth(from: modelContext)
                                 }
-                            },
-                            onSelectMonth: { index in
-                                viewModel.selectMonth(at: index, from: modelContext)
                             }
                         )
                     }
@@ -258,6 +278,174 @@ struct JournalView: View {
             .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, OverwatchTheme.Spacing.xl)
+    }
+
+    // MARK: - Global Period Selector
+
+    private var globalMonthPicker: some View {
+        HStack(spacing: OverwatchTheme.Spacing.sm) {
+            Image(systemName: "calendar")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
+
+            Text("PERIOD")
+                .font(Typography.hudLabel)
+                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
+                .tracking(2)
+
+            // Range chips: ALL, 3M, 1M
+            ForEach(
+                [JournalViewModel.PeriodFilter.all, .threeMonths, .oneMonth],
+                id: \.id
+            ) { period in
+                periodChip(label: period.label, isActive: viewModel.selectedPeriod == period) {
+                    viewModel.selectPeriod(period, from: modelContext)
+                }
+            }
+
+            // Divider between ranges and month navigator
+            Rectangle()
+                .fill(OverwatchTheme.accentCyan.opacity(0.15))
+                .frame(width: 1, height: 16)
+
+            // Month navigator: ◀ JAN '26 ▼ ▶
+            monthNavigator
+
+            Spacer()
+        }
+    }
+
+    // MARK: - Month Navigator (arrow + dropdown)
+
+    private var monthNavigator: some View {
+        HStack(spacing: 2) {
+            // Previous (older) month arrow
+            Button {
+                withAnimation(Animations.quick) {
+                    viewModel.selectPreviousMonth(from: modelContext)
+                }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(
+                        viewModel.canSelectPreviousMonth
+                            ? OverwatchTheme.accentCyan
+                            : OverwatchTheme.textSecondary.opacity(0.3)
+                    )
+                    .frame(width: 24, height: 26)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!viewModel.canSelectPreviousMonth)
+
+            // Month dropdown
+            Menu {
+                ForEach(
+                    Array(viewModel.availableMonths.enumerated()),
+                    id: \.element.id
+                ) { index, month in
+                    Button {
+                        withAnimation(Animations.quick) {
+                            viewModel.selectMonth(at: index, from: modelContext)
+                        }
+                    } label: {
+                        HStack {
+                            Text(month.label)
+                            if viewModel.selectedMonthIndex == index
+                                && !viewModel.isRangeMode
+                            {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(viewModel.selectedMonthShortLabel)
+                        .font(Typography.hudLabel)
+                        .tracking(1.5)
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 7, weight: .semibold))
+                }
+                .foregroundStyle(
+                    viewModel.isRangeMode
+                        ? OverwatchTheme.textSecondary
+                        : OverwatchTheme.accentCyan
+                )
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(
+                    viewModel.isRangeMode
+                        ? .clear
+                        : OverwatchTheme.accentCyan.opacity(0.1)
+                )
+                .clipShape(HUDFrameShape(chamferSize: 5))
+                .overlay(
+                    HUDFrameShape(chamferSize: 5)
+                        .stroke(
+                            viewModel.isRangeMode
+                                ? OverwatchTheme.accentCyan.opacity(0.1)
+                                : OverwatchTheme.accentCyan.opacity(0.5),
+                            lineWidth: 1
+                        )
+                )
+            }
+
+            // Next (newer) month arrow
+            Button {
+                withAnimation(Animations.quick) {
+                    viewModel.selectNextMonth(from: modelContext)
+                }
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(
+                        viewModel.canSelectNextMonth
+                            ? OverwatchTheme.accentCyan
+                            : OverwatchTheme.textSecondary.opacity(0.3)
+                    )
+                    .frame(width: 24, height: 26)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!viewModel.canSelectNextMonth)
+        }
+    }
+
+    private func periodChip(label: String, isActive: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(Animations.quick) {
+                action()
+            }
+        } label: {
+            Text(label)
+                .font(Typography.hudLabel)
+                .tracking(1.5)
+                .foregroundStyle(
+                    isActive
+                        ? OverwatchTheme.accentCyan
+                        : OverwatchTheme.textSecondary
+                )
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(
+                    isActive
+                        ? OverwatchTheme.accentCyan.opacity(0.1)
+                        : .clear
+                )
+                .clipShape(HUDFrameShape(chamferSize: 5))
+                .overlay(
+                    HUDFrameShape(chamferSize: 5)
+                        .stroke(
+                            isActive
+                                ? OverwatchTheme.accentCyan.opacity(0.5)
+                                : OverwatchTheme.accentCyan.opacity(0.1),
+                            lineWidth: 1
+                        )
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Editor Panel
@@ -469,7 +657,7 @@ struct JournalView: View {
 
                 Button {
                     withAnimation(Animations.quick) {
-                        viewModel.selectEntry(entry.id, from: modelContext)
+                        viewModel.editEntry(entry.id, from: modelContext)
                     }
                 } label: {
                     HStack(spacing: 4) {
@@ -485,11 +673,12 @@ struct JournalView: View {
 
             HUDDivider()
 
-            // Content preview
-            Text(entry.contentPreview)
+            // Full content
+            Text(viewModel.selectedEntryContent)
                 .font(Typography.commandLine)
                 .foregroundStyle(OverwatchTheme.textPrimary.opacity(0.8))
                 .lineSpacing(4)
+                .textSelection(.enabled)
 
             // Tags
             if !entry.tags.isEmpty {

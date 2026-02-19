@@ -11,6 +11,11 @@ struct SettingsView: View {
     @State private var showJSONExport = false
     @State private var showCSVExport = false
 
+    #if DEBUG
+    @State private var seedStatus: String?
+    @State private var isSeeding = false
+    #endif
+
     var body: some View {
         ScrollView {
             VStack(spacing: OverwatchTheme.Spacing.xl) {
@@ -22,6 +27,10 @@ struct SettingsView: View {
                 notificationsSection
                 dataSection
                 appearanceSection
+
+                #if DEBUG
+                debugSection
+                #endif
             }
             .padding(OverwatchTheme.Spacing.xl)
             .frame(maxWidth: 720, alignment: .leading)
@@ -538,6 +547,79 @@ struct SettingsView: View {
         }
         .buttonStyle(.plain)
     }
+
+    // MARK: - Debug (DEBUG only)
+
+    #if DEBUG
+    private var debugSection: some View {
+        TacticalCard {
+            VStack(alignment: .leading, spacing: OverwatchTheme.Spacing.lg) {
+                sectionLabel("DEBUG")
+
+                Text("Seed or clear 60 days of synthetic journal + habit data with designed sentiment correlations. Your real entries are never touched.")
+                    .font(Typography.caption)
+                    .foregroundStyle(OverwatchTheme.textSecondary)
+
+                HStack(spacing: OverwatchTheme.Spacing.md) {
+                    hudButton(
+                        "SEED DEMO DATA",
+                        icon: "flask",
+                        color: OverwatchTheme.accentPrimary
+                    ) {
+                        guard !isSeeding else { return }
+                        isSeeding = true
+                        seedStatus = nil
+
+                        SyntheticDataSeeder.seedJournalAndHabits(in: modelContext)
+
+                        let service = SentimentAnalysisService()
+                        Task {
+                            let descriptor = FetchDescriptor<JournalEntry>(
+                                predicate: #Predicate<JournalEntry> { $0.sentimentScore == 0.0 },
+                                sortBy: [SortDescriptor(\.date)]
+                            )
+                            if let entries = try? modelContext.fetch(descriptor) {
+                                await service.analyzeBatch(entries)
+                            }
+                            seedStatus = "Seeded 60 days + scored sentiment"
+                            isSeeding = false
+                        }
+                    }
+                    .disabled(isSeeding)
+                    .opacity(isSeeding ? 0.5 : 1.0)
+
+                    hudButton(
+                        "CLEAR DEMO DATA",
+                        icon: "trash",
+                        color: OverwatchTheme.alert
+                    ) {
+                        guard !isSeeding else { return }
+                        SyntheticDataSeeder.clearSyntheticData(from: modelContext)
+                        seedStatus = "Demo data removed"
+                    }
+                    .disabled(isSeeding)
+
+                    if isSeeding {
+                        ProgressView()
+                            .scaleEffect(0.6)
+                            .tint(OverwatchTheme.accentPrimary)
+                    }
+                }
+
+                if let status = seedStatus {
+                    Text(status)
+                        .font(Typography.hudLabel)
+                        .foregroundStyle(
+                            status.contains("removed")
+                                ? OverwatchTheme.alert
+                                : OverwatchTheme.accentSecondary
+                        )
+                        .tracking(1)
+                }
+            }
+        }
+    }
+    #endif
 
     // MARK: - Helpers
 

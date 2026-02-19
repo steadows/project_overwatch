@@ -32,6 +32,7 @@
 		485687BC91EE6DAB0DDB8DEC /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9184036D0C048716B2D07C01 /* JournalView.swift */; };
 		A1B2C3D4E5F60718A9BCDE01 /* MonthlyAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A9BCDE02 /* MonthlyAnalysisView.swift */; };
 		4B8496038AF8E3EAFAF0CDCB /* SentimentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */; };
+		6B2F9A4D3E7C81B5A0D1F234 /* SentimentGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4E1B5F2A9D70C6B3E2F345 /* SentimentGauge.swift */; };
 		4CD1F93FEA9F02AC61BF6187 /* HabitPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43F1BAA99FADB77694B6DC0 /* HabitPanelView.swift */; };
 		4F1B0F42078A0C30B6F3B06D /* JournalTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8451A512F411B3CD74CD5D43 /* JournalTimelineView.swift */; };
 		57CFB93CEECF6BF7380B65F7 /* WhoopAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */; };
@@ -54,6 +55,9 @@
 		990EA6264F4B6067FBFCDE78 /* OverwatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60D341F5FA4171AACBAA405 /* OverwatchTests.swift */; };
 		A0A83159E03AAB58EAE0D83D /* WhoopStrainResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6AAB10F4961A04F1893631 /* WhoopStrainResponse.swift */; };
 		A9618CB35A985FA80379511F /* SentimentAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CBD21FC89C72CBD79E06D1 /* SentimentAnalysisService.swift */; };
+		B1A2C3D4E5F607189ABCDE02 /* SyntheticDataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F607189ABCDE01 /* SyntheticDataSeeder.swift */; };
+		B1A2C3D4E5F607189ABCDE04 /* SyntheticDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F607189ABCDE03 /* SyntheticDataTests.swift */; };
+		C7A2B3D4E5F607189ABCDE06 /* IntelligenceManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A2B3D4E5F607189ABCDE05 /* IntelligenceManagerTests.swift */; };
 		A97C4855352448D97C882281 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFE72631736EDFA2BBA92D9 /* DashboardViewModel.swift */; };
 		B396C490B0160DD98593030A /* HabitModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FF738A252B6A88996B4D8A /* HabitModelTests.swift */; };
 		B4F2EA42FE71DCA2ECFE61A3 /* WireframeTrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 714A4B9CC98EB7E7A724A23B /* WireframeTrace.swift */; };
@@ -116,6 +120,7 @@
 		5004EFE2BD9DB358C74FB902 /* JournalEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalEntry.swift; sourceTree = "<group>"; };
 		51E6BE3B5E7F4447DDA92939 /* HabitCoefficient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCoefficient.swift; sourceTree = "<group>"; };
 		5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentIndicator.swift; sourceTree = "<group>"; };
+		8C4E1B5F2A9D70C6B3E2F345 /* SentimentGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentGauge.swift; sourceTree = "<group>"; };
 		5905D0F736AE611329C52DB6 /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
 		5D1260AFFBF301BCA773350C /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
 		611FC9802035E17031862784 /* MonthlyAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyAnalysis.swift; sourceTree = "<group>"; };
@@ -142,6 +147,9 @@
 		A121813D31B812A1E550B303 /* TacticalDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TacticalDashboardView.swift; sourceTree = "<group>"; };
 		A2F90B02DAAA023021218FD5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A4CBD21FC89C72CBD79E06D1 /* SentimentAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentAnalysisService.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F607189ABCDE01 /* SyntheticDataSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntheticDataSeeder.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F607189ABCDE03 /* SyntheticDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntheticDataTests.swift; sourceTree = "<group>"; };
+		C7A2B3D4E5F607189ABCDE05 /* IntelligenceManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceManagerTests.swift; sourceTree = "<group>"; };
 		A7C00E9FAE6DBAB0595BE470 /* OverwatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OverwatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A86127A83B6F01D1310BC605 /* GeminiServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiServiceTests.swift; sourceTree = "<group>"; };
 		AA7405BC17131493408758DD /* WhoopModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopModelTests.swift; sourceTree = "<group>"; };
@@ -252,6 +260,7 @@
 				83B192B699787526E491D288 /* NaturalLanguageParser.swift */,
 				74AE8BCD9BD4C243FC8FCE0F /* RegressionService.swift */,
 				A4CBD21FC89C72CBD79E06D1 /* SentimentAnalysisService.swift */,
+				B1A2C3D4E5F607189ABCDE01 /* SyntheticDataSeeder.swift */,
 				FC4AA737F93F001A27472CD3 /* WhoopAuthManager.swift */,
 				22367B9DC9FDD11F311153AF /* WhoopClient.swift */,
 				6C6A78F28CF7CFD4E826AA2B /* WhoopSyncManager.swift */,
@@ -292,6 +301,7 @@
 				8451A512F411B3CD74CD5D43 /* JournalTimelineView.swift */,
 				DD5922A1BA228E3CCE8AC742 /* MetricTile.swift */,
 				5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */,
+				8C4E1B5F2A9D70C6B3E2F345 /* SentimentGauge.swift */,
 				3845B4FA7E854754FB3C2B83 /* SentimentTrendChart.swift */,
 				4AB7C46D8AE24468D1455DF2 /* StubHeader.swift */,
 				F535001D5F621BE93CF888A4 /* TacticalCard.swift */,
@@ -316,11 +326,13 @@
 			children = (
 				A86127A83B6F01D1310BC605 /* GeminiServiceTests.swift */,
 				95FF738A252B6A88996B4D8A /* HabitModelTests.swift */,
+				C7A2B3D4E5F607189ABCDE05 /* IntelligenceManagerTests.swift */,
 				D0442FDEA242E1F3B0FF687F /* JournalModelTests.swift */,
 				AF8BBF59AA6745540784B6F2 /* NaturalLanguageParserTests.swift */,
 				C60D341F5FA4171AACBAA405 /* OverwatchTests.swift */,
 				1AB49ADBC7D150C60DAE49DC /* RegressionServiceTests.swift */,
 				4B427BE69916E77C65EC5939 /* SentimentAnalysisServiceTests.swift */,
+				B1A2C3D4E5F607189ABCDE03 /* SyntheticDataTests.swift */,
 				17ED0CF48323DC5139043144 /* WhoopAuthTests.swift */,
 				3D328C6DF4C0AFA8CF6D7E95 /* WhoopClientTests.swift */,
 				AA7405BC17131493408758DD /* WhoopModelTests.swift */,
@@ -498,10 +510,12 @@
 				0EB8451F32100B9B9320BC53 /* ReportsView.swift in Sources */,
 				A9618CB35A985FA80379511F /* SentimentAnalysisService.swift in Sources */,
 				4B8496038AF8E3EAFAF0CDCB /* SentimentIndicator.swift in Sources */,
+				6B2F9A4D3E7C81B5A0D1F234 /* SentimentGauge.swift in Sources */,
 				FBF3BDF1041BF9D0FC528011 /* SentimentTrendChart.swift in Sources */,
 				D087BA1BAB543E77A39FCCBB /* SettingsView.swift in Sources */,
 				C2D510A6733ACA1CB58D8DFE /* SettingsViewModel.swift in Sources */,
 				7AA447E96FAB4AC500722AF3 /* StubHeader.swift in Sources */,
+				B1A2C3D4E5F607189ABCDE02 /* SyntheticDataSeeder.swift in Sources */,
 				69A6A1478EA399924343FA5C /* TacticalCard.swift in Sources */,
 				6736B570946DCAA68C6AEEA9 /* TacticalDashboardView.swift in Sources */,
 				1DCAB98672B7CD01F7E13225 /* Typography.swift in Sources */,
@@ -524,11 +538,13 @@
 			files = (
 				0A1851F3CE22AF668D0A72D1 /* GeminiServiceTests.swift in Sources */,
 				B396C490B0160DD98593030A /* HabitModelTests.swift in Sources */,
+				C7A2B3D4E5F607189ABCDE06 /* IntelligenceManagerTests.swift in Sources */,
 				021B8365A37421875AEE4E8E /* JournalModelTests.swift in Sources */,
 				4410B6AE413EDBB82F724705 /* NaturalLanguageParserTests.swift in Sources */,
 				990EA6264F4B6067FBFCDE78 /* OverwatchTests.swift in Sources */,
 				D5BA2EA0DD1D1CCA827CBCA5 /* RegressionServiceTests.swift in Sources */,
 				903F0C743F8BE9A4CEE09ECD /* SentimentAnalysisServiceTests.swift in Sources */,
+				B1A2C3D4E5F607189ABCDE04 /* SyntheticDataTests.swift in Sources */,
 				57CFB93CEECF6BF7380B65F7 /* WhoopAuthTests.swift in Sources */,
 				C4662B7BFD694759E29A4CF6 /* WhoopClientTests.swift in Sources */,
 				F7DD63F80E1E30294BBC9864 /* WhoopModelTests.swift in Sources */,
@@ -563,6 +579,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;

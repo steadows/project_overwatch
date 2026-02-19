@@ -277,17 +277,21 @@ final class DashboardViewModel {
         guard let habits = try? context.fetch(descriptor),
               let habit = habits.first(where: { $0.id == habitID }) else { return }
 
-        // Check if already completed today
-        if let existingEntry = habit.entries.first(where: {
+        // Delete ALL completed entries for today (not just the first)
+        let todayEntries = habit.entries.filter {
             $0.date >= todayStart && $0.date < todayEnd && $0.completed
-        }) {
-            context.delete(existingEntry)
+        }
+
+        if !todayEntries.isEmpty {
+            todayEntries.forEach { context.delete($0) }
         } else {
             let entry = HabitEntry(date: .now, completed: true)
             entry.habit = habit
             context.insert(entry)
         }
 
+        // Flush so relationship data is fresh for loadData
+        try? context.save()
         loadData(from: context)
     }
 
@@ -306,12 +310,10 @@ final class DashboardViewModel {
         guard let habits = try? context.fetch(descriptor),
               let habit = habits.first(where: { $0.id == habitID }) else { return }
 
-        // Remove existing today entry if present
-        if let existingEntry = habit.entries.first(where: {
-            $0.date >= todayStart && $0.date < todayEnd && $0.completed
-        }) {
-            context.delete(existingEntry)
-        }
+        // Remove ALL existing today entries before creating the confirmed one
+        habit.entries
+            .filter { $0.date >= todayStart && $0.date < todayEnd && $0.completed }
+            .forEach { context.delete($0) }
 
         // Create new entry with value and notes
         let entry = HabitEntry(date: .now, completed: true)
@@ -320,6 +322,8 @@ final class DashboardViewModel {
         entry.habit = habit
         context.insert(entry)
 
+        // Flush so relationship data is fresh for loadData
+        try? context.save()
         expandedHabitID = nil
         loadData(from: context)
     }

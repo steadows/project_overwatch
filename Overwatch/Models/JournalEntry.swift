@@ -6,7 +6,6 @@ final class JournalEntry {
     var id: UUID
     var date: Date
     var content: String
-    var parsedHabits: [String]
     var createdAt: Date
 
     // Phase 6.5 — Sentiment & Journal properties
@@ -15,8 +14,11 @@ final class JournalEntry {
     var sentimentMagnitude: Double
     var title: String
     var wordCount: Int
-    var tags: [String]
     var updatedAt: Date
+
+    // JSON-backed storage for arrays (avoids CoreData Array<String> materialization errors)
+    var parsedHabitsJSON: String
+    var tagsJSON: String
 
     init(
         id: UUID = UUID(),
@@ -35,14 +37,37 @@ final class JournalEntry {
         self.id = id
         self.date = date
         self.content = content
-        self.parsedHabits = parsedHabits
+        self.parsedHabitsJSON = Self.encodeStringArray(parsedHabits)
         self.createdAt = createdAt
         self.sentimentScore = sentimentScore
         self.sentimentLabel = sentimentLabel
         self.sentimentMagnitude = sentimentMagnitude
         self.title = title
         self.wordCount = wordCount
-        self.tags = tags
+        self.tagsJSON = Self.encodeStringArray(tags)
         self.updatedAt = updatedAt
+    }
+}
+
+// MARK: - Array Accessors (outside @Model macro scope)
+
+extension JournalEntry {
+    var parsedHabits: [String] {
+        get { Self.decodeStringArray(parsedHabitsJSON) }
+        set { parsedHabitsJSON = Self.encodeStringArray(newValue) }
+    }
+
+    var tags: [String] {
+        get { Self.decodeStringArray(tagsJSON) }
+        set { tagsJSON = Self.encodeStringArray(newValue) }
+    }
+
+    static func encodeStringArray(_ array: [String]) -> String {
+        (try? String(data: JSONEncoder().encode(array), encoding: .utf8)) ?? "[]"
+    }
+
+    static func decodeStringArray(_ json: String) -> [String] {
+        guard let data = json.data(using: .utf8) else { return [] }
+        return (try? JSONDecoder().decode([String].self, from: data)) ?? []
     }
 }

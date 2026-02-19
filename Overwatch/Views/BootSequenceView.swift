@@ -258,38 +258,51 @@ struct BootSequenceView: View {
             }
         }
 
-        // Phase 5 (2.5s): Dissolve → complete
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            withAnimation(.easeIn(duration: 0.3)) {
+        // Phase 5 (2.8s): Dissolve → complete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.8) {
+            withAnimation(.easeIn(duration: 0.5)) {
                 dissolving = true
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.8) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.3) {
             onComplete()
         }
     }
 
     private func runAbbreviated() {
         phase = .logo
-        gridProgress = 1.0
-        dataStreamOpacity = 0.5
 
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        // Fade in atmosphere
+        withAnimation(.easeOut(duration: 0.6)) {
+            gridProgress = 1.0
+            dataStreamOpacity = 0.4
+        }
+
+        // Logo materializes
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
             logoVisible = true
         }
-        withAnimation(.easeOut(duration: 0.3)) {
-            logoGlowRadius = 24
+        withAnimation(.easeOut(duration: 0.4)) {
+            logoGlowRadius = 28
         }
-        withAnimation(.easeInOut(duration: 0.3).delay(0.15)) {
-            logoGlowRadius = 12
+        // Glow settles
+        withAnimation(.easeInOut(duration: 0.5).delay(0.3)) {
+            logoGlowRadius = 14
+        }
+        // Gentle glow pulse while holding
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                logoGlowRadius = 20
+            }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            withAnimation(.easeIn(duration: 0.2)) {
+        // Dissolve out
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            withAnimation(.easeIn(duration: 0.5)) {
                 dissolving = true
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.9) {
             onComplete()
         }
     }
@@ -359,8 +372,8 @@ struct RootView: View {
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.15), value: bootComplete)
-        .animation(.easeInOut(duration: 0.3), value: showOnboarding)
+        .animation(.easeInOut(duration: 0.5), value: bootComplete)
+        .animation(.easeInOut(duration: 0.4), value: showOnboarding)
     }
 
     private func finishBoot() {
@@ -371,13 +384,13 @@ struct RootView: View {
         if hasCompletedOnboarding {
             // Returning user — go straight to app
             showApp = true
-            withAnimation(.easeIn(duration: 0.15)) {
+            withAnimation(.easeInOut(duration: 0.5)) {
                 bootComplete = true
             }
         } else {
             // First launch — show onboarding
             showOnboarding = true
-            withAnimation(.easeIn(duration: 0.15)) {
+            withAnimation(.easeInOut(duration: 0.5)) {
                 bootComplete = true
             }
         }

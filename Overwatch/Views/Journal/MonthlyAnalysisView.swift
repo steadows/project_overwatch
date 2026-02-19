@@ -3,14 +3,17 @@ import Charts
 
 /// Collapsible "MONTHLY INTELLIGENCE" section showing regression analysis results,
 /// force multiplier habit, coefficient bar chart, and Gemini narrative.
+///
+/// Month selection is handled externally by the global period picker in JournalView.
+/// This view displays analysis for whatever month is currently selected.
 struct MonthlyAnalysisView: View {
     let analysis: JournalViewModel.MonthlyAnalysisItem?
     let isGenerating: Bool
-    let availableMonths: [JournalViewModel.MonthOption]
     let currentMonthEntryCount: Int
-    @Binding var selectedMonthIndex: Int
+    let selectedMonthLabel: String
+    let isRangeMode: Bool
+    var analysisError: String? = nil
     let onGenerate: () -> Void
-    let onSelectMonth: (Int) -> Void
 
     @State private var isExpanded = true
 
@@ -20,19 +23,26 @@ struct MonthlyAnalysisView: View {
             .sorted { abs($0.coefficient) > abs($1.coefficient) }
     }
 
+    /// Whether the generate button should be enabled.
+    private var canGenerate: Bool {
+        !isGenerating && !isRangeMode && currentMonthEntryCount >= 14
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             headerRow
             if isExpanded {
                 VStack(alignment: .leading, spacing: OverwatchTheme.Spacing.lg) {
-                    if !availableMonths.isEmpty {
-                        monthSelector
-                    }
-
                     if isGenerating {
                         loadingState
                     } else if let analysis {
                         analysisContent(analysis)
+                    } else if let error = analysisError {
+                        errorState(error)
+                    } else if isRangeMode {
+                        selectMonthPrompt
+                    } else if currentMonthEntryCount >= 14 {
+                        readyToGenerateState
                     } else {
                         insufficientDataState
                     }
@@ -45,76 +55,44 @@ struct MonthlyAnalysisView: View {
     // MARK: - Header
 
     private var headerRow: some View {
-        Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-                isExpanded.toggle()
-            }
-        } label: {
-            HStack(spacing: OverwatchTheme.Spacing.sm) {
-                Rectangle()
-                    .fill(OverwatchTheme.accentPrimary.opacity(0.6))
-                    .frame(width: 3, height: 12)
-                    .shadow(color: OverwatchTheme.accentPrimary.opacity(0.6), radius: 4)
-
-                Text("// MONTHLY INTELLIGENCE")
-                    .font(Typography.hudLabel)
-                    .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.5))
-                    .tracking(3)
-                    .textGlow(OverwatchTheme.accentPrimary, radius: 3)
-
-                Spacer()
-
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.4))
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Month Selector
-
-    private var monthSelector: some View {
         HStack(spacing: OverwatchTheme.Spacing.sm) {
-            ForEach(Array(availableMonths.enumerated()), id: \.element.id) { index, month in
-                Button {
-                    withAnimation(Animations.quick) {
-                        onSelectMonth(index)
-                    }
-                } label: {
-                    Text(month.shortLabel)
-                        .font(Typography.hudLabel)
-                        .tracking(1.5)
-                        .foregroundStyle(
-                            selectedMonthIndex == index
-                                ? OverwatchTheme.accentCyan
-                                : OverwatchTheme.textSecondary
-                        )
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(
-                            selectedMonthIndex == index
-                                ? OverwatchTheme.accentCyan.opacity(0.1)
-                                : .clear
-                        )
-                        .clipShape(HUDFrameShape(chamferSize: 5))
-                        .overlay(
-                            HUDFrameShape(chamferSize: 5)
-                                .stroke(
-                                    selectedMonthIndex == index
-                                        ? OverwatchTheme.accentCyan.opacity(0.5)
-                                        : OverwatchTheme.accentCyan.opacity(0.1),
-                                    lineWidth: 1
-                                )
-                        )
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                    isExpanded.toggle()
                 }
-                .buttonStyle(.plain)
+            } label: {
+                HStack(spacing: OverwatchTheme.Spacing.sm) {
+                    Rectangle()
+                        .fill(OverwatchTheme.accentPrimary.opacity(0.6))
+                        .frame(width: 3, height: 12)
+                        .shadow(color: OverwatchTheme.accentPrimary.opacity(0.6), radius: 4)
+
+                    Text("// MONTHLY INTELLIGENCE")
+                        .font(Typography.hudLabel)
+                        .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.5))
+                        .tracking(3)
+                        .textGlow(OverwatchTheme.accentPrimary, radius: 3)
+
+                    if !selectedMonthLabel.isEmpty {
+                        Text("— \(selectedMonthLabel.uppercased())")
+                            .font(Typography.hudLabel)
+                            .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.3))
+                            .tracking(2)
+                    }
+
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.4))
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
 
             Spacer()
 
-            generateButton
+            if isExpanded {
+                generateButton
+            }
         }
     }
 
@@ -125,7 +103,7 @@ struct MonthlyAnalysisView: View {
             HStack(spacing: 4) {
                 Image(systemName: analysis != nil ? "arrow.clockwise" : "cpu")
                     .font(.system(size: 10, weight: .medium))
-                Text(analysis != nil ? "REGENERATE" : "GENERATE ANALYSIS")
+                Text(analysis != nil ? "REGENERATE" : "GENERATE")
                     .font(Typography.hudLabel)
                     .tracking(1)
             }
@@ -140,8 +118,8 @@ struct MonthlyAnalysisView: View {
             )
         }
         .buttonStyle(.plain)
-        .disabled(isGenerating || currentMonthEntryCount < 14)
-        .opacity(isGenerating || currentMonthEntryCount < 14 ? 0.4 : 1.0)
+        .disabled(!canGenerate)
+        .opacity(canGenerate ? 1.0 : 0.4)
     }
 
     // MARK: - Analysis Content
@@ -322,7 +300,7 @@ struct MonthlyAnalysisView: View {
     private func qualityIndicators(_ item: JournalViewModel.MonthlyAnalysisItem) -> some View {
         HStack(spacing: OverwatchTheme.Spacing.xl) {
             qualityMetric(
-                label: "R² FIT",
+                label: "R\u{00B2} FIT",
                 value: String(format: "%.3f", item.modelR2),
                 color: item.modelR2 > 0.3
                     ? OverwatchTheme.accentSecondary
@@ -383,6 +361,97 @@ struct MonthlyAnalysisView: View {
         .padding(.vertical, OverwatchTheme.Spacing.xxl)
     }
 
+    // MARK: - Error State
+
+    private func errorState(_ message: String) -> some View {
+        VStack(spacing: OverwatchTheme.Spacing.md) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 28, weight: .thin))
+                .foregroundStyle(OverwatchTheme.alert.opacity(0.4))
+
+            Text("ANALYSIS FAILED")
+                .font(Typography.hudLabel)
+                .foregroundStyle(OverwatchTheme.alert.opacity(0.5))
+                .tracking(2)
+                .textGlow(OverwatchTheme.alert, radius: 3)
+
+            Text(message)
+                .font(Typography.metricTiny)
+                .foregroundStyle(OverwatchTheme.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, OverwatchTheme.Spacing.xxl)
+    }
+
+    // MARK: - Select Month Prompt (range mode, no specific month selected)
+
+    private var selectMonthPrompt: some View {
+        VStack(spacing: OverwatchTheme.Spacing.md) {
+            Image(systemName: "calendar.badge.clock")
+                .font(.system(size: 28, weight: .thin))
+                .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.15))
+
+            Text("SELECT A MONTH")
+                .font(Typography.hudLabel)
+                .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.35))
+                .tracking(2)
+                .textGlow(OverwatchTheme.accentPrimary, radius: 3)
+
+            Text("Choose a specific month from the period selector above to generate or view analysis")
+                .font(Typography.metricTiny)
+                .foregroundStyle(OverwatchTheme.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, OverwatchTheme.Spacing.xxl)
+    }
+
+    // MARK: - Ready to Generate (specific month, enough data, no analysis yet)
+
+    private var readyToGenerateState: some View {
+        VStack(spacing: OverwatchTheme.Spacing.md) {
+            Image(systemName: "cpu")
+                .font(.system(size: 28, weight: .thin))
+                .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.25))
+
+            Text("READY TO ANALYZE")
+                .font(Typography.hudLabel)
+                .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.5))
+                .tracking(2)
+                .textGlow(OverwatchTheme.accentPrimary, radius: 3)
+
+            Text(
+                "\(currentMonthEntryCount) entries available for \(selectedMonthLabel)"
+            )
+            .font(Typography.metricTiny)
+            .foregroundStyle(OverwatchTheme.textSecondary)
+            .multilineTextAlignment(.center)
+
+            Button(action: onGenerate) {
+                HStack(spacing: 6) {
+                    Image(systemName: "cpu")
+                        .font(.system(size: 11, weight: .medium))
+                    Text("GENERATE ANALYSIS")
+                        .font(Typography.hudLabel)
+                        .tracking(1.5)
+                }
+                .foregroundStyle(OverwatchTheme.accentPrimary)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(OverwatchTheme.accentPrimary.opacity(0.08))
+                .clipShape(HUDFrameShape(chamferSize: 8))
+                .overlay(
+                    HUDFrameShape(chamferSize: 8)
+                        .stroke(OverwatchTheme.accentPrimary.opacity(0.4), lineWidth: 1)
+                )
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, OverwatchTheme.Spacing.xxl)
+    }
+
     // MARK: - Insufficient Data State
 
     private var insufficientDataState: some View {
@@ -398,15 +467,11 @@ struct MonthlyAnalysisView: View {
                 .textGlow(OverwatchTheme.accentPrimary, radius: 3)
 
             Text(
-                "Log at least 14 journal entries this month to generate analysis (\(currentMonthEntryCount)/14)"
+                "Log at least 14 journal entries for \(selectedMonthLabel) to generate analysis (\(currentMonthEntryCount)/14)"
             )
             .font(Typography.metricTiny)
             .foregroundStyle(OverwatchTheme.textSecondary)
             .multilineTextAlignment(.center)
-
-            if currentMonthEntryCount >= 14 {
-                generateButton
-            }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, OverwatchTheme.Spacing.xxl)
@@ -417,10 +482,10 @@ struct MonthlyAnalysisView: View {
 
 #Preview("Monthly Analysis — With Data") {
     let mockCoefficients: [HabitCoefficient] = [
-        HabitCoefficient(habitName: "Meditation", habitEmoji: "🧘", coefficient: 0.34, pValue: 0.01, completionRate: 0.8, direction: .positive),
-        HabitCoefficient(habitName: "Exercise", habitEmoji: "🏋️", coefficient: 0.21, pValue: 0.05, completionRate: 0.7, direction: .positive),
-        HabitCoefficient(habitName: "Reading", habitEmoji: "📚", coefficient: 0.02, pValue: 0.85, completionRate: 0.5, direction: .neutral),
-        HabitCoefficient(habitName: "Alcohol", habitEmoji: "🍺", coefficient: -0.28, pValue: 0.02, completionRate: 0.3, direction: .negative),
+        HabitCoefficient(habitName: "Meditation", habitEmoji: "\u{1F9D8}", coefficient: 0.34, pValue: 0.01, completionRate: 0.8, direction: .positive),
+        HabitCoefficient(habitName: "Exercise", habitEmoji: "\u{1F3CB}\u{FE0F}", coefficient: 0.21, pValue: 0.05, completionRate: 0.7, direction: .positive),
+        HabitCoefficient(habitName: "Reading", habitEmoji: "\u{1F4DA}", coefficient: 0.02, pValue: 0.85, completionRate: 0.5, direction: .neutral),
+        HabitCoefficient(habitName: "Alcohol", habitEmoji: "\u{1F37A}", coefficient: -0.28, pValue: 0.02, completionRate: 0.3, direction: .negative),
     ]
 
     let mockAnalysis = JournalViewModel.MonthlyAnalysisItem(
@@ -432,15 +497,10 @@ struct MonthlyAnalysisView: View {
         entryCount: 28,
         forceMultiplierHabit: "Meditation",
         modelR2: 0.61,
-        summary: "Strong month overall. Your meditation practice stands out as a clear wellbeing driver — days when you meditated correlated with significantly higher sentiment scores. Exercise also contributed positively, while alcohol consumption showed a notable negative association. Consider doubling down on your morning meditation routine.",
+        summary: "Strong month overall. Your meditation practice stands out as a clear wellbeing driver \u{2014} days when you meditated correlated with significantly higher sentiment scores. Exercise also contributed positively, while alcohol consumption showed a notable negative association. Consider doubling down on your morning meditation routine.",
         coefficients: mockCoefficients,
         generatedAt: .now
     )
-
-    let months = [
-        JournalViewModel.MonthOption(month: 2, year: 2026, label: "February 2026", shortLabel: "FEB 26"),
-        JournalViewModel.MonthOption(month: 1, year: 2026, label: "January 2026", shortLabel: "JAN 26"),
-    ]
 
     ZStack {
         OverwatchTheme.background.ignoresSafeArea()
@@ -450,11 +510,10 @@ struct MonthlyAnalysisView: View {
             MonthlyAnalysisView(
                 analysis: mockAnalysis,
                 isGenerating: false,
-                availableMonths: months,
                 currentMonthEntryCount: 28,
-                selectedMonthIndex: .constant(0),
-                onGenerate: {},
-                onSelectMonth: { _ in }
+                selectedMonthLabel: "February 2026",
+                isRangeMode: false,
+                onGenerate: {}
             )
         }
         .padding(24)
@@ -462,7 +521,7 @@ struct MonthlyAnalysisView: View {
     .frame(width: 700, height: 600)
 }
 
-#Preview("Monthly Analysis — Insufficient Data") {
+#Preview("Monthly Analysis — Ready to Generate") {
     ZStack {
         OverwatchTheme.background.ignoresSafeArea()
         GridBackdrop().ignoresSafeArea()
@@ -471,11 +530,30 @@ struct MonthlyAnalysisView: View {
             MonthlyAnalysisView(
                 analysis: nil,
                 isGenerating: false,
-                availableMonths: [],
-                currentMonthEntryCount: 8,
-                selectedMonthIndex: .constant(0),
-                onGenerate: {},
-                onSelectMonth: { _ in }
+                currentMonthEntryCount: 29,
+                selectedMonthLabel: "December 2025",
+                isRangeMode: false,
+                onGenerate: {}
+            )
+        }
+        .padding(24)
+    }
+    .frame(width: 700, height: 400)
+}
+
+#Preview("Monthly Analysis — Select Month") {
+    ZStack {
+        OverwatchTheme.background.ignoresSafeArea()
+        GridBackdrop().ignoresSafeArea()
+
+        TacticalCard {
+            MonthlyAnalysisView(
+                analysis: nil,
+                isGenerating: false,
+                currentMonthEntryCount: 0,
+                selectedMonthLabel: "",
+                isRangeMode: true,
+                onGenerate: {}
             )
         }
         .padding(24)

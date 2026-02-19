@@ -85,7 +85,7 @@ struct ArcGauge: View {
 // MARK: - Tick Marks
 
 /// Small radial tick marks around the gauge arc — adds mechanical precision detail.
-private struct ArcTickMarks: View {
+struct ArcTickMarks: View {
     var color: Color
     var count: Int = 24
 

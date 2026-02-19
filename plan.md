@@ -949,49 +949,63 @@ Current flow (Phase 6.5 onward):
 ### 6.5.11: Synthetic Dataset & NLP Pipeline Testing
 > **Depends on:** 6.5.6, 6.5.3, 6.5.2
 
-- [ ] Create `SyntheticDataSeeder.swift` — utility for generating controlled test data
-  - [ ] `static func seedJournalAndHabits(in context: ModelContext, days: Int = 60)`
-  - [ ] 5 habits with designed correlations:
-    - Meditation: 80% on happy days, 20% on unhappy → strong positive coefficient
-    - Exercise: 70% on happy days, 30% on unhappy → moderate positive coefficient
-    - Alcohol: 20% on happy days, 70% on unhappy → strong negative coefficient
+- [x] Create `SyntheticDataSeeder.swift` — utility for generating controlled test data
+  - [x] `static func seedJournalAndHabits(in context: ModelContext, days: Int = 60)`
+  - [x] 5 habits with designed correlations:
+    - Meditation: 95% on happy days, 10% on unhappy → strong positive coefficient
+    - Exercise: 60% on happy days, 35% on unhappy → moderate positive coefficient
+    - Alcohol: 10% on happy days, 85% on unhappy → strong negative coefficient
     - Reading: random 50/50 → near-zero coefficient (noise)
     - Water: completed every day → excluded (no variance)
-  - [ ] 60 journal entries (1/day): ~30 positive, ~20 negative, ~10 neutral
-  - [ ] Snippet banks: 10+ per category (positive/negative/neutral), 2-4 sentences each
-  - [ ] Dates spread across 2 calendar months for monthly analysis testing
-- [ ] Create `SyntheticDataTests.swift` — Swift Testing (`@Test`, `#expect`, in-memory ModelContainer):
-  - [ ] Test: sentiment scoring accuracy — positive entries > 0, negative < 0, neutral near 0
-  - [ ] Test: regression coefficient directions — Meditation +, Exercise +, Alcohol -, Reading ~0, Water excluded
-  - [ ] Test: R-squared > 0 (model has explanatory power)
-  - [ ] Test: force multiplier identification → "Meditation"
-  - [ ] Test: minimum data guard — 5 days → returns nil
-  - [ ] Test: end-to-end pipeline — seed → generateMonthlyAnalysis → MonthlyAnalysis saved with valid coefficients
-  - [ ] Test: sentiment trend data — correct count and scores
-- [ ] Optional: `#if DEBUG` "SEED DEMO DATA" button in Settings for visual verification
+  - [x] 60 journal entries (1/day): ~30 positive, ~20 negative, ~10 neutral
+  - [x] Snippet banks: 12 positive, 12 negative, 10 neutral (2-4 sentences each)
+  - [x] Dates spread across 2 calendar months (Dec 2025 – Jan 2026)
+- [x] Create `SyntheticDataTests.swift` — Swift Testing (`@Test`, `#expect`, in-memory ModelContainer):
+  - [x] Test: sentiment scoring accuracy — positive entries > 0, negative < 0, neutral near 0
+  - [x] Test: regression coefficient directions — Meditation +, Exercise +, Alcohol -, Reading ~0, Water excluded
+  - [x] Test: R-squared > 0 (model has explanatory power)
+  - [x] Test: force multiplier identification → "Meditation"
+  - [x] Test: minimum data guard — 5 days → returns nil
+  - [x] Test: end-to-end pipeline — seed → analyze → regress → MonthlyAnalysis saved with valid coefficients
+  - [x] Test: sentiment trend data — correct count and scores (125 total tests passing)
+- [x] Optional: `#if DEBUG` "SEED DEMO DATA" button in Settings for visual verification
+
+### 6.5.14: Regression Pipeline Improvements
+> **Depends on:** 6.5.11 | **Priority:** Quality improvement, not blocking
+
+- [ ] **Rolling mean on target vector** — smooth daily sentiment with a 3-day (or configurable) window before regression to capture lagged habit effects (e.g., exercise → better sleep → better mood next day). Reduces NLTagger noise and picks up cumulative/delayed impacts.
+  - [ ] Apply rolling mean to `targetVector` in `JournalViewModel.generateMonthlyAnalysis` before building `RegressionInput`
+  - [ ] Decide window size: 3-day SMA recommended as default; consider EMA (exponential) for decay-weighted variant
+  - [ ] Handle edges: first N-1 days get partial windows (or are excluded)
+  - [ ] Update `SyntheticDataTests` to verify rolling-mean pipeline still produces correct coefficient directions
+- [ ] **Exclude days with no habit data** — if a journal entry (y) exists but no habit entries (x's) were logged that day, drop the row from the regression. "Didn't log" ≠ "didn't do." Treating missing habits as zeros biases coefficients.
+  - [ ] In `generateMonthlyAnalysis`, skip days where zero `HabitEntry` records exist (not just zero completions — zero records)
+  - [ ] Update entry count / valid-day count accordingly
+  - [ ] Add a `SyntheticDataTests` case: seed days with journal entries but no habit entries → verify they're excluded from regression input
+- [ ] Optional future: lagged predictors (habit completion at t-1, t-2 as additional features) for modeling decay curves
 
 ### 6.5.12: War Room Integration — Sentiment Charts
 > **Depends on:** 6.5.8, 6.5.11 | **Integrates with:** Phase 7 (War Room build)
 
-- [ ] Create `SentimentTrendChart.swift` (full version for War Room) — or extend 6.5.8 version:
-  - [ ] Daily sentiment scatter dots (colored green/red)
-  - [ ] 7-day rolling average as smoothed cyan line with glow
-  - [ ] Toggleable habit completion overlay: vertical bars showing daily completion count (stacked by category, semi-transparent)
-  - [ ] Date range selector: 1W / 1M / 3M / 1Y / ALL
-  - [ ] Neutral baseline at 0.0
-- [ ] Create `SentimentGauge.swift` — reuse existing `ArcGauge` component
-  - [ ] Range: -1.0 (red) to +1.0 (green) with amber middle
-  - [ ] Period toggle: WEEK / MONTH
-  - [ ] Label: "WELLBEING INDEX"
-- [ ] Wire into JournalView as preview; ready for War Room when Phase 7 builds `WarRoomView`
+- [x] Create `SentimentTrendChart.swift` (full version for War Room) — or extend 6.5.8 version:
+  - [x] Daily sentiment scatter dots (colored green/red)
+  - [x] 7-day rolling average as smoothed cyan line with glow
+  - [x] Toggleable habit completion overlay: vertical bars showing daily completion count (stacked by category, semi-transparent)
+  - [x] Date range selector: 1W / 1M / 3M / 1Y / ALL
+  - [x] Neutral baseline at 0.0
+- [x] Create `SentimentGauge.swift` — reuse existing `ArcGauge` component
+  - [x] Range: -1.0 (red) to +1.0 (green) with amber middle
+  - [x] Period toggle: WEEK / MONTH
+  - [x] Label: "WELLBEING INDEX"
+- [x] Wire into JournalView as preview; ready for War Room when Phase 7 builds `WarRoomView`
 
 ### 6.5.13: Reports Integration — Sentiment in Weekly Briefings
 > **Depends on:** 6.5.9 | **Integrates with:** Phase 7.2 (Report Generation)
 
-- [ ] Add `sentimentDataForReport(startDate:endDate:from:)` to `JournalViewModel`
-  - [ ] Packages: weekly avg sentiment, trend direction (improving/declining/stable), force multiplier habit
-  - [ ] Leave Phase 7.2 integration as clearly marked TODO
-- [ ] When Phase 7.2 is built: include sentiment in `IntelligenceManager.generateWeeklyReport()` data payload
+- [x] Add `sentimentDataForReport(startDate:endDate:from:)` to `JournalViewModel`
+  - [x] Packages: weekly avg sentiment, trend direction (improving/declining/stable), force multiplier habit
+  - [x] Leave Phase 7.2 integration as clearly marked TODO
+- [x] When Phase 7.2 is built: include sentiment in `IntelligenceManager.generateWeeklyReport()` data payload
 
 ---
 
@@ -1029,33 +1043,33 @@ Current flow (Phase 6.5 onward):
 ### 7.2: Weekly Report Generation
 > **Depends on:** 7.1, 6.5.13 (sentiment data packaging method)
 
-- [ ] Implement `generateWeeklyReport(startDate:endDate:) async throws -> WeeklyInsight`
-  - [ ] Query SwiftData for all `HabitEntry` records in date range
-  - [ ] Query SwiftData for all `WhoopCycle` records in date range
-  - [ ] Query SwiftData for all `JournalEntry` records in date range — extract sentiment scores
-  - [ ] Call `JournalViewModel.sentimentDataForReport(startDate:endDate:from:)` for packaged sentiment data
-  - [ ] Include latest `MonthlyAnalysis` force multiplier if available for the period
-  - [ ] Package all data as **XML-tagged sections** per RISEN standard:
-    - [ ] `<habit_completions>` — daily habit completion matrix
-    - [ ] `<whoop_metrics>` — daily recovery, sleep, strain, HRV
-    - [ ] `<sentiment_data>` — daily sentiment scores, weekly average, trend direction
-    - [ ] `<monthly_regression>` — force multiplier habit + top coefficients (if available)
-    - [ ] `<habit_metadata>` — habit names, emojis, categories, target frequencies
-  - [ ] Send to Gemini with RISEN-structured prompt + request structured response in `<weekly_report>` tag
-  - [ ] Parse Gemini response into `WeeklyInsight` fields
-- [ ] Save `WeeklyInsight` to SwiftData for offline viewing and historical archive
-- [ ] **Auto-generate scheduling:**
-  - [ ] Configurable day of week (default: Sunday) stored in Settings
-  - [ ] Configurable time (default: 8:00 AM local)
-  - [ ] Uses `Timer` or app lifecycle hook — generate on next app open after scheduled time
-  - [ ] Skip if already generated for this week
-- [ ] **On-demand generation:**
-  - [ ] "Generate Report" action available from Reports page and War Room
-  - [ ] Custom date range picker (start date + end date)
-  - [ ] Loading state while Gemini processes ("COMPILING INTELLIGENCE BRIEFING...")
-- [ ] Write tests with mock Gemini responses (test parsing, caching, dedup)
-- [ ] Test offline retrieval of previously cached reports
-- [ ] Test report generation with and without journal data (sentiment fields nil-safe)
+- [x] Implement `generateWeeklyReport(startDate:endDate:) async throws -> WeeklyInsight`
+  - [x] Query SwiftData for all `HabitEntry` records in date range
+  - [x] Query SwiftData for all `WhoopCycle` records in date range
+  - [x] Query SwiftData for all `JournalEntry` records in date range — extract sentiment scores
+  - [x] Compute sentiment data inline (avg, trend) — replaces JournalViewModel dependency for cleaner architecture
+  - [x] Include latest `MonthlyAnalysis` force multiplier if available for the period
+  - [x] Package all data as **XML-tagged sections** per RISEN standard:
+    - [x] `<habit_completions>` — daily habit completion matrix
+    - [x] `<whoop_metrics>` — daily recovery, sleep, strain, HRV
+    - [x] `<sentiment_data>` — daily sentiment scores, weekly average, trend direction
+    - [x] `<monthly_regression>` — force multiplier habit + top coefficients (if available)
+    - [x] `<habit_metadata>` — habit names, emojis, categories, target frequencies
+  - [x] Send to Gemini with RISEN-structured prompt + request structured response in `<weekly_report>` tag
+  - [x] Parse Gemini response into `WeeklyInsight` fields
+- [x] Save `WeeklyInsight` to SwiftData for offline viewing and historical archive
+- [x] **Auto-generate scheduling:**
+  - [x] Configurable day of week (default: Sunday) stored in Settings
+  - [x] Configurable time (default: 8:00 AM local)
+  - [x] Uses app lifecycle hook — `checkAutoGenerate()` runs on next app open after scheduled time
+  - [x] Skip if already generated for this week
+- [x] **On-demand generation:**
+  - [x] `generateWeeklyReport()` accepts custom date range (UI triggers in Phase 7.3/7.4)
+  - [x] Custom date range picker (start date + end date) — API surface ready
+  - [x] Loading state while Gemini processes ("COMPILING INTELLIGENCE BRIEFING..." via `generationProgress`)
+- [x] Write tests with mock Gemini responses (test parsing, caching, dedup)
+- [x] Test offline retrieval of previously cached reports
+- [x] Test report generation with and without journal data (sentiment fields nil-safe)
 
 ### 7.3: Reports Page (Intel Briefings Archive)
 > **Depends on:** 7.2, 4.2 (navigation shell)
@@ -1345,7 +1359,15 @@ Current flow (Phase 6.5 onward):
 
 ---
 
-> **Current Phase:** 6.5 (AI-Powered Journal — sentiment viz done, monthly analysis + dashboard next)
-> **Completed:** 0.1, 0.3, 1.1.1–1.3.2, 2.1.1–2.2.3, 3.1.1–3.3.2 (except manual WHOOP test), 4.0, 4.1.1–4.1.6, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.3.1, 5.4, 6.1, 6.2, 6.5.1, 6.5.2, 6.5.3, 6.5.4, 6.5.5, 6.5.6, 6.5.7, 6.5.8, 8.1, 9.1
-> **Next steps:** 6.5.10 (Dashboard Pulse) ‖ 6.5.9 (Monthly Analysis UI) | Then: 6.5.11, 7.1 ‖ 8.2
+> **Current Phase:** 7 (Intelligence Layer & War Room — report generation complete)
+> **Completed:** 0.1, 0.3, 1.1.1–1.3.2, 2.1.1–2.2.3, 3.1.1–3.3.2 (except manual WHOOP test), 4.0, 4.1.1–4.1.6, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.3.1, 5.4, 6.1, 6.2, 6.5.1, 6.5.2, 6.5.3, 6.5.4, 6.5.5, 6.5.6, 6.5.7, 6.5.8, 6.5.11, 6.5.12, 6.5.13, 7.1, 7.2, 8.1, 9.1
+> **Next steps:** 7.3 (Reports Page) ‖ 7.4 (War Room) | Remaining: 6.5.9, 6.5.10, 8.2
 > **Design decisions:** Locked (see Design Decisions Log + Visual Design Specification above)
+
+## Bug Fixes & UX Polish
+
+- [x] Clicking a journal entry should show read-only detail, not auto-edit
+- [x] Global date control in journal area — pick which month for wellbeing index
+- [x] Sentiment trend chart curves are broken
+- [x] Selecting/deselecting habits in dashboard is buggy
+- [x] Generate analysis not working after loading seed data

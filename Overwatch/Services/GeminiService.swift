@@ -8,6 +8,7 @@ enum GeminiError: LocalizedError {
     case emptyResponse
     case invalidResponse(String)
     case rateLimited
+    case serviceUnavailable
 
     var errorDescription: String? {
         switch self {
@@ -15,6 +16,7 @@ enum GeminiError: LocalizedError {
         case .emptyResponse: "Empty response from Gemini"
         case .invalidResponse(let detail): "Invalid Gemini response: \(detail)"
         case .rateLimited: "Gemini API rate limited — try again later"
+        case .serviceUnavailable: "Gemini service temporarily unavailable — retries exhausted"
         }
     }
 }
@@ -35,10 +37,14 @@ struct GeminiParsedResponse: Codable, Sendable {
 /// and provides structured methods for habit parsing and connection testing.
 actor GeminiService {
 
+    private static let primaryModel = "gemini-2.5-flash"
+    private static let maxRetries = 3
+    private static let baseDelay: UInt64 = 1_000_000_000 // 1 second in nanoseconds
+
     private let model: GenerativeModel
 
     init(apiKey: String) {
-        self.model = GenerativeModel(name: "gemini-2.0-flash", apiKey: apiKey)
+        self.model = GenerativeModel(name: Self.primaryModel, apiKey: apiKey)
     }
 
     /// Creates a GeminiService from the configured API key, or nil if no key is available.
@@ -47,16 +53,50 @@ actor GeminiService {
         return GeminiService(apiKey: key)
     }
 
+    // MARK: - Retry Logic
+
+    /// Executes a Gemini API call with exponential backoff on transient failures (503, rate limits).
+    private func withRetry<T>(_ operation: @Sendable () async throws -> T) async throws -> T {
+        for attempt in 0..<Self.maxRetries {
+            do {
+                return try await operation()
+            } catch {
+                let isTransient = isTransientError(error)
+                let isLastAttempt = attempt == Self.maxRetries - 1
+
+                if !isTransient || isLastAttempt {
+                    if isTransient { throw GeminiError.serviceUnavailable }
+                    throw error
+                }
+
+                let delay = Self.baseDelay * UInt64(1 << attempt) // 1s, 2s, 4s
+                try await Task.sleep(nanoseconds: delay)
+            }
+        }
+        throw GeminiError.serviceUnavailable
+    }
+
+    /// Checks if an error is a transient server-side failure worth retrying.
+    private nonisolated func isTransientError(_ error: Error) -> Bool {
+        let message = error.localizedDescription.lowercased()
+        return message.contains("unavailable")
+            || message.contains("503")
+            || message.contains("high demand")
+            || message.contains("rate limit")
+            || message.contains("overloaded")
+    }
+
     // MARK: - Habit Parsing
 
     /// Sends freeform text to Gemini for structured habit parsing.
     /// The prompt includes the user's existing habit names for context-aware matching.
     func parseHabit(_ input: String, existingHabits: [String]) async throws -> GeminiParsedResponse {
         let prompt = buildParsePrompt(input: input, habits: existingHabits)
-        let response = try await model.generateContent(prompt)
 
-        guard let text = response.text else {
-            throw GeminiError.emptyResponse
+        let text: String = try await withRetry {
+            let response = try await self.model.generateContent(prompt)
+            guard let text = response.text else { throw GeminiError.emptyResponse }
+            return text
         }
 
         return try decodeParseResponse(text)
@@ -66,8 +106,10 @@ actor GeminiService {
 
     /// Verifies the API key works by sending a minimal request.
     func testConnection() async throws -> Bool {
-        let response = try await model.generateContent("Respond with exactly one word: OK")
-        return response.text != nil
+        try await withRetry {
+            let response = try await self.model.generateContent("Respond with exactly one word: OK")
+            return response.text != nil
+        }
     }
 
     // MARK: - Prompt Building
@@ -109,8 +151,11 @@ actor GeminiService {
         let prompt = buildSentimentPrompt(title: title, content: content)
 
         do {
-            let response = try await model.generateContent(prompt)
-            guard let text = response.text else { return nil }
+            let text: String = try await withRetry {
+                let response = try await self.model.generateContent(prompt)
+                guard let text = response.text else { throw GeminiError.emptyResponse }
+                return text
+            }
             return parseSentimentResponse(text)
         } catch {
             return nil
@@ -211,14 +256,12 @@ actor GeminiService {
         )
 
         do {
-            let response = try await model.generateContent(prompt)
-            guard let text = response.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                return Self.templateFallback(
-                    coefficients: coefficients,
-                    averageSentiment: averageSentiment,
-                    monthName: monthName,
-                    entryCount: entryCount
-                )
+            let text: String = try await withRetry {
+                let response = try await self.model.generateContent(prompt)
+                guard let text = response.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    throw GeminiError.emptyResponse
+                }
+                return text
             }
             return text.trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
@@ -371,11 +414,13 @@ actor GeminiService {
     /// Sends a pre-built RISEN prompt to Gemini and returns the raw response text.
     /// Used by IntelligenceManager for weekly intelligence briefings.
     func generateWeeklyBriefing(prompt: String) async throws -> String {
-        let response = try await model.generateContent(prompt)
-        guard let text = response.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw GeminiError.emptyResponse
+        try await withRetry {
+            let response = try await self.model.generateContent(prompt)
+            guard let text = response.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                throw GeminiError.emptyResponse
+            }
+            return text
         }
-        return text
     }
 
     // MARK: - Response Decoding
