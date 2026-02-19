@@ -8,6 +8,9 @@ final class Habit {
     var emoji: String
     var category: String
     var targetFrequency: Int
+    var isQuantitative: Bool
+    var unitLabel: String
+    var sortOrder: Int
     var createdAt: Date
 
     @Relationship(deleteRule: .cascade, inverse: \HabitEntry.habit)
@@ -19,6 +22,9 @@ final class Habit {
         emoji: String = "",
         category: String = "General",
         targetFrequency: Int = 7,
+        isQuantitative: Bool = false,
+        unitLabel: String = "",
+        sortOrder: Int = 0,
         createdAt: Date = .now
     ) {
         self.id = id
@@ -26,6 +32,9 @@ final class Habit {
         self.emoji = emoji
         self.category = category
         self.targetFrequency = targetFrequency
+        self.isQuantitative = isQuantitative
+        self.unitLabel = unitLabel
+        self.sortOrder = sortOrder
         self.createdAt = createdAt
         self.entries = []
     }

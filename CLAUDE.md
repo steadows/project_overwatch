@@ -144,6 +144,73 @@ SwiftData @Model ←→ ViewModel (@Observable) ←→ View (@Query / @State)
 
 ---
 
+# Gemini Prompting Standard — RISEN with XML Tags
+
+All prompts sent to the Gemini API (via `GeminiService`) must follow the **RISEN** framework with **XML tags** for section headers and data passing. This is a hard rule — no freeform prompt strings.
+
+## RISEN Structure
+
+Every Gemini prompt must include these sections, wrapped in XML tags:
+
+```
+<role>
+Who Gemini is in this context. Define the persona, expertise, and tone.
+Example: "You are a performance coach who analyzes habit and wellbeing data. You are encouraging but honest, data-driven, and always actionable."
+</role>
+
+<instructions>
+What Gemini should do. Clear, specific directives. Include output format requirements.
+Example: "Analyze the following habit-sentiment regression results. Produce a 2-3 paragraph narrative summary. Highlight the force multiplier habit. End with one actionable recommendation."
+</instructions>
+
+<steps>
+Ordered steps Gemini should follow to complete the task.
+Example:
+1. Review the habit coefficients and identify the strongest positive and negative drivers.
+2. Summarize the overall sentiment trend for the month.
+3. Call out the force multiplier habit with specific data.
+4. Provide one concrete, actionable recommendation.
+</steps>
+
+<expectations>
+Output format, length, tone, and constraints.
+Example: "Respond in 2-3 paragraphs. Use a motivational but data-grounded tone. Reference specific habit names and coefficient values. Do not use bullet points — narrative prose only."
+</expectations>
+
+<narrowing>
+Boundaries and guardrails. What NOT to do.
+Example: "Do not invent data points not present in the input. Do not provide medical advice. Do not reference habits not included in the data."
+</narrowing>
+```
+
+## Data Passing
+
+All structured data passed to Gemini must be wrapped in descriptive XML tags:
+
+```
+<habit_coefficients>
+[{"habitName": "Meditation", "coefficient": 0.34, "direction": "positive"}, ...]
+</habit_coefficients>
+
+<sentiment_summary>
+{"averageScore": 0.42, "entryCount": 28, "month": "February 2026"}
+</sentiment_summary>
+
+<existing_habits>
+["Meditation", "Exercise", "Water", "Reading"]
+</existing_habits>
+```
+
+## Rules
+
+- **Every** `GeminiService` method that builds a prompt must use all five RISEN tags.
+- **Every** data payload must be in its own named XML tag — never inline raw JSON in the instructions.
+- Keep `<role>` consistent across the app (performance coach persona) unless the task specifically requires a different persona.
+- `<expectations>` must always specify the output format (JSON schema, prose, etc.) so responses are parseable.
+- When Gemini returns structured data, request it inside a specific XML tag (e.g., `<analysis_result>`) for reliable parsing.
+
+---
+
 # Skills & References
 
 When the user uploads or defines **skills** (reusable prompts, patterns, or domain-specific instructions), they will be added to this file or referenced here. Skills augment the build process and should be consulted when relevant work begins.

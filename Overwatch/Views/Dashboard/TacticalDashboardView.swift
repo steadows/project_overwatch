@@ -247,7 +247,7 @@ struct TacticalDashboardView: View {
         }
     }
 
-    // MARK: - Heat Map Preview (30-day mini)
+    // MARK: - Heat Map Preview (30-day compact)
 
     private var heatMapPreview: some View {
         VStack(spacing: OverwatchTheme.Spacing.sm) {
@@ -272,85 +272,12 @@ struct TacticalDashboardView: View {
                             .tracking(1)
                     }
 
-                    // Mini heat map placeholder — will be replaced in Phase 4.4
-                    miniHeatMapGrid
+                    HabitHeatMapView(
+                        days: viewModel.compactHeatMapDays,
+                        mode: .compact
+                    )
                 }
             }
-        }
-    }
-
-    /// 30-day mini heat map grid (4 rows × ~8 columns) using Canvas for performance.
-    /// Shows aggregate daily completion as color intensity.
-    /// Replaced by full HabitHeatMapView in Phase 4.4.
-    private var miniHeatMapGrid: some View {
-        Canvas { context, size in
-            let cols = 8
-            let rows = 4
-            let spacing: CGFloat = 3
-            let cellSize = min(
-                (size.width - CGFloat(cols - 1) * spacing) / CGFloat(cols),
-                (size.height - CGFloat(rows - 1) * spacing) / CGFloat(rows)
-            )
-
-            let totalHabits = max(viewModel.habitSummary.totalHabits, 1)
-            let calendar = Calendar.current
-            let today = calendar.startOfDay(for: .now)
-
-            for row in 0..<rows {
-                for col in 0..<cols {
-                    let dayIndex = row * cols + col
-                    guard dayIndex < 30 else { continue }
-
-                    let x = CGFloat(col) * (cellSize + spacing)
-                    let y = CGFloat(row) * (cellSize + spacing)
-                    let rect = CGRect(x: x, y: y, width: cellSize, height: cellSize)
-
-                    // Calculate completion for this day from tracked habits
-                    let dayDate = calendar.date(byAdding: .day, value: -(29 - dayIndex), to: today)!
-                    let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayDate)!
-                    let completedCount = viewModel.trackedHabits.filter { habit in
-                        // Rough approximation — uses weekly/monthly rate as proxy
-                        // Real implementation will query HabitEntry directly (Phase 4.4)
-                        habit.completedToday && dayIndex == 29
-                    }.count
-
-                    let rate = dayIndex == 29
-                        ? Double(completedCount) / Double(totalHabits)
-                        : Double(dayIndex % 3 == 0 ? 0 : dayIndex) / 30.0 // Placeholder gradient
-
-                    let color = heatMapCellColor(rate: rate)
-                    let roundedRect = Path(roundedRect: rect, cornerRadius: 2)
-                    context.fill(roundedRect, with: .color(color))
-
-                    // Glow on high-completion cells
-                    if rate > 0.8 {
-                        context.drawLayer { ctx in
-                            ctx.addFilter(.shadow(
-                                color: OverwatchTheme.accentCyan.opacity(0.3),
-                                radius: 3
-                            ))
-                            ctx.fill(roundedRect, with: .color(color))
-                        }
-                    }
-                }
-            }
-        }
-        .frame(height: 64)
-        .frame(maxWidth: .infinity)
-    }
-
-    private func heatMapCellColor(rate: Double) -> Color {
-        switch rate {
-        case 0:
-            Color(red: 0.11, green: 0.11, blue: 0.12) // #1C1C1E
-        case 0.01..<0.34:
-            OverwatchTheme.accentCyan.opacity(0.2)
-        case 0.34..<0.67:
-            OverwatchTheme.accentCyan.opacity(0.5)
-        case 0.67..<1.0:
-            OverwatchTheme.accentCyan.opacity(0.8)
-        default:
-            OverwatchTheme.accentCyan
         }
     }
 

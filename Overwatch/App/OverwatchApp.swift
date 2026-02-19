@@ -5,13 +5,14 @@ import SwiftData
 struct OverwatchApp: App {
     var body: some Scene {
         WindowGroup {
-            NavigationShell()
+            RootView()
                 .frame(minWidth: 900, minHeight: 600)
         }
         .modelContainer(for: [
             Habit.self,
             HabitEntry.self,
             JournalEntry.self,
+            MonthlyAnalysis.self,
             WhoopCycle.self,
         ])
     }

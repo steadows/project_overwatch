@@ -12,6 +12,10 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
     MACOSX_DEPLOYMENT_TARGET: "15.0"
+    SWIFT_ENABLE_EXPLICIT_MODULES: NO
+  configs:
+    Debug:
+      ONLY_ACTIVE_ARCH: YES
 
 packages:
   GoogleGenerativeAI:
@@ -54,6 +58,16 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         GENERATE_INFOPLIST_FILE: false
         ENABLE_TESTABILITY: true
+    postBuildScripts:
+      - script: |
+          ENV_FILE="${SRCROOT}/../.env"
+          DEST_DIR="${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Resources"
+          mkdir -p "$DEST_DIR"
+          if [ -f "$ENV_FILE" ]; then
+            cp "$ENV_FILE" "$DEST_DIR/env.local"
+          fi
+        name: "Copy .env to Bundle"
+        basedOnDependencyAnalysis: false
     entitlements:
       path: App/Overwatch.entitlements
       properties:

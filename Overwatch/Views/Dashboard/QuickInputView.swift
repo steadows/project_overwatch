@@ -4,7 +4,7 @@ import SwiftData
 /// HUD-styled text input field for freeform habit logging.
 ///
 /// SF Mono font, ">" prompt character, blinking cursor animation.
-/// Submit routes to NaturalLanguageParser (stubbed for now).
+/// Submit routes to NaturalLanguageParser for regex-based matching.
 /// Success: glow pulse + particle scatter + confirmation materialize.
 /// Error: red glow + shake + error message.
 struct QuickInputView: View {
@@ -19,10 +19,12 @@ struct QuickInputView: View {
     @State private var particleTrigger = false
     @State private var inputHistory: [String] = []
     @State private var historyIndex: Int = -1
+    @State private var isParsing = false
     @FocusState private var fieldFocused: Bool
 
     private let historyKey = "overwatch.quickInput.history"
     private let maxHistory = 20
+    private let parser = NaturalLanguageParser()
 
     enum FeedbackState {
         case idle
@@ -109,7 +111,11 @@ struct QuickInputView: View {
     }
 
     private var promptText: Text {
-        Text("Log a habit... (e.g., 'Drank 3L water')")
+        if isParsing {
+            return Text("ANALYZING INPUT...")
+                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
+        }
+        return Text("Log a habit... (e.g., 'Drank 3L water')")
             .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.25))
     }
 
@@ -154,85 +160,92 @@ struct QuickInputView: View {
     private func submitInput() {
         let trimmed = inputText.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
+        guard !isParsing else { return }
 
-        // Save to history
         saveToHistory(trimmed)
 
-        // Stub parse — try to match against existing habits
-        let parsed = stubParse(trimmed)
+        let habitRefs = viewModel.trackedHabits.map { tracked in
+            HabitReference(
+                id: tracked.id,
+                name: tracked.name,
+                isQuantitative: false,
+                unitLabel: ""
+            )
+        }
 
-        if let habitID = parsed.habitID {
-            // Success — log it
-            viewModel.toggleHabitCompletion(habitID, in: modelContext)
-            inputText = ""
-            historyIndex = -1
+        isParsing = true
+        let capturedText = trimmed
 
-            // Success feedback
-            particleTrigger = true
-            withAnimation(.easeOut(duration: 0.3)) {
-                feedbackState = .success("LOGGED: \(parsed.habitName.uppercased())")
+        Task {
+            let parsed = await parser.parse(capturedText, habits: habitRefs)
+            isParsing = false
+
+            if let habitID = parsed.matchedHabitID, parsed.confidence >= 0.5 {
+                handleSuccessfulParse(parsed, habitID: habitID)
+            } else {
+                handleFailedParse()
             }
+        }
+    }
 
-            // Auto-dismiss feedback
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                withAnimation(.easeIn(duration: 0.2)) {
-                    feedbackState = .idle
-                }
-            }
+    private func handleSuccessfulParse(_ parsed: ParsedHabit, habitID: UUID) {
+        if parsed.value != nil {
+            viewModel.confirmHabitEntry(
+                habitID,
+                value: parsed.value,
+                notes: parsed.rawInput,
+                in: modelContext
+            )
         } else {
-            // Error — unrecognized
-            inputText = ""
-            historyIndex = -1
+            viewModel.toggleHabitCompletion(habitID, in: modelContext)
+        }
+        inputText = ""
+        historyIndex = -1
 
-            // Shake animation
+        particleTrigger = true
+        withAnimation(.easeOut(duration: 0.3)) {
+            feedbackState = .success("LOGGED: \(parsed.habitName.uppercased())")
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeIn(duration: 0.2)) {
+                feedbackState = .idle
+            }
+        }
+    }
+
+    private func handleFailedParse() {
+        inputText = ""
+        historyIndex = -1
+
+        withAnimation(.spring(response: 0.08, dampingFraction: 0.3)) {
+            shakeOffset = 6
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
             withAnimation(.spring(response: 0.08, dampingFraction: 0.3)) {
-                shakeOffset = 6
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                withAnimation(.spring(response: 0.08, dampingFraction: 0.3)) {
-                    shakeOffset = -4
-                }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
-                withAnimation(.spring(response: 0.08, dampingFraction: 0.3)) {
-                    shakeOffset = 2
-                }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.24) {
-                withAnimation(.spring(response: 0.1, dampingFraction: 0.5)) {
-                    shakeOffset = 0
-                }
-            }
-
-            withAnimation(.easeOut(duration: 0.3)) {
-                feedbackState = .error("UNRECOGNIZED INPUT")
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                withAnimation(.easeIn(duration: 0.2)) {
-                    feedbackState = .idle
-                }
+                shakeOffset = -4
             }
         }
-    }
-
-    // MARK: - Stub Parser
-
-    private struct StubParseResult {
-        let habitName: String
-        let habitID: UUID?
-    }
-
-    /// Stub parser — fuzzy matches input against existing habit names.
-    /// Will be replaced by NaturalLanguageParser in Phase 6.
-    private func stubParse(_ input: String) -> StubParseResult {
-        let lowered = input.lowercased()
-        for habit in viewModel.trackedHabits {
-            if lowered.contains(habit.name.lowercased()) {
-                return StubParseResult(habitName: habit.name, habitID: habit.id)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
+            withAnimation(.spring(response: 0.08, dampingFraction: 0.3)) {
+                shakeOffset = 2
             }
         }
-        return StubParseResult(habitName: input, habitID: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.24) {
+            withAnimation(.spring(response: 0.1, dampingFraction: 0.5)) {
+                shakeOffset = 0
+            }
+        }
+
+        withAnimation(.easeOut(duration: 0.3)) {
+            feedbackState = .error("UNRECOGNIZED INPUT")
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            withAnimation(.easeIn(duration: 0.2)) {
+                feedbackState = .idle
+            }
+        }
     }
 
     // MARK: - History

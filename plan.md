@@ -239,49 +239,54 @@ These subtle animations run continuously to keep the UI feeling alive:
 ---
 
 ```
-Phases 0–3: COMPLETE (foundation, models, WHOOP integration)
-Phase 4.0–4.1: COMPLETE (HUD theme, initial dashboard, habit panel)
+Phases 0–6: COMPLETE (foundation, models, WHOOP, dashboard, habits, NLP parsing)
+Phase 8.1, 9.1: COMPLETE (boot sequence, settings)
 
-Current flow (Phase 4.1.5 onward):
+Current flow (Phase 6.5 onward):
 
-4.1.5 (Effects Lib) ──→ 4.2 (Nav Shell) ──→ 4.3 (Dashboard Redesign) ──→ 4.4 (Heat Map) ──→ 4.5 (Quick Input)
-      │                                                                      │
-      ├──→ 5.1 (Habit Management) ──→ 5.2 (Stats) ──→ 5.3 (Journal)       │
-      │                                                    │                 │
-      │                                              5.4 (Trend Charts)     │
-      │                                                                      │
-      ├──→ 8.1 (Boot Sequence) ──→ 8.2 (Onboarding)                        │
-      │                                                                      │
-      ├──→ 9.1 (Settings) ←────────────────────────────────────────────┐    │
-      │                                                                 │    │
-      │    6.1 (Local Parser) ←─────────────────────────────────────────┼────┘
-      │         │                                                       │
-      │    6.2 (Gemini Parser) ──→ 7.1 (Intel Manager) ──→ 7.2 (Reports Gen)
-      │                                                          │
-      │                                                    7.3 (Reports Page)
-      │                                                          │
-      │                                               7.4 (War Room Split Pane)
-      │                                                          │
-      └──→ 9.2 (Error States) ←─────────────────────────────────┘
-                  │
-            9.3 (Visual Audit) ──→ 10.1 (Unit Tests) ──→ 10.2 (Integration)
-                                                                │
-                                                          10.3 (Performance)
-                                                                │
-                                                    11.1 (Build) ──→ 11.2 (Ship)
+6.5.1 (Models) --+--- 6.5.2 (Sentiment Svc) --+--- 6.5.6 (JournalVM) --- 6.5.7 (Journal UI)
+                 |                              |         |                       |
+                 +--- 6.5.3 (Regression Svc) ---+         |               6.5.8 (Sentiment Viz)
+                 |         |                              |                       |
+                 |   6.5.4 (Gemini Narr.) ----------------+              6.5.10 (Dashboard Pulse)
+                 |                                        |                       |
+                 +--- 6.5.5 (Nav Sidebar) ----------------+              6.5.9 (Monthly Analysis)
+                                                                                  |
+                                                                  6.5.11 (Synthetic Data + Tests)
+                                                                          |
+                                                                  6.5.12 (War Room Charts)
+                                                                  6.5.13 (Reports Stubs)
+                                                                          |
+                     7.1 (Intel Manager) --- 7.2 (Reports Gen) --- 7.3 (Reports Page)
+                                                                          |
+                                                               7.4 (War Room Split Pane)
+                                                                          |
+                     8.2 (Onboarding)                                     |
+                                                                          |
+                     9.2 (Error States) <---------------------------------+
+                          |
+                    9.3 (Visual Audit) --- 10.1 (Unit Tests) --- 10.2 (Integration)
+                                                                        |
+                                                                 10.3 (Performance)
+                                                                        |
+                                                        11.1 (Build) --- 11.2 (Ship)
 ```
 
 ### Parallelization Guide
 
 | After completing... | You can run in parallel... |
 |---------------------|---------------------------|
-| 4.2 (nav shell) | **4.3** (dashboard redesign) ‖ **5.1** (habit management) ‖ **8.1** (boot sequence) ‖ **9.1** (settings) |
-| 4.3 (dashboard) | **4.4** (heat map) ‖ **4.5** (quick input) |
-| 4.5 (quick input) | **6.1** (local parser) — needs input field wired |
-| 5.1 (habit mgmt) | **5.2** (stats) ‖ **5.3** (journal) — both need habit CRUD |
-| 6.2 (Gemini parser) | **7.1** (intel manager) — needs Gemini service |
+| 6.5.1 (models) | **6.5.2** (sentiment svc) ‖ **6.5.3** (regression svc) ‖ **6.5.5** (nav sidebar) |
+| 6.5.2 + 6.5.3 | **6.5.4** (Gemini narrative) ‖ **6.5.6** (JournalVM) |
+| 6.5.5 + 6.5.6 | **6.5.7** (Journal UI) |
+| 6.5.7 | **6.5.8** (sentiment viz) ‖ **6.5.10** (dashboard pulse) |
+| 6.5.8 + 6.5.4 | **6.5.9** (monthly analysis UI) |
+| 6.5.6 + 6.5.2 + 6.5.3 | **6.5.11** (synthetic data + tests) |
+| 6.5.8 + 6.5.11 | **6.5.12** (War Room charts) |
+| 6.5.9 | **6.5.13** (reports integration stubs) |
+| 6.5.13 (journal done) | **7.1** (intel manager) ‖ **8.2** (onboarding) |
 | 7.2 (report gen) | **7.3** (reports page) ‖ **7.4** (war room) |
-| 7.4 + 9.1 (all views built) | **9.2** (error states) |
+| 7.4 + all views built | **9.2** (error states) |
 | 9.3 (polish done) | **10.1** (unit tests) ‖ **10.2** (integration tests) |
 
 ---
@@ -587,25 +592,25 @@ Current flow (Phase 4.1.5 onward):
 ### 4.4: Heat Map Component
 > **Depends on:** 4.3 | **Reusable component** — used by Dashboard (30-day preview) and Habits page (full 12-month)
 
-- [ ] Create `HabitHeatMapView.swift` — configurable grid component
-  - [ ] Full mode: 52×7 grid (weeks × days), trailing 12 months
-  - [ ] Compact mode: ~4×7 grid, trailing 30 days (for dashboard preview)
-  - [ ] Mode set via init parameter, same component for both
-- [ ] Create `HeatMapCell.swift` — rounded rect, color intensity from completion percentage
-  - [ ] 0%: dark/empty (#1C1C1E)
-  - [ ] 1-33%: dim cyan
-  - [ ] 34-66%: medium cyan
-  - [ ] 67-99%: bright cyan
-  - [ ] 100%: full glow with subtle pulse
-- [ ] Use `Canvas` for rendering performance (365+ cells must render at 60fps)
-- [ ] **Aggregate mode** (default): shows overall daily completion % across all habits
-- [ ] **Per-habit filter mode**: dropdown or segmented control to switch to a single habit's heat map
-- [ ] Hover interaction:
-  - [ ] Tooltip slides in showing: date, habits completed that day, completion percentage
-  - [ ] Cell glow intensifies on hover
-- [ ] Legend bar showing color intensity scale (0% → 100%) with HUD styling
-- [ ] Wire to `@Query` on `HabitEntry` data, computed by `DashboardViewModel` or `HabitsViewModel`
-- [ ] Verify performance: smooth scrolling/hover with 365 days of sample data
+- [x] Create `HabitHeatMapView.swift` — configurable grid component
+  - [x] Full mode: 52×7 grid (weeks × days), trailing 12 months
+  - [x] Compact mode: ~4×7 grid, trailing 30 days (for dashboard preview)
+  - [x] Mode set via init parameter, same component for both
+- [x] Create `HeatMapCell.swift` — rounded rect, color intensity from completion percentage (integrated into Canvas rendering, no separate file needed)
+  - [x] 0%: dark/empty (#1C1C1E)
+  - [x] 1-33%: dim cyan
+  - [x] 34-66%: medium cyan
+  - [x] 67-99%: bright cyan
+  - [x] 100%: full glow with subtle pulse
+- [x] Use `Canvas` for rendering performance (365+ cells must render at 60fps)
+- [x] **Aggregate mode** (default): shows overall daily completion % across all habits
+- [x] **Per-habit filter mode**: `HeatMapDataBuilder.buildForHabit()` — ready for Habits page (Phase 5.2) to add dropdown
+- [x] Hover interaction:
+  - [x] Tooltip slides in showing: date, habits completed that day, completion percentage
+  - [x] Cell glow intensifies on hover
+- [x] Legend bar showing color intensity scale (0% → 100%) with HUD styling
+- [x] Wire to `@Query` on `HabitEntry` data, computed by `DashboardViewModel` or `HabitsViewModel`
+- [x] Verify performance: smooth scrolling/hover with 365 days of sample data
 
 ### 4.5: Quick Input Field
 > **Depends on:** 4.3 (dashboard layout has the input section)
@@ -626,76 +631,106 @@ Current flow (Phase 4.1.5 onward):
 
 > **Design context:** The Habits page is the single source of truth for all habit data. Full CRUD management, individual heat maps, scrollable journal timeline, and per-habit trend charts. This is where you go to understand your habits deeply — the Dashboard is for quick daily action, the Habits page is for review and configuration.
 
-### 5.1: Habit Management
+### 5.1: Habit Management ✅
 > **Depends on:** 4.2 (navigation shell routes to Habits page)
 
-- [ ] Create `HabitsViewModel.swift` — `@Observable @MainActor`, owns all habit CRUD + computed stats
-  - [ ] `habits: [Habit]` — all tracked habits from SwiftData
-  - [ ] `selectedHabit: Habit?` — currently selected for detail view
-  - [ ] `addHabit(name:emoji:category:targetFrequency:)` method
-  - [ ] `updateHabit(_:)` method
-  - [ ] `deleteHabit(_:)` method with entry cascade
-  - [ ] `reorderHabits(_:)` method
-- [ ] Create `HabitsView.swift` — main habits page routed from sidebar
-  - [ ] Master-detail layout: habit list (left/top) + selected habit detail (right/bottom)
-  - [ ] Or: scrollable single-column with expandable rows
-- [ ] Habit list items: emoji + name + category badge + current streak count + weekly completion rate bar
-- [ ] Add Habit sheet: HUD-styled form
-  - [ ] Name field (DESIGNATION)
-  - [ ] Emoji picker (ICON)
-  - [ ] Category dropdown (Health, Fitness, Mindfulness, Productivity, or custom)
-  - [ ] Target frequency picker (Daily, X times per week, X times per month)
-  - [ ] Unit type (boolean / quantity with unit label)
-  - [ ] ACTIVATE / CANCEL buttons
-- [ ] Edit Habit: same form as Add, pre-populated, triggered by edit button on habit row
-- [ ] Delete Habit: confirmation dialog ("DECOMMISSION {habit name}?"), cascade deletes all entries
-- [ ] Reorder habits via drag-and-drop (custom drag handle with HUD styling)
-- [ ] Category filtering: filter bar at top to show all / specific category
-- [ ] Empty state: "NO ACTIVE OPERATIONS — Add your first habit to begin tracking"
+- [x] Create `HabitsViewModel.swift` — `@Observable @MainActor`, owns all habit CRUD + computed stats
+  - [x] `habits: [HabitItem]` — all tracked habits from SwiftData (as display structs)
+  - [x] `selectedHabit: HabitItem?` — currently selected for detail view
+  - [x] `addHabit(name:emoji:category:targetFrequency:isQuantitative:unitLabel:)` method
+  - [x] `updateHabit(_:)` method
+  - [x] `deleteHabit(_:)` method with entry cascade
+  - [x] `reorderHabits(_:)` / `moveHabit(from:toPositionOf:)` / `commitReorder(in:)` methods
+  - [x] `calculateCurrentStreak()` and `calculateLongestStreak()` methods
+  - [x] Category filtering with `selectedCategory` + `filteredHabits` computed property
+- [x] Extended `Habit` model with `sortOrder: Int`, `isQuantitative: Bool`, `unitLabel: String`
+- [x] Create `HabitsView.swift` — main habits page routed from sidebar
+  - [x] Master-detail layout: habit list (left ~40%) + selected habit detail (right ~60%)
+  - [x] Header with page title, habit count, NEW OP button
+- [x] Habit list items: emoji + name + category badge + current streak (🔥) + weekly completion rate bar
+- [x] Add Habit sheet: HUD-styled form (`HabitFormSheet`)
+  - [x] Name field (DESIGNATION)
+  - [x] Emoji field (ICON)
+  - [x] Category chips (General, Health, Fitness, Mindfulness, Productivity, Social, Financial, Educational, Religious)
+  - [x] Target frequency picker (Daily / X per week with +/- controls)
+  - [x] Unit type (Toggle ○/● / Quantity 123 with unit label field)
+  - [x] ACTIVATE / CANCEL buttons (UPDATE for edit mode)
+- [x] Edit Habit: same `HabitFormSheet` in edit mode, pre-populated, triggered by context menu
+- [x] Delete Habit: confirmation alert ("DECOMMISSION OPERATION?"), cascade deletes all entries
+- [x] Reorder habits via drag-and-drop (drag handle + `DropDelegate` reorder)
+- [x] Category filtering: scrollable chip bar (ALL + per-category) at top
+- [x] Empty state: "NO ACTIVE OPERATIONS — Establish first operation"
+- [x] Detail panel: basic stats grid (streak, longest, total, rates, frequency) + Phase 5.2 placeholder
+- [x] Updated `DashboardViewModel` to sort habits by `sortOrder` then `name`
+- [x] Verify build + 30/30 tests pass
 
-### 5.2: Per-Habit Heat Maps & Stats
+### 5.2: Per-Habit Heat Maps & Stats ✅
 > **Depends on:** 5.1, 4.4 (heat map component built)
 
-- [ ] Habit detail panel (when a habit is selected or row is expanded):
-  - [ ] Individual heat map using `HabitHeatMapView` in per-habit mode (full 12-month view)
-  - [ ] Stats card showing:
-    - [ ] Current streak (consecutive days/occurrences)
-    - [ ] Longest streak (all time)
-    - [ ] Total completions
-    - [ ] Weekly completion rate (last 7 days)
-    - [ ] Monthly completion rate (last 30 days)
-    - [ ] All-time completion rate
-- [ ] Streak milestone celebrations: HUD-style glow burst animation at 7-day, 30-day, 100-day, 365-day milestones
-- [ ] Stats displayed as `MetricTile` components for visual consistency
+- [x] Habit detail panel (when a habit is selected or row is expanded):
+  - [x] Individual heat map using `HabitHeatMapView` in per-habit mode (full 12-month view)
+  - [x] Stats card showing:
+    - [x] Current streak (consecutive days/occurrences)
+    - [x] Longest streak (all time)
+    - [x] Total completions
+    - [x] Weekly completion rate (last 7 days)
+    - [x] Monthly completion rate (last 30 days)
+    - [x] All-time completion rate
+- [x] Streak milestone celebrations: HUD-style glow burst animation at 7-day, 30-day, 100-day, 365-day milestones
+- [x] Stats displayed as `MetricTile` components for visual consistency
 
-### 5.3: Journal Timeline
+### 5.3: Journal Timeline ✅
 > **Depends on:** 5.1
 
-- [ ] Create `JournalTimelineView.swift` — scrollable timeline of all `HabitEntry` logs
-  - [ ] Newest entries first
-  - [ ] Each entry row: timestamp + habit emoji + habit name + value/notes if present
-  - [ ] HUD-styled vertical timeline line connecting entries (thin cyan line with node dots at each entry)
-- [ ] Filters:
-  - [ ] By habit (dropdown showing all habits)
-  - [ ] By date range (preset: today, last 7 days, last 30 days, custom)
-  - [ ] By category
-- [ ] Tap entry to edit: inline expand with value/notes fields + save/delete buttons
-- [ ] Delete entry: swipe-to-delete or delete button, with "ENTRY PURGED" confirmation
-- [ ] Lazy loading for performance with large datasets
+- [x] Create `JournalTimelineView.swift` — scrollable timeline of all `HabitEntry` logs
+  - [x] Newest entries first
+  - [x] Each entry row: timestamp + habit emoji + habit name + value/notes if present
+  - [x] HUD-styled vertical timeline line connecting entries (thin cyan line with node dots at each entry)
+- [x] Filters:
+  - [x] By habit (cycle-through chip filter on all tracked habits)
+  - [x] By date range (preset: today, last 7 days, last 30 days, all)
+  - [x] By category (cycle-through chip filter on all categories)
+- [x] Tap entry to edit: inline expand with value/notes fields + save/delete buttons
+- [x] Delete entry: delete button with "PURGE ENTRY?" confirmation alert
+- [x] Lazy loading for performance with large datasets (LazyVStack)
+- [x] Created `JournalTimelineViewModel.swift` — separate ViewModel for journal state (avoids 5.2 conflict)
+- [x] Integrated into HabitsView as collapsible "FIELD LOG" section below master-detail
+- [x] Verify build + 30/30 tests pass
+
+### 5.3.1: Habit UX Improvements — Edit Access, Icon Picker, Goal-Relative Rates ✅
+> **Depends on:** 5.1 | **Priority: HIGH — quality-of-life fixes before building more features on top**
+
+- [x] **Edit button in detail panel:** Add a prominent "EDIT OPERATION" button to the `HabitDetailPanel` header (right side of Habits page) so users don't need to discover the context menu
+  - [x] HUD-styled button (pencil icon + label), positioned in the detail header next to the habit name
+  - [x] Opens the same `HabitFormSheet` in `.edit` mode
+  - [x] Requires surfacing `activeSheet` state or an edit callback from the detail panel
+- [x] **Pre-populated icon picker:** Replace the free-text "ICON" emoji field in `HabitFormSheet` with a scrollable grid of curated icons
+  - [x] Curated set of ~40-50 common habit icons organized by category (fitness, health, productivity, mindfulness, etc.)
+  - [x] Grid layout with tappable cells — selected icon gets cyan highlight + glow
+  - [x] Still allow custom emoji entry via a "CUSTOM" option or text field at the end
+  - [x] Icons display at ~28pt in the grid, selected icon previewed larger in the form header
+  - [x] HUD-styled grid cells (HUDFrameShape, surface background, cyan selection border)
+- [x] **Goal-relative rate calculations:** Update completion rate math to factor in `targetFrequency`
+  - [x] Weekly rate: completed days in last 7 / `min(targetFrequency, 7)` instead of raw `/7`
+  - [x] Monthly rate: completed days in last 30 / `(targetFrequency * 30/7)` — proportional to weekly target
+  - [x] Update in both `HabitsViewModel` and `DashboardViewModel` (both compute rates)
+  - [x] Detail panel: add "ON TRACK" / "BEHIND" indicator comparing current rate to target
+  - [x] Color-code relative to goal: green (≥100% of target), amber (50-99%), red (<50%)
+- [x] Verify build + all existing tests pass
 
 ### 5.4: Per-Habit Trend Charts
 > **Depends on:** 5.2
 
-- [ ] Create `HabitTrendChartView.swift` using SwiftUI Charts
-  - [ ] For boolean habits: line chart of completion rate over time (7-day rolling average)
-  - [ ] For quantity habits: line chart of actual values over time (e.g., water intake in liters)
-- [ ] WHOOP correlation overlay: option to overlay recovery score on the same chart
-  - [ ] Dual Y-axis: habit metric (left) + recovery % (right)
-  - [ ] Visual correlation — do good habit weeks align with high recovery?
-- [ ] Date range selector: 1 week / 1 month / 3 months / 1 year
-- [ ] HUD chart styling: cyan line, dark background, subtle grid lines, glow on data points
-- [ ] Animated transitions when switching date ranges (spring animation on data points)
-- [ ] Empty state: "INSUFFICIENT DATA — Log more entries to see trends" (minimum 7 data points)
+- [x] Create `HabitTrendChartView.swift` using SwiftUI Charts
+  - [x] For boolean habits: line chart of completion rate over time (7-day rolling average)
+  - [x] For quantity habits: line chart of actual values over time (e.g., water intake in liters)
+- [x] WHOOP correlation overlay: option to overlay recovery score on the same chart
+  - [x] Dual Y-axis: habit metric (left) + recovery % (right)
+  - [x] Visual correlation — do good habit weeks align with high recovery?
+- [x] Date range selector: 1 week / 1 month / 3 months / 1 year
+- [x] HUD chart styling: cyan line, dark background, subtle grid lines, glow on data points
+- [x] Animated transitions when switching date ranges (spring animation on data points)
+- [x] Empty state: "INSUFFICIENT DATA — Log more entries to see trends" (minimum 7 data points)
 
 ---
 
@@ -703,91 +738,288 @@ Current flow (Phase 4.1.5 onward):
 
 > **Design context:** The quick input field on the Dashboard routes text through a parser. Local regex-based parsing handles common patterns instantly. Gemini is a fallback for ambiguous or complex inputs. The goal: type naturally, habits get logged automatically.
 
-### 6.1: ParsedHabit & Local Parser
+### 6.1: ParsedHabit & Local Parser ✅
 > **Depends on:** 4.5 (quick input wired with stub)
 
-- [ ] Define `ParsedHabit` struct:
-  - [ ] `habitName: String` — matched or inferred habit name
-  - [ ] `value: Double?` — numeric value if present (e.g., 3.0 for "3L water")
-  - [ ] `unit: String?` — unit label if present (e.g., "L", "hours", "min")
-  - [ ] `confidence: Double` — 0.0 to 1.0, how sure the parser is
-  - [ ] `rawInput: String` — original user text
-  - [ ] `matchedHabit: Habit?` — reference to existing habit if fuzzy-matched
-- [ ] Create `NaturalLanguageParser.swift` — `@MainActor` class (needs SwiftData access for fuzzy matching)
-  - [ ] `func parse(_ input: String) async -> ParsedHabit` — main entry point
-  - [ ] `func parseLocally(_ input: String) -> ParsedHabit?` — regex-based, synchronous
-- [ ] Implement quantity patterns:
-  - [ ] "Drank 3L water" → water, 3.0, "L"
-  - [ ] "Slept 8 hours" → sleep, 8.0, "hours"
-  - [ ] "Meditated 20 min" → meditation, 20.0, "min"
-  - [ ] "Ran 5k" → running, 5.0, "km"
-  - [ ] Handle decimal values: "Drank 2.5L water"
-- [ ] Implement boolean patterns:
-  - [ ] "Worked out" → exercise, completed = true
-  - [ ] "No alcohol" → alcohol, completed = true (inverted habit)
-  - [ ] "Skipped sugar" → sugar, completed = true (inverted habit)
-  - [ ] "Did yoga" → yoga, completed = true
-- [ ] Implement fuzzy matching against existing `Habit.name` values in SwiftData
-  - [ ] Case-insensitive contains match
-  - [ ] Common abbreviation handling (e.g., "med" → "Meditation")
-- [ ] Write unit tests for all regex patterns + edge cases (empty string, numbers only, emoji only)
+- [x] Define `ParsedHabit` struct:
+  - [x] `habitName: String` — matched or inferred habit name
+  - [x] `value: Double?` — numeric value if present (e.g., 3.0 for "3L water")
+  - [x] `unit: String?` — unit label if present (e.g., "L", "hours", "min")
+  - [x] `confidence: Double` — 0.0 to 1.0, how sure the parser is
+  - [x] `rawInput: String` — original user text
+  - [x] `matchedHabitID: UUID?` — reference to existing habit if fuzzy-matched (lightweight ID instead of SwiftData model ref)
+- [x] Create `NaturalLanguageParser.swift` — `Sendable` class (decoupled from SwiftData; takes `[HabitReference]` for fuzzy matching)
+  - [x] `func parse(_ input: String, habits:) async -> ParsedHabit` — main entry point (Gemini fallback placeholder for 6.2)
+  - [x] `func parseLocally(_ input: String, habits:) -> ParsedHabit?` — regex-based, synchronous
+- [x] Implement quantity patterns:
+  - [x] "Drank 3L water" → water, 3.0, "L"
+  - [x] "Slept 8 hours" → sleep, 8.0, "hours"
+  - [x] "Meditated 20 min" → meditation, 20.0, "min"
+  - [x] "Ran 5k" → running, 5.0, "km"
+  - [x] Handle decimal values: "Drank 2.5L water"
+- [x] Implement boolean patterns:
+  - [x] "Worked out" → exercise, completed = true
+  - [x] "No alcohol" → alcohol, completed = true (inverted habit)
+  - [x] "Skipped sugar" → sugar, completed = true (inverted habit)
+  - [x] "Did yoga" → yoga, completed = true
+- [x] Implement fuzzy matching against existing `Habit.name` values in SwiftData
+  - [x] Case-insensitive contains match
+  - [x] Common abbreviation handling (e.g., "med" → "Meditation")
+- [x] Write unit tests for all regex patterns + edge cases (empty string, numbers only, emoji only)
+- [x] Wire `NaturalLanguageParser` into `QuickInputView` — replaces stub parser, routes values through `confirmHabitEntry`
+- [x] Verify build + 70/70 tests pass (38 new parser tests + 32 existing)
 
 ### 6.2: Gemini Parsing Fallback
 > **Depends on:** 6.1
 
-- [ ] Create `GeminiService.swift` actor — centralizes all Gemini API communication
-  - [ ] Init with API key from Keychain
-  - [ ] Manages `GenerativeModel` instance
-  - [ ] Rate limiting / request queuing
-- [ ] Add `parseWithGemini(_ input: String, existingHabits: [String]) async throws -> ParsedHabit`
-  - [ ] Prompt includes list of user's existing habit names for context
-  - [ ] Response format: structured JSON matching `ParsedHabit` fields
-- [ ] Implement hybrid logic in `NaturalLanguageParser.parse()`:
-  - [ ] Step 1: Try local parser
-  - [ ] Step 2: If local confidence < 0.7, call Gemini
-  - [ ] Step 3: If Gemini also fails, return low-confidence result with "UNRECOGNIZED" flag
-- [ ] Cache Gemini mappings: store `rawInput → ParsedHabit` in UserDefaults for repeat inputs
-  - [ ] Cache TTL: 30 days
-  - [ ] Avoid redundant API calls for the same phrasing
-- [ ] Replace stub in `QuickInputView` with real `NaturalLanguageParser`
-- [ ] Write integration tests with mock Gemini response
-- [ ] Test edge cases: gibberish input, multi-habit in one sentence, emoji-only, very long input
+- [x] Create `GeminiService.swift` actor — centralizes all Gemini API communication
+  - [x] Init with API key from EnvironmentConfig (.env file → bundle → Keychain fallback)
+  - [x] Manages `GenerativeModel` instance (gemini-2.0-flash)
+  - [x] Rate limiting / request queuing (actor serialization)
+- [x] Add `parseHabit(_ input: String, existingHabits: [String]) async throws -> GeminiParsedResponse`
+  - [x] Prompt includes list of user's existing habit names for context
+  - [x] Response format: structured JSON matching `GeminiParsedResponse` fields
+- [x] Implement hybrid logic in `NaturalLanguageParser.parse()`:
+  - [x] Step 1: Try local parser (return if confidence >= 0.7)
+  - [x] Step 2: Check cache for previous Gemini result
+  - [x] Step 3: If local confidence < 0.7, call Gemini
+  - [x] Step 4: If Gemini also fails, return low-confidence result with "UNRECOGNIZED" flag
+- [x] Cache Gemini mappings: store `rawInput → ParsedHabit` in UserDefaults for repeat inputs
+  - [x] Cache TTL: 30 days
+  - [x] Avoid redundant API calls for the same phrasing
+- [x] Wire async `NaturalLanguageParser.parse()` into `QuickInputView` (replaces sync `parseLocally`)
+  - [x] Added `isParsing` loading state with "ANALYZING INPUT..." prompt
+- [x] Created `EnvironmentConfig.swift` — reads API key from .env file bundled at build time
+  - [x] Post-build script copies project root `.env` into app bundle as `env.local`
+  - [x] Priority: ProcessInfo env → bundled .env → Keychain fallback
+  - [x] Updated Settings UI to show key source (ENV FILE / KEYCHAIN / NOT CONFIGURED)
+- [x] Write integration tests with mock Gemini response (GeminiParsedResponse decoding)
+- [x] Test edge cases: gibberish input, emoji-only, very long input, empty input
+- [x] Verify build + all tests pass (existing + 21 new)
+
+---
+
+## Phase 6.5 — AI-Powered Journal
+
+> **Design context:** The Journal is a dedicated section for freeform writing about the user's day, thoughts, and feelings. Each entry is automatically scored for sentiment using Apple's NaturalLanguage framework (NLTagger — offline, instant, free). Monthly linear regression analysis correlates habit completion with sentiment to identify which habits most impact wellbeing. Gemini generates a narrative interpretation of results. This is where data becomes self-knowledge.
+>
+> **Key decisions:** Linear regression (not logistic) on continuous sentiment (-1.0 to 1.0) via Accelerate/LAPACK. NLTagger for per-entry scoring, Gemini for monthly narrative only. New 6th sidebar item. All data in SwiftData.
+
+### 6.5.1: Model Layer — JournalEntry Extension & MonthlyAnalysis
+> **Depends on:** 2.1.2 (JournalEntry exists)
+
+- [x] Extend `JournalEntry.swift` with new properties (all with defaults for lightweight migration):
+  - [x] `sentimentScore: Double` (default 0.0) — range -1.0 to 1.0
+  - [x] `sentimentLabel: String` (default "neutral") — "positive", "negative", "neutral"
+  - [x] `sentimentMagnitude: Double` (default 0.0) — abs(sentimentScore)
+  - [x] `title: String` (default "") — optional short title for the entry
+  - [x] `wordCount: Int` (default 0) — cached for display
+  - [x] `tags: [String]` (default []) — user-applied tags
+  - [x] `updatedAt: Date` (default .now) — last edit timestamp
+- [x] Create `MonthlyAnalysis.swift` — SwiftData `@Model`:
+  - [x] `id: UUID`, `month: Int`, `year: Int`, `startDate: Date`, `endDate: Date`
+  - [x] `habitCoefficients: [HabitCoefficient]` (Codable array via Transformable)
+  - [x] `forceMultiplierHabit: String` — habit with highest positive coefficient
+  - [x] `modelR2: Double` — R-squared goodness of fit
+  - [x] `averageSentiment: Double`, `entryCount: Int`, `summary: String`, `generatedAt: Date`
+- [x] Create `HabitCoefficient` Codable struct: `habitName`, `habitEmoji`, `coefficient`, `pValue`, `completionRate`, `direction`
+- [x] Register `MonthlyAnalysis` in `OverwatchApp.swift` ModelContainer
+- [x] Write unit tests: model creation, defaults, HabitCoefficient Codable round-trip
+
+### 6.5.2: SentimentAnalysisService
+> **Depends on:** 6.5.1 | **Parallel with:** 6.5.3, 6.5.5
+
+- [ ] Create `SentimentAnalysisService.swift` — `actor` using Apple `NaturalLanguage` framework
+- [ ] Implement `analyzeSentiment(_ text: String) -> SentimentResult` using `NLTagger` with `.sentimentScore` scheme
+  - [ ] Score: -1.0 to 1.0 | Label: > 0.1 = positive, < -0.1 = negative, else neutral | Magnitude: abs(score)
+- [ ] Create `SentimentResult` struct (Sendable): `score`, `label`, `magnitude`
+- [ ] Handle edge cases: empty text → neutral, short text (< 10 chars) → neutral with magnitude 0
+- [ ] Write unit tests: known positive phrases, known negative, neutral, empty string, emoji-only, multi-paragraph
+
+### 6.5.3: RegressionService
+> **Depends on:** 6.5.1 | **Parallel with:** 6.5.2, 6.5.5
+
+- [ ] Create `RegressionService.swift` — `final class RegressionService: Sendable` using `import Accelerate`
+- [ ] Define `RegressionInput` struct: `habitNames`, `habitEmojis`, `featureMatrix` ([days × habits]), `targetVector` ([days])
+- [ ] Define `RegressionOutput` struct: `coefficients: [HabitCoefficient]`, `r2: Double`, `intercept: Double`
+- [ ] Implement `computeRegression(_ input:) -> RegressionOutput?` via LAPACK `dgels_` least-squares
+  - [ ] Compute R-squared from residuals / total sum of squares
+  - [ ] Compute t-statistics and approximate p-values per coefficient
+  - [ ] Guard: return nil if < 14 observations or < 2 habits with variance
+- [ ] Write unit tests: synthetic data with known correlations, insufficient data → nil, zero variance, single habit
+
+### 6.5.4: GeminiService Extension — Regression Narrative
+> **Depends on:** 6.5.3, 6.2 (GeminiService exists)
+
+- [ ] Add `interpretRegressionResults(coefficients:averageSentiment:monthName:entryCount:) async throws -> String` to `GeminiService`
+- [ ] Build prompt with performance coach persona: encouraging, data-driven, actionable
+- [ ] Output: 2-3 paragraph narrative summarizing wellbeing drivers + force multiplier callout + recommendation
+- [ ] Graceful fallback when Gemini unavailable: template-based summary from coefficients alone
+- [ ] Write tests with mock Gemini response
+
+### 6.5.5: Navigation Update — Journal Sidebar
+> **Depends on:** 4.2 (NavigationShell) | **Parallel with:** 6.5.2, 6.5.3
+
+- [ ] Add `.journal` case to `NavigationSection` enum between `.habits` and `.warRoom`
+- [ ] Icon: `"book.pages"`, label: `"Journal"`
+- [ ] Add case to `detailContent(for:)` switch → render `JournalView`
+- [ ] Verify sidebar renders correctly with 6 items
+
+### 6.5.6: JournalViewModel
+> **Depends on:** 6.5.2, 6.5.3
+
+- [ ] Create `JournalViewModel.swift` — `@Observable @MainActor`, inject `SentimentAnalysisService` + `RegressionService` via init
+- [ ] Display types: `JournalItem` (id, date, title, contentPreview, wordCount, sentimentScore, sentimentLabel, tags, createdAt), `SentimentDataPoint` (date, score), `MonthlyAnalysisItem`
+- [ ] State: entries, selectedEntryID, editorContent/Title/Tags, isEditing, editingEntryID, currentSentiment, sentimentTrend, filters, latestAnalysis, isGeneratingAnalysis
+- [ ] Implement `loadEntries(from:)`, `saveEntry(in:)` async (with sentiment analysis), `deleteEntry`, `selectEntry`, `startNewEntry`
+- [ ] Implement `analyzeSentimentLive()` async — debounced 1s for live indicator
+- [ ] Implement `loadSentimentTrend(from:)` — build SentimentDataPoint array
+- [ ] Implement `generateMonthlyAnalysis(for:from:)` async — build regression input, call services, save MonthlyAnalysis
+- [ ] Implement `sentimentDataForReport(startDate:endDate:from:)` — packages data for Phase 7.2 integration
+- [ ] Filter/search logic
+- [ ] Write unit tests: entry CRUD, sentiment integration, filter logic, monthly analysis flow
+
+### 6.5.7: Journal UI — Entry List & Editor
+> **Depends on:** 6.5.5, 6.5.6
+
+- [ ] Create `Views/Journal/` directory
+- [ ] Create `JournalView.swift` — master-detail layout matching `HabitsView` pattern
+  - [ ] Left panel (~40%): scrollable entry list with `TacticalCard`-styled rows (date, title, sentiment dot, word count, preview)
+  - [ ] Search field at top (HUD-styled), filter chips (7D / 30D / 90D / ALL, sentiment ALL / + / - / ~)
+  - [ ] Right panel (~60%): title field + `TextEditor` + tag input + live sentiment badge + SAVE / CANCEL
+  - [ ] "NEW ENTRY" button in header
+  - [ ] Empty state: "BEGIN YOUR FIELD LOG — Record thoughts, reflections, and daily observations"
+  - [ ] Entry deletion with "PURGE ENTRY?" confirmation
+  - [ ] Materialize/Dissolve animation patterns
+
+### 6.5.8: Sentiment Visualization Components
+> **Depends on:** 6.5.7
+
+- [ ] Create `SentimentIndicator.swift` — `SentimentDot` (6pt, color-coded, glow) + `SentimentBadge` (score + arrow + label)
+- [ ] Create `SentimentTrendChart.swift` — SwiftUI Charts line chart (following `HabitTrendChartView` pattern)
+  - [ ] X: dates, Y: sentiment score (-1.0 to 1.0)
+  - [ ] Green zone above 0, red zone below 0 (gradient area fill), neutral baseline
+  - [ ] HUD chart styling, animated transitions on date range switch
+- [ ] Integrate trend chart into JournalView right panel below editor
+
+### 6.5.9: Monthly Analysis UI
+> **Depends on:** 6.5.8, 6.5.4
+
+- [ ] Create `MonthlyAnalysisView.swift` — collapsible "MONTHLY INTELLIGENCE" section in JournalView
+  - [ ] Gemini narrative summary at top (or template fallback)
+  - [ ] Force multiplier habit highlighted with accent glow + emoji
+  - [ ] Horizontal bar chart of habit coefficients (green right for positive, red left for negative, sorted by |coefficient|)
+  - [ ] Model quality indicators: R², entry count, average sentiment
+  - [ ] "GENERATE ANALYSIS" / "REGENERATE" button
+  - [ ] Loading: "COMPUTING REGRESSION..." | Insufficient data: "NEED MORE DATA — Log at least 14 entries"
+  - [ ] Month selector for historical viewing
+- [ ] Auto-trigger on first app open after month end (if >= 14 entries for prior month)
+
+### 6.5.10: Dashboard Integration — Sentiment Pulse
+> **Depends on:** 6.5.8
+
+- [ ] Add compact "SENTIMENT PULSE" `TacticalCard` to `TacticalDashboardView` (below WHOOP strip)
+  - [ ] Today's sentiment dot + 7-day sparkline + "JOURNAL" link
+  - [ ] Tap navigates to Journal page
+  - [ ] No entries: dimmed "NO ENTRIES TODAY"
+- [ ] Add `sentimentPulse` computed property to `DashboardViewModel`
+
+### 6.5.11: Synthetic Dataset & NLP Pipeline Testing
+> **Depends on:** 6.5.6, 6.5.3, 6.5.2
+
+- [ ] Create `SyntheticDataSeeder.swift` — utility for generating controlled test data
+  - [ ] `static func seedJournalAndHabits(in context: ModelContext, days: Int = 60)`
+  - [ ] 5 habits with designed correlations:
+    - Meditation: 80% on happy days, 20% on unhappy → strong positive coefficient
+    - Exercise: 70% on happy days, 30% on unhappy → moderate positive coefficient
+    - Alcohol: 20% on happy days, 70% on unhappy → strong negative coefficient
+    - Reading: random 50/50 → near-zero coefficient (noise)
+    - Water: completed every day → excluded (no variance)
+  - [ ] 60 journal entries (1/day): ~30 positive, ~20 negative, ~10 neutral
+  - [ ] Snippet banks: 10+ per category (positive/negative/neutral), 2-4 sentences each
+  - [ ] Dates spread across 2 calendar months for monthly analysis testing
+- [ ] Create `SyntheticDataTests.swift` — Swift Testing (`@Test`, `#expect`, in-memory ModelContainer):
+  - [ ] Test: sentiment scoring accuracy — positive entries > 0, negative < 0, neutral near 0
+  - [ ] Test: regression coefficient directions — Meditation +, Exercise +, Alcohol -, Reading ~0, Water excluded
+  - [ ] Test: R-squared > 0 (model has explanatory power)
+  - [ ] Test: force multiplier identification → "Meditation"
+  - [ ] Test: minimum data guard — 5 days → returns nil
+  - [ ] Test: end-to-end pipeline — seed → generateMonthlyAnalysis → MonthlyAnalysis saved with valid coefficients
+  - [ ] Test: sentiment trend data — correct count and scores
+- [ ] Optional: `#if DEBUG` "SEED DEMO DATA" button in Settings for visual verification
+
+### 6.5.12: War Room Integration — Sentiment Charts
+> **Depends on:** 6.5.8, 6.5.11 | **Integrates with:** Phase 7 (War Room build)
+
+- [ ] Create `SentimentTrendChart.swift` (full version for War Room) — or extend 6.5.8 version:
+  - [ ] Daily sentiment scatter dots (colored green/red)
+  - [ ] 7-day rolling average as smoothed cyan line with glow
+  - [ ] Toggleable habit completion overlay: vertical bars showing daily completion count (stacked by category, semi-transparent)
+  - [ ] Date range selector: 1W / 1M / 3M / 1Y / ALL
+  - [ ] Neutral baseline at 0.0
+- [ ] Create `SentimentGauge.swift` — reuse existing `ArcGauge` component
+  - [ ] Range: -1.0 (red) to +1.0 (green) with amber middle
+  - [ ] Period toggle: WEEK / MONTH
+  - [ ] Label: "WELLBEING INDEX"
+- [ ] Wire into JournalView as preview; ready for War Room when Phase 7 builds `WarRoomView`
+
+### 6.5.13: Reports Integration — Sentiment in Weekly Briefings
+> **Depends on:** 6.5.9 | **Integrates with:** Phase 7.2 (Report Generation)
+
+- [ ] Add `sentimentDataForReport(startDate:endDate:from:)` to `JournalViewModel`
+  - [ ] Packages: weekly avg sentiment, trend direction (improving/declining/stable), force multiplier habit
+  - [ ] Leave Phase 7.2 integration as clearly marked TODO
+- [ ] When Phase 7.2 is built: include sentiment in `IntelligenceManager.generateWeeklyReport()` data payload
 
 ---
 
 ## Phase 7 — Intelligence Layer & War Room
 
-> **Design context:** AI persona is a **performance coach** — encouraging, data-driven, motivational + actionable. Names specific habits, gives concrete recommendations, celebrates wins. Reports auto-generate weekly AND can be triggered on-demand for any date range.
+> **Design context:** AI persona is a **performance coach** — encouraging, data-driven, motivational + actionable. Names specific habits, gives concrete recommendations, celebrates wins. Reports auto-generate weekly AND can be triggered on-demand for any date range. Reports now include **sentiment analysis data** from Phase 6.5 (journal entries scored by NLTagger, monthly regression results).
 >
-> The War Room is a **split-pane** layout: AI briefing panel (left) + interactive charts (right). Both visible simultaneously, cross-linked so insights reference chart data.
+> The War Room is a **split-pane** layout: AI briefing panel (left) + interactive charts (right). Both visible simultaneously, cross-linked so insights reference chart data. **Sentiment charts** (time series + wellbeing gauge) from Phase 6.5.12 are integrated as chart type options.
+>
+> **All Gemini prompts must follow the RISEN framework with XML tags** (see CLAUDE.md — Gemini Prompting Standard). No freeform prompt strings.
 
 ### 7.1: Intelligence Manager & Persona
-> **Depends on:** 6.2 (Gemini service exists)
+> **Depends on:** 6.2 (Gemini service exists), 6.5.1 (JournalEntry sentiment fields + MonthlyAnalysis model)
 
 - [ ] Create `IntelligenceManager.swift` — uses `GeminiService`, owns all report generation logic
-- [ ] Define system prompt for performance coach persona:
-  - [ ] Encouraging but honest — celebrates wins, flags regressions without being harsh
-  - [ ] Data-driven — always references specific numbers (e.g., "Your meditation streak hit 14 days and HRV climbed 8% over that period")
-  - [ ] Actionable — every insight ends with a concrete recommendation
-  - [ ] Example tone: "Strong week overall. Your hydration consistency (6/7 days) is clearly paying off — recovery averaged 71%, up from 63% last week. One area to watch: sleep duration dropped below 7h three nights. Try setting a 10pm wind-down alarm."
+- [ ] Define performance coach persona prompt using **RISEN/XML structure** (per CLAUDE.md):
+  - [ ] `<role>`: Performance coach — encouraging but honest, data-driven, actionable
+  - [ ] `<instructions>`: Analyze habit, biometric, and sentiment data. Produce narrative + recommendations.
+  - [ ] `<steps>`: 1) Review habit completion rates, 2) Correlate with WHOOP recovery, 3) Factor in journal sentiment trends, 4) Identify force multiplier, 5) Generate recommendations
+  - [ ] `<expectations>`: 2-3 paragraph narrative, reference specific numbers, end with actionable items
+  - [ ] `<narrowing>`: No medical advice, no invented data, only reference habits/metrics in input
+  - [ ] Example tone: "Strong week overall. Your hydration consistency (6/7 days) is clearly paying off — recovery averaged 71%, up from 63% last week. Your journal sentiment tracked positive (+0.42 avg), aligning with your meditation streak. One area to watch: sleep duration dropped below 7h three nights. Try setting a 10pm wind-down alarm."
 - [ ] Define `WeeklyInsight` SwiftData `@Model`:
   - [ ] `id: UUID`
   - [ ] `dateRangeStart: Date`, `dateRangeEnd: Date`
   - [ ] `summary: String` — 2-3 paragraph narrative overview
-  - [ ] `forceMultiplierHabit: String` — the habit with highest positive correlation to recovery
+  - [ ] `forceMultiplierHabit: String` — the habit with highest positive correlation to recovery AND/OR sentiment
   - [ ] `recommendations: [String]` — 3-5 actionable items
-  - [ ] `correlations: [HabitCorrelation]` — habit name + correlation coefficient + direction
+  - [ ] `correlations: [HabitCoefficient]` — **reuse `HabitCoefficient` from Phase 6.5.1** (not a new struct)
+  - [ ] `averageSentiment: Double?` — weekly average sentiment score (nil if no journal entries)
+  - [ ] `sentimentTrend: String?` — "improving", "declining", "stable" (nil if no entries)
   - [ ] `generatedAt: Date`
-- [ ] Define `HabitCorrelation` struct: `habitName: String`, `coefficient: Double`, `direction: String` ("positive"/"negative")
+- [ ] Register `WeeklyInsight` in `OverwatchApp.swift` ModelContainer
 
 ### 7.2: Weekly Report Generation
-> **Depends on:** 7.1
+> **Depends on:** 7.1, 6.5.13 (sentiment data packaging method)
 
 - [ ] Implement `generateWeeklyReport(startDate:endDate:) async throws -> WeeklyInsight`
   - [ ] Query SwiftData for all `HabitEntry` records in date range
   - [ ] Query SwiftData for all `WhoopCycle` records in date range
-  - [ ] Package as structured JSON: daily habit completions, daily WHOOP metrics, habit metadata
-  - [ ] Send to Gemini with performance coach system prompt + structured output request
+  - [ ] Query SwiftData for all `JournalEntry` records in date range — extract sentiment scores
+  - [ ] Call `JournalViewModel.sentimentDataForReport(startDate:endDate:from:)` for packaged sentiment data
+  - [ ] Include latest `MonthlyAnalysis` force multiplier if available for the period
+  - [ ] Package all data as **XML-tagged sections** per RISEN standard:
+    - [ ] `<habit_completions>` — daily habit completion matrix
+    - [ ] `<whoop_metrics>` — daily recovery, sleep, strain, HRV
+    - [ ] `<sentiment_data>` — daily sentiment scores, weekly average, trend direction
+    - [ ] `<monthly_regression>` — force multiplier habit + top coefficients (if available)
+    - [ ] `<habit_metadata>` — habit names, emojis, categories, target frequencies
+  - [ ] Send to Gemini with RISEN-structured prompt + request structured response in `<weekly_report>` tag
   - [ ] Parse Gemini response into `WeeklyInsight` fields
 - [ ] Save `WeeklyInsight` to SwiftData for offline viewing and historical archive
 - [ ] **Auto-generate scheduling:**
@@ -801,6 +1033,7 @@ Current flow (Phase 4.1.5 onward):
   - [ ] Loading state while Gemini processes ("COMPILING INTELLIGENCE BRIEFING...")
 - [ ] Write tests with mock Gemini responses (test parsing, caching, dedup)
 - [ ] Test offline retrieval of previously cached reports
+- [ ] Test report generation with and without journal data (sentiment fields nil-safe)
 
 ### 7.3: Reports Page (Intel Briefings Archive)
 > **Depends on:** 7.2, 4.2 (navigation shell)
@@ -819,16 +1052,20 @@ Current flow (Phase 4.1.5 onward):
   - [ ] Full summary text
   - [ ] Force multiplier habit section with explanation
   - [ ] Recommendations list (numbered, each actionable)
-  - [ ] Correlations list (habit name + direction + strength indicator)
+  - [ ] Correlations list using `HabitCoefficient` display (habit name + emoji + direction + strength bar)
+  - [ ] Sentiment summary section: weekly avg sentiment badge + trend arrow (if journal data exists)
 - [ ] Empty state: "NO BRIEFINGS YET — Your first intel report generates after one week of tracking data."
 - [ ] Loading state for in-progress generation: animated HUD progress indicator
 
 ### 7.4: War Room — Split Pane Analytics
-> **Depends on:** 7.2 (needs report data), 5.4 (trend chart patterns)
+> **Depends on:** 7.2 (needs report data), 5.4 (trend chart patterns), 6.5.12 (sentiment chart components)
 
 - [ ] Create `WarRoomViewModel.swift` — `@Observable @MainActor`, owns chart data + AI insight state
   - [ ] `selectedDateRange: DateRange` (1 week / 1 month / 3 months / 1 year / all time)
   - [ ] `latestInsight: WeeklyInsight?` — most recent report
+  - [ ] `sentimentTrend: [SentimentDataPoint]` — from JournalEntry queries for sentiment chart
+  - [ ] `averageSentiment: Double` — for wellbeing gauge (week/month toggleable)
+  - [ ] `habitCompletionOverlay: [DailyHabitCompletion]` — for sentiment chart overlay bars
   - [ ] Computed chart data arrays from SwiftData queries
 - [ ] Create `WarRoomView.swift` — routed from sidebar "War Room" section
   - [ ] **Split pane layout:** AI briefing (left, ~40% width) + charts (right, ~60% width)
@@ -837,6 +1074,7 @@ Current flow (Phase 4.1.5 onward):
 - [ ] **Left pane — AI Briefing Panel:**
   - [ ] Latest weekly insight displayed as scrollable narrative
   - [ ] Force multiplier habit highlighted with accent glow
+  - [ ] **Wellbeing gauge** (from 6.5.12 `SentimentGauge`) — ArcGauge showing avg sentiment for period
   - [ ] Recommendations as numbered list with checkbox-style items
   - [ ] "REFRESH ANALYSIS" button to regenerate
   - [ ] If no insight available: "AWAITING INTELLIGENCE DATA" placeholder
@@ -846,7 +1084,9 @@ Current flow (Phase 4.1.5 onward):
     - [ ] **Bar chart:** daily habit completion count (stacked by category)
     - [ ] **Scatter plot:** habit completion % (X) vs. recovery score (Y) — shows correlation
     - [ ] **Area chart:** sleep metrics (SWS, REM, total hours) stacked over time
-  - [ ] Chart type switcher: segmented control or tab bar above chart area
+    - [ ] **Sentiment time series** (from 6.5.12): daily dots + 7-day rolling avg + toggleable habit completion overlay
+    - [ ] **Habit-sentiment scatter**: habit completion % (X) vs. sentiment score (Y) — visualizes regression
+  - [ ] Chart type switcher: segmented control or tab bar above chart area (6 chart types)
   - [ ] Date range selector: 1 week / 1 month / 3 months / 1 year / all time
 - [ ] **Cross-linking:** tapping an insight in the left pane highlights the relevant time range / data points in the right pane chart
 - [ ] Chart animations: spring transitions when switching chart type or date range, data points animate in
@@ -859,13 +1099,13 @@ Current flow (Phase 4.1.5 onward):
 
 > **Design context:** First impressions matter. A quick (2-3 second) cinematic boot sequence sets the Jarvis tone immediately. Then a guided setup gets the user operational. Subsequent launches skip straight to the app.
 
-### 8.1: Boot Sequence
+### 8.1: Boot Sequence ✅
 > **Depends on:** 4.2 (navigation shell exists as the destination)
 
-- [ ] Create `BootSequenceView.swift` — 2-3 second cinematic intro using named animation patterns:
-  - [ ] **Phase 1 (0.0s):** Black void, single cursor blink (0.8s cycle)
-  - [ ] **Phase 2 (0.3s):** Grid lines draw across screen using **Wireframe Trace** — thin cyan lines trace horizontally and vertically from center outward, building the grid backdrop
-  - [ ] **Phase 3 (0.6s):** **Data Stream Texture** fades in behind text at 8% opacity (higher than normal for dramatic effect). System init text **Stagger**s in line by line (0.1s per line), each line using **Materialize** (fade + slight upward drift):
+- [x] Create `BootSequenceView.swift` — 2-3 second cinematic intro using named animation patterns:
+  - [x] **Phase 1 (0.0s):** Black void, single cursor blink (0.8s cycle)
+  - [x] **Phase 2 (0.3s):** Grid lines draw across screen using **Wireframe Trace** — thin cyan lines trace horizontally and vertically from center outward, building the grid backdrop
+  - [x] **Phase 3 (0.6s):** **Data Stream Texture** fades in behind text at 8% opacity (higher than normal for dramatic effect). System init text **Stagger**s in line by line (0.1s per line), each line using **Materialize** (fade + slight upward drift):
     ```
     OVERWATCH v1.0 // SYSTEM INITIALIZATION
     LOADING MODULES...
@@ -874,12 +1114,12 @@ Current flow (Phase 4.1.5 onward):
     INTELLIGENCE CORE..... ONLINE
     ```
     "ONLINE" text gets a **Glow Pulse** (green) as each subsystem activates
-  - [ ] **Phase 4 (1.5s):** "OVERWATCH" logo text **Materialize**s — letters appear one by one with **Wireframe Trace** outlines that fill with color, then full **Glow Bloom** expands outward (16pt → 32pt radius, 0.4s)
-  - [ ] **Phase 5 (2.5s):** Entire boot screen uses **Dissolve** pattern — content fades, grid fades, void transitions to NavigationShell
-- [ ] First launch: full 2-3 second sequence
-- [ ] Subsequent launches: skip entirely (direct to NavigationShell) — or 0.5s abbreviated logo flash with **Glow Pulse** only
-- [ ] Store `hasCompletedFirstBoot` in UserDefaults
-- [ ] All effects pull from the reusable components built in 4.1.5 (WireframeTrace, DataStreamTexture, AnimationPatterns)
+  - [x] **Phase 4 (1.5s):** "OVERWATCH" logo text **Materialize**s — letters appear one by one with **Wireframe Trace** outlines that fill with color, then full **Glow Bloom** expands outward (16pt → 32pt radius, 0.4s)
+  - [x] **Phase 5 (2.5s):** Entire boot screen uses **Dissolve** pattern — content fades, grid fades, void transitions to NavigationShell
+- [x] First launch: full 2-3 second sequence
+- [x] Subsequent launches: skip entirely (direct to NavigationShell) — or 0.5s abbreviated logo flash with **Glow Pulse** only
+- [x] Store `hasCompletedFirstBoot` in UserDefaults
+- [x] All effects pull from the reusable components built in 4.1.5 (WireframeTrace, DataStreamTexture, AnimationPatterns)
 
 ### 8.2: Guided Setup (First Launch Only)
 > **Depends on:** 8.1
@@ -913,31 +1153,31 @@ Current flow (Phase 4.1.5 onward):
 
 > **Design context:** Settings is a practical page — not flashy, but still HUD-themed. Error states should feel in-universe ("SIGNAL LOST" not "Error 401"). Visual polish pass ensures every view is consistent with the holographic HUD aesthetic.
 
-### 9.1: Settings Page
+### 9.1: Settings Page ✅
 > **Depends on:** 4.2 (navigation shell routes to Settings)
 
-- [ ] Create `SettingsViewModel.swift` — `@Observable @MainActor`, owns all settings state + connection management
-- [ ] Create `SettingsView.swift` — routed from sidebar "Settings" section
-- [ ] **Connections section:**
-  - [ ] WHOOP: connection status indicator (LINKED / DISCONNECTED), connect/disconnect button, last sync timestamp
-  - [ ] Gemini API: key entry field (masked, stored in Keychain), "TEST CONNECTION" button with success/fail feedback
-- [ ] **Reports section:**
-  - [ ] Auto-generate: toggle on/off
-  - [ ] Day of week picker (default: Sunday)
-  - [ ] Time picker (default: 8:00 AM)
-- [ ] **Habits section:**
-  - [ ] Manage categories: list of categories, add/rename/delete custom categories
-  - [ ] Default habit suggestions toggle (show/hide on onboarding and add-habit sheet)
-- [ ] **Notifications section:**
-  - [ ] Daily habit reminder: toggle + time picker
-  - [ ] Weekly report ready: toggle
-- [ ] **Data section:**
-  - [ ] "EXPORT ALL DATA" → JSON file (habits, entries, WHOOP cycles, reports)
-  - [ ] "EXPORT HABITS" → CSV file (habit entries only)
-  - [ ] "PURGE ALL DATA" → destructive action with double-confirmation ("Are you sure?" → "Type PURGE to confirm")
-- [ ] **Appearance section:**
-  - [ ] Accent color picker (default: cyan #00D4FF, options: green, amber, red, purple, white)
-- [ ] All form controls HUD-styled: dark backgrounds, cyan borders, monospace labels
+- [x] Create `SettingsViewModel.swift` — `@Observable @MainActor`, owns all settings state + connection management
+- [x] Create `SettingsView.swift` — routed from sidebar "Settings" section
+- [x] **Connections section:**
+  - [x] WHOOP: connection status indicator (LINKED / DISCONNECTED), connect/disconnect button, last sync timestamp
+  - [x] Gemini API: key entry field (masked, stored in Keychain), "TEST CONNECTION" button with success/fail feedback
+- [x] **Reports section:**
+  - [x] Auto-generate: toggle on/off
+  - [x] Day of week picker (default: Sunday)
+  - [x] Time picker (default: 8:00 AM)
+- [x] **Habits section:**
+  - [x] Manage categories: list of categories, add/rename/delete custom categories
+  - [x] Default habit suggestions toggle (show/hide on onboarding and add-habit sheet)
+- [x] **Notifications section:**
+  - [x] Daily habit reminder: toggle + time picker
+  - [x] Weekly report ready: toggle
+- [x] **Data section:**
+  - [x] "EXPORT ALL DATA" → JSON file (habits, entries, WHOOP cycles, reports)
+  - [x] "EXPORT HABITS" → CSV file (habit entries only)
+  - [x] "PURGE ALL DATA" → destructive action with double-confirmation ("Are you sure?" → "Type PURGE to confirm")
+- [x] **Appearance section:**
+  - [x] Accent color picker (default: cyan #00D4FF, options: green, amber, red, purple, white)
+- [x] All form controls HUD-styled: dark backgrounds, cyan borders, monospace labels
 
 ### 9.2: Error States & Graceful Degradation
 > **Depends on:** 7.4, 9.1 (need all major views built to add error states to them)
@@ -1074,10 +1314,16 @@ Current flow (Phase 4.1.5 onward):
 | Data sources | WHOOP only | No abstraction layer. Add provider protocol when second source is built |
 | Settings depth | Moderate | Connections, API keys, schedule, categories, notifications, export, accent color |
 | Habits page | Full deep-dive | CRUD + heat maps + journal timeline + trend charts |
+| Journal | AI-powered freeform + sentiment regression | New 6th sidebar item. NLTagger for sentiment, Accelerate/LAPACK for linear regression, Gemini for narrative |
+| Sentiment engine | Apple NLTagger (local) | Offline, instant, free. Gemini reserved for monthly narrative only |
+| Regression type | Linear (not logistic) | Continuous sentiment (-1.0 to 1.0) preserves information. Via Accelerate `dgels_` |
+| ML engine | Native Swift (Accelerate) | No Python dependency. Self-contained, zero external runtime |
+| Monthly analysis | Auto on month end + on-demand | Min 14 journal entries. Identifies force multiplier habit |
+| War Room sentiment | Time series + wellbeing gauge | Daily + 7-day rolling avg + habit overlay. ArcGauge from -1 to +1 |
 
 ---
 
-> **Current Phase:** 4.4 — Heat Map Component (next up)
-> **Completed:** 0.1, 0.3, 1.1.1–1.3.2, 2.1.1–2.2.3, 3.1.1–3.3.2 (except manual WHOOP test), 4.0, 4.1.1–4.1.6, 4.2, 4.3, 4.5
-> **Next steps:** 4.4 (heat map) → 5.1 (habit management) ‖ 8.1 (boot sequence) ‖ 9.1 (settings)
+> **Current Phase:** 6.5.1 (AI-Powered Journal — model layer first)
+> **Completed:** 0.1, 0.3, 1.1.1–1.3.2, 2.1.1–2.2.3, 3.1.1–3.3.2 (except manual WHOOP test), 4.0, 4.1.1–4.1.6, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.3.1, 5.4, 6.1, 6.2, 8.1, 9.1
+> **Next steps:** 6.5.1 (models) → 6.5.2/6.5.3/6.5.5 (services + nav, parallel) → 6.5.6 (VM) → 6.5.7+ (UI) | Then: 7.1 ‖ 8.2
 > **Design decisions:** Locked (see Design Decisions Log + Visual Design Specification above)

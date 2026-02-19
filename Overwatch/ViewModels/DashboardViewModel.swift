@@ -56,6 +56,11 @@ final class DashboardViewModel {
 
     var trackedHabits: [TrackedHabit] = []
 
+    // MARK: - Heat Map
+
+    /// Pre-computed 30-day heat map data for the dashboard compact preview.
+    var compactHeatMapDays: [HeatMapDay] = []
+
     // MARK: - Dashboard Interaction State
 
     /// Which habit's expand panel is currently open (nil = all collapsed)
@@ -76,6 +81,7 @@ final class DashboardViewModel {
         loadWhoopMetrics(from: context)
         loadHabitSummary(from: context)
         loadTrackedHabits(from: context)
+        loadHeatMapData(from: context)
     }
 
     private func loadWhoopMetrics(from context: ModelContext) {
@@ -127,7 +133,7 @@ final class DashboardViewModel {
         let weekStart = calendar.date(byAdding: .day, value: -7, to: todayStart)!
         let monthStart = calendar.date(byAdding: .day, value: -30, to: todayStart)!
 
-        let descriptor = FetchDescriptor<Habit>(sortBy: [SortDescriptor(\.name)])
+        let descriptor = FetchDescriptor<Habit>(sortBy: [SortDescriptor(\.sortOrder), SortDescriptor(\.name)])
         guard let habits = try? context.fetch(descriptor) else {
             trackedHabits = []
             return
@@ -154,15 +160,30 @@ final class DashboardViewModel {
                     .map { calendar.startOfDay(for: $0.date) }
             ).count
 
+            // Goal-relative rates
+            let weeklyTarget = Double(min(habit.targetFrequency, 7))
+            let monthlyTarget = Double(habit.targetFrequency) * 30.0 / 7.0
+
             return TrackedHabit(
                 id: habit.id,
                 name: habit.name,
                 emoji: habit.emoji,
                 completedToday: completedToday,
-                weeklyRate: Double(weeklyDays) / 7.0,
-                monthlyRate: Double(monthlyDays) / 30.0
+                weeklyRate: min(weeklyTarget > 0 ? Double(weeklyDays) / weeklyTarget : 0, 1.0),
+                monthlyRate: min(monthlyTarget > 0 ? Double(monthlyDays) / monthlyTarget : 0, 1.0)
             )
         }
+    }
+
+    // MARK: - Heat Map Data
+
+    private func loadHeatMapData(from context: ModelContext) {
+        let descriptor = FetchDescriptor<Habit>(sortBy: [SortDescriptor(\.sortOrder), SortDescriptor(\.name)])
+        guard let habits = try? context.fetch(descriptor) else {
+            compactHeatMapDays = []
+            return
+        }
+        compactHeatMapDays = HeatMapDataBuilder.buildAggregate(habits: habits, dayCount: 35)
     }
 
     // MARK: - Habit Actions
