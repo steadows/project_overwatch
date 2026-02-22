@@ -2,19 +2,36 @@ import SwiftUI
 
 /// Compact horizontal WHOOP metrics strip — single row of mini metric tiles.
 ///
-/// Tap to expand into full ArcGauge view. Shows "CONNECT WHOOP" prompt
-/// when no biometric data is available.
+/// Three states:
+/// 1. **Data** — full metrics strip, tap to expand arc gauges
+/// 2. **Error** — dimmed cached data + "BIOMETRIC SIGNAL LOST" overlay + retry
+/// 3. **No connection** — "LINK BIOMETRIC SOURCE" prompt + navigate to Settings
 struct CompactWhoopStrip: View {
     let metrics: DashboardViewModel.WhoopMetrics
     let hasData: Bool
+    let errorMessage: String?
     @Binding var isExpanded: Bool
+    var onRetry: (() -> Void)?
+    var onNavigateToSettings: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 0) {
             if hasData {
-                compactStrip
-                expandedGauges
+                if let errorMessage {
+                    // State 2: API error — show dimmed data + error badge
+                    compactStrip
+                        .opacity(0.4)
+                    HUDStatusBadge.whoopSignalLost(detail: errorMessage) {
+                        onRetry?()
+                    }
+                    .padding(.top, OverwatchTheme.Spacing.sm)
+                } else {
+                    // State 1: Healthy data
+                    compactStrip
+                    expandedGauges
+                }
             } else {
+                // State 3: No connection
                 connectPrompt
             }
         }
@@ -156,46 +173,14 @@ struct CompactWhoopStrip: View {
     // MARK: - Connect Prompt
 
     private var connectPrompt: some View {
-        HStack(spacing: OverwatchTheme.Spacing.md) {
-            Image(systemName: "antenna.radiowaves.left.and.right")
-                .font(.system(size: 16, weight: .ultraLight))
-                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.3))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("BIOMETRIC SOURCE OFFLINE")
-                    .font(Typography.hudLabel)
-                    .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.4))
-                    .tracking(2)
-                    .textGlow(OverwatchTheme.accentCyan, radius: 2)
-
-                Text("Connect WHOOP in Settings to enable biometric tracking")
-                    .font(Typography.metricTiny)
-                    .foregroundStyle(OverwatchTheme.textSecondary)
+        Button {
+            onNavigateToSettings?()
+        } label: {
+            HUDStatusBadge.linkBiometricSource {
+                onNavigateToSettings?()
             }
-
-            Spacer()
-
-            Text("LINK")
-                .font(Typography.hudLabel)
-                .tracking(1.5)
-                .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(OverwatchTheme.accentCyan.opacity(0.06))
-                .clipShape(HUDFrameShape(chamferSize: 6))
-                .overlay(
-                    HUDFrameShape(chamferSize: 6)
-                        .stroke(OverwatchTheme.accentCyan.opacity(0.2), lineWidth: 1)
-                )
         }
-        .padding(.horizontal, OverwatchTheme.Spacing.lg)
-        .padding(.vertical, OverwatchTheme.Spacing.md)
-        .background(OverwatchTheme.surfaceTranslucent)
-        .clipShape(HUDFrameShape(chamferSize: 10))
-        .overlay(
-            HUDFrameShape(chamferSize: 10)
-                .stroke(OverwatchTheme.accentCyan.opacity(0.12), lineWidth: 1)
-        )
+        .buttonStyle(.plain)
     }
 }
 
@@ -205,6 +190,7 @@ struct CompactWhoopStrip: View {
         GridBackdrop().ignoresSafeArea()
 
         VStack(spacing: 20) {
+            // Healthy data
             CompactWhoopStrip(
                 metrics: .init(
                     recoveryScore: 78,
@@ -215,17 +201,37 @@ struct CompactWhoopStrip: View {
                     lastSyncedAt: .now
                 ),
                 hasData: true,
+                errorMessage: nil,
                 isExpanded: .constant(false)
             )
 
+            // API error with cached data
+            CompactWhoopStrip(
+                metrics: .init(
+                    recoveryScore: 78,
+                    strain: 12.4,
+                    sleepPerformance: 85,
+                    restingHeartRate: 52,
+                    hrvRmssd: 67,
+                    lastSyncedAt: .now
+                ),
+                hasData: true,
+                errorMessage: "Connection timed out",
+                isExpanded: .constant(false),
+                onRetry: {}
+            )
+
+            // No connection
             CompactWhoopStrip(
                 metrics: .empty,
                 hasData: false,
-                isExpanded: .constant(false)
+                errorMessage: nil,
+                isExpanded: .constant(false),
+                onNavigateToSettings: {}
             )
         }
         .padding()
         .frame(width: 600)
     }
-    .frame(width: 700, height: 400)
+    .frame(width: 700, height: 600)
 }

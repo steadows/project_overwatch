@@ -9,6 +9,20 @@ enum EnvironmentConfig {
 
     nonisolated(unsafe) private static var envCache: [String: String]?
 
+    /// Returns the WHOOP client ID from the first available source.
+    static var whoopClientId: String? {
+        if let val = ProcessInfo.processInfo.environment["WHOOP_CLIENT_ID"], !val.isEmpty { return val }
+        if let val = loadBundledEnv()["WHOOP_CLIENT_ID"], !val.isEmpty { return val }
+        return KeychainHelper.readString(key: KeychainHelper.Keys.whoopClientId)
+    }
+
+    /// Returns the WHOOP client secret from the first available source.
+    static var whoopClientSecret: String? {
+        if let val = ProcessInfo.processInfo.environment["WHOOP_CLIENT_SECRET"], !val.isEmpty { return val }
+        if let val = loadBundledEnv()["WHOOP_CLIENT_SECRET"], !val.isEmpty { return val }
+        return KeychainHelper.readString(key: KeychainHelper.Keys.whoopClientSecret)
+    }
+
     /// Returns the Gemini API key from the first available source.
     static var geminiAPIKey: String? {
         // 1. Process environment (Xcode scheme env vars / terminal launch)

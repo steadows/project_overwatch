@@ -1074,60 +1074,60 @@ Current flow (Phase 6.5 onward):
 ### 7.3: Reports Page (Intel Briefings Archive)
 > **Depends on:** 7.2, 4.2 (navigation shell)
 
-- [ ] Create `ReportsViewModel.swift` — `@Observable @MainActor`, owns report list + generation triggers
-- [ ] Create `ReportsView.swift` — routed from sidebar "Reports" section
-  - [ ] Header: "INTEL BRIEFINGS" with HUD styling
-  - [ ] "GENERATE REPORT" button (prominent, top-right) — triggers on-demand generation with date range picker
-  - [ ] Scrollable list of past reports, newest first
-  - [ ] Each report card (`TacticalCard` styled):
-    - [ ] Date range label (e.g., "FEB 10 — FEB 16, 2026")
-    - [ ] Summary preview (first 2 lines of summary, truncated)
-    - [ ] Force multiplier habit badge (highlighted in accent color)
-    - [ ] Generated timestamp
-- [ ] Tap report card → expand to full detail view:
-  - [ ] Full summary text
-  - [ ] Force multiplier habit section with explanation
-  - [ ] Recommendations list (numbered, each actionable)
-  - [ ] Correlations list using `HabitCoefficient` display (habit name + emoji + direction + strength bar)
-  - [ ] Sentiment summary section: weekly avg sentiment badge + trend arrow (if journal data exists)
-- [ ] Empty state: "NO BRIEFINGS YET — Your first intel report generates after one week of tracking data."
-- [ ] Loading state for in-progress generation: animated HUD progress indicator
+- [x] Create `ReportsViewModel.swift` — `@Observable @MainActor`, owns report list + generation triggers
+- [x] Create `ReportsView.swift` — routed from sidebar "Reports" section
+  - [x] Header: "INTEL BRIEFINGS" with HUD styling
+  - [x] "GENERATE REPORT" button (prominent, top-right) — triggers on-demand generation with date range picker
+  - [x] Scrollable list of past reports, newest first
+  - [x] Each report card (`TacticalCard` styled):
+    - [x] Date range label (e.g., "FEB 10 — FEB 16, 2026")
+    - [x] Summary preview (first 2 lines of summary, truncated)
+    - [x] Force multiplier habit badge (highlighted in accent color)
+    - [x] Generated timestamp
+- [x] Tap report card → expand to full detail view:
+  - [x] Full summary text
+  - [x] Force multiplier habit section with explanation
+  - [x] Recommendations list (numbered, each actionable)
+  - [x] Correlations list using `HabitCoefficient` display (habit name + emoji + direction + strength bar)
+  - [x] Sentiment summary section: weekly avg sentiment badge + trend arrow (if journal data exists)
+- [x] Empty state: "NO BRIEFINGS YET — Your first intel report generates after one week of tracking data."
+- [x] Loading state for in-progress generation: animated HUD progress indicator
 
 ### 7.4: War Room — Split Pane Analytics
 > **Depends on:** 7.2 (needs report data), 5.4 (trend chart patterns), 6.5.12 (sentiment chart components)
 
-- [ ] Create `WarRoomViewModel.swift` — `@Observable @MainActor`, owns chart data + AI insight state
-  - [ ] `selectedDateRange: DateRange` (1 week / 1 month / 3 months / 1 year / all time)
-  - [ ] `latestInsight: WeeklyInsight?` — most recent report
-  - [ ] `sentimentTrend: [SentimentDataPoint]` — from JournalEntry queries for sentiment chart
-  - [ ] `averageSentiment: Double` — for wellbeing gauge (week/month toggleable)
-  - [ ] `habitCompletionOverlay: [DailyHabitCompletion]` — for sentiment chart overlay bars
-  - [ ] Computed chart data arrays from SwiftData queries
-- [ ] Create `WarRoomView.swift` — routed from sidebar "War Room" section
-  - [ ] **Split pane layout:** AI briefing (left, ~40% width) + charts (right, ~60% width)
-  - [ ] Resizable divider between panes (drag to adjust ratio)
-  - [ ] Full HUD treatment: scan line overlay, grid backdrop, glow effects
-- [ ] **Left pane — AI Briefing Panel:**
-  - [ ] Latest weekly insight displayed as scrollable narrative
-  - [ ] Force multiplier habit highlighted with accent glow
-  - [ ] **Wellbeing gauge** (from 6.5.12 `SentimentGauge`) — ArcGauge showing avg sentiment for period
-  - [ ] Recommendations as numbered list with checkbox-style items
-  - [ ] "REFRESH ANALYSIS" button to regenerate
-  - [ ] If no insight available: "AWAITING INTELLIGENCE DATA" placeholder
-- [ ] **Right pane — Interactive Charts:**
-  - [ ] Create `TrendChartView.swift` — SwiftUI Charts container, switchable chart types:
-    - [ ] **Line chart:** recovery score over time (green/amber/red zones)
-    - [ ] **Bar chart:** daily habit completion count (stacked by category)
-    - [ ] **Scatter plot:** habit completion % (X) vs. recovery score (Y) — shows correlation
-    - [ ] **Area chart:** sleep metrics (SWS, REM, total hours) stacked over time
-    - [ ] **Sentiment time series** (from 6.5.12): daily dots + 7-day rolling avg + toggleable habit completion overlay
-    - [ ] **Habit-sentiment scatter**: habit completion % (X) vs. sentiment score (Y) — visualizes regression
-  - [ ] Chart type switcher: segmented control or tab bar above chart area (6 chart types)
-  - [ ] Date range selector: 1 week / 1 month / 3 months / 1 year / all time
+- [x] Create `WarRoomViewModel.swift` — `@Observable @MainActor`, owns chart data + AI insight state
+  - [x] `selectedDateRange: DateRange` (1 week / 1 month / 3 months / 1 year / all time)
+  - [x] `latestInsight: WeeklyInsight?` — most recent report
+  - [x] `sentimentTrend: [SentimentDataPoint]` — from JournalEntry queries for sentiment chart
+  - [x] `averageSentiment: Double` — for wellbeing gauge (week/month toggleable)
+  - [x] `habitCompletionOverlay: [DailyHabitCompletion]` — for sentiment chart overlay bars
+  - [x] Computed chart data arrays from SwiftData queries
+- [x] Create `WarRoomView.swift` — routed from sidebar "War Room" section
+  - [x] **Split pane layout:** AI briefing (left, ~40% width) + charts (right, ~60% width)
+  - [x] Resizable divider between panes (drag to adjust ratio)
+  - [x] Full HUD treatment: scan line overlay, grid backdrop, glow effects
+- [x] **Left pane — AI Briefing Panel:**
+  - [x] Latest weekly insight displayed as scrollable narrative
+  - [x] Force multiplier habit highlighted with accent glow
+  - [x] **Wellbeing gauge** (from 6.5.12 `SentimentGauge`) — ArcGauge showing avg sentiment for period
+  - [x] Recommendations as numbered list with checkbox-style items
+  - [x] "REFRESH ANALYSIS" button to regenerate
+  - [x] If no insight available: "AWAITING INTELLIGENCE DATA" placeholder
+- [x] **Right pane — Interactive Charts:**
+  - [x] Charts built inline in `WarRoomView.swift` (no separate TrendChartView — keeps it self-contained):
+    - [x] **Line chart:** recovery score over time (green/amber/red zones)
+    - [x] **Bar chart:** daily habit completion count (stacked by category)
+    - [x] **Scatter plot:** habit completion % (X) vs. recovery score (Y) — shows correlation
+    - [x] **Area chart:** sleep metrics (SWS, REM, total hours) stacked over time
+    - [x] **Sentiment time series** (from 6.5.12): daily dots + 7-day rolling avg + toggleable habit completion overlay
+    - [x] **Habit-sentiment scatter**: habit completion % (X) vs. sentiment score (Y) — visualizes regression
+  - [x] Chart type switcher: segmented control or tab bar above chart area (6 chart types)
+  - [x] Date range selector: 1 week / 1 month / 3 months / 1 year / all time
 - [ ] **Cross-linking:** tapping an insight in the left pane highlights the relevant time range / data points in the right pane chart
-- [ ] Chart animations: spring transitions when switching chart type or date range, data points animate in
-- [ ] HUD chart styling: cyan lines, glow on data points, dark axes, subtle grid, scan line overlay on chart background
-- [ ] Empty state: "INSUFFICIENT DATA FOR ANALYSIS — Continue tracking for deeper insights" (minimum threshold: 7 days of data)
+- [x] Chart animations: spring transitions when switching chart type or date range, data points animate in
+- [x] HUD chart styling: cyan lines, glow on data points, dark axes, subtle grid, scan line overlay on chart background
+- [x] Empty state: "INSUFFICIENT DATA FOR ANALYSIS — Continue tracking for deeper insights" (minimum threshold: 7 days of data)
 
 ---
 
@@ -1218,13 +1218,13 @@ Current flow (Phase 6.5 onward):
 ### 9.2: Error States & Graceful Degradation
 > **Depends on:** 7.4, 9.1 (need all major views built to add error states to them)
 
-- [ ] **No WHOOP connection:** contextual "LINK BIOMETRIC SOURCE" prompt in WHOOP metric areas (Dashboard strip + War Room charts)
-- [ ] **WHOOP API error:** HUD-styled error panel — "BIOMETRIC SIGNAL LOST" + retry button + last cached data shown dimmed
-- [ ] **Offline mode:** all views work with cached data, "LAST SYNC: {timestamp}" badge in status area, dimmed sync icon
-- [ ] **No habits yet:** empty states with "ESTABLISH FIRST OPERATION" prompts (Dashboard + Habits page)
-- [ ] **Gemini unavailable / no API key:** AI features show "INTELLIGENCE CORE OFFLINE" badge, data views still fully functional without AI insights
-- [ ] **Rate limited / quota exceeded:** "INTELLIGENCE CORE THROTTLED — Retry in {time}" message
-- [ ] **Empty data ranges:** charts and heat maps show "INSUFFICIENT DATA" with minimum threshold note
+- [x] **No WHOOP connection:** contextual "LINK BIOMETRIC SOURCE" prompt in WHOOP metric areas (Dashboard strip + War Room charts)
+- [x] **WHOOP API error:** HUD-styled error panel — "BIOMETRIC SIGNAL LOST" + retry button + last cached data shown dimmed
+- [x] **Offline mode:** all views work with cached data, "LAST SYNC: {timestamp}" badge in status area, dimmed sync icon
+- [x] **No habits yet:** empty states with "ESTABLISH FIRST OPERATION" prompts (Dashboard + Habits page)
+- [x] **Gemini unavailable / no API key:** AI features show "INTELLIGENCE CORE OFFLINE" badge, data views still fully functional without AI insights
+- [x] **Rate limited / quota exceeded:** "INTELLIGENCE CORE THROTTLED — Retry in {time}" message
+- [x] **Empty data ranges:** charts and heat maps show "INSUFFICIENT DATA" with minimum threshold note
 
 ### 9.3: Visual Audit & Animation Polish
 > **Depends on:** 9.2 (all views built and error-stated)
@@ -1371,3 +1371,97 @@ Current flow (Phase 6.5 onward):
 - [x] Sentiment trend chart curves are broken
 - [x] Selecting/deselecting habits in dashboard is buggy
 - [x] Generate analysis not working after loading seed data
+
+---
+
+## Phase 12 — WHOOP API v2 Migration
+
+> **Context:** Phases 2–3 built the WHOOP integration against v1 endpoints. The WHOOP Developer API serves v2. This phase migrates all networking code to v2 without changing the SwiftData model, dashboard UI, or Gemini integration. API registration requires no approval for ≤10 users.
+
+### 12.1: Update Codable Response Models
+> **Depends on:** nothing (standalone refactor)
+- [x] `WhoopRecoveryResponse.swift` — change `Record.sleepId` from `Int` to `String` (v2 uses UUID)
+- [x] `WhoopSleepResponse.swift` — change `Record.id` from `Int` to `String` (v2 uses UUID)
+- [x] `WhoopSleepResponse.swift` — add `Record.cycleId: Int` field + CodingKey `"cycle_id"` (v2 provides this)
+- [x] `WhoopStrainResponse.swift` — verify matches v2 Cycle schema (no changes needed)
+
+### 12.2: Update WhoopClient Endpoint Paths
+> **Depends on:** 12.1
+- [x] `WhoopClient.swift` — `fetchRecovery()`: `/v1/recovery` → `/v2/recovery`
+- [x] `WhoopClient.swift` — `fetchSleep()`: `/v1/activity/sleep` → `/v2/activity/sleep`
+- [x] `WhoopClient.swift` — `fetchStrain()`: `/v1/cycle` → `/v2/cycle`
+- [x] Update doc comment from "v1" to "v2"
+
+### 12.3: Simplify Sleep-to-Cycle Matching in SyncManager
+> **Depends on:** 12.1 (sleep model has cycleId)
+- [x] `WhoopSyncManager.swift` — replace fuzzy date-range sleep matching with direct `cycleId` lookup
+- [x] Use `findOrCreateCycle(cycleId: record.cycleId)` for sleep records (same pattern as recovery)
+- [x] Remove calendar/date-based predicate logic from sleep overlay section
+- [x] Keep nap filtering (`where !record.nap`)
+
+### 12.4: Update Test Fixtures for v2
+> **Depends on:** 12.1, 12.2
+- [x] `WhoopModelTests.swift` — recovery fixtures: `"sleep_id"` → UUID string
+- [x] `WhoopModelTests.swift` — sleep fixtures: `"id"` → UUID string, add `"cycle_id"` field
+- [x] `WhoopClientTests.swift` — same fixture updates for mock responses
+- [ ] Run all WHOOP test suites — verify pass
+
+### 12.5: Verify OAuth Scopes
+> **Depends on:** nothing (read-only check)
+- [x] Confirm `WhoopAuthManager` scopes match v2: `read:recovery`, `read:cycles`, `read:sleep`, `read:profile`
+- [x] Cross-reference against openapi.json securitySchemes (no changes needed)
+
+### 12.6: Build & Integration Test
+> **Depends on:** 12.1–12.4
+- [ ] Full project build passes (`xcodebuild build`)
+- [ ] All WHOOP test suites pass (`WhoopModelTests`, `WhoopClientTests`, `WhoopAuthTests`)
+- [x] Manual test with real WHOOP credentials — OAuth flow works, tokens stored
+
+### 12.7: Fix OAuth Runtime Issues (completed during real-device testing)
+> **Depends on:** 12.6
+- [x] Fix `ASWebAuthenticationSession` dispatch crash — completion handler inherits `@MainActor` from class, but fires on XPC thread. Fix: `nonisolated` method + `@Sendable` handler defined outside `DispatchQueue.main.async` + `nonisolated(unsafe)` on `activeSession` property
+- [x] Fix `WhoopTokenResponse` decode failure — WHOOP doesn't return `refresh_token`. Made field optional.
+- [x] Route WHOOP client credentials through `EnvironmentConfig` (`.env` file) instead of requiring manual Keychain seeding
+- [x] Add debug logging for token decode failures
+
+---
+
+## Phase 13 — WHOOP Sync Wiring
+
+> **Context:** The sync infrastructure is fully built (WhoopClient, WhoopSyncManager, AppState.startWhoopSync, CompactWhoopStrip, DashboardViewModel WHOOP metrics) but nothing connects the pieces at runtime. After linking in Settings, no sync fires, the dashboard never gets data, and sync status is never reported. This phase wires everything together.
+
+### 13.1: Start Sync on App Launch
+> **Depends on:** 12.7 (OAuth works, tokens stored)
+- [x] `OverwatchApp.swift` or `NavigationShell.swift` — on appear, check if WHOOP is authenticated (`KeychainHelper.readString(whoopAccessToken) != nil`)
+- [x] If authenticated, call `AppState.shared.startWhoopSync(modelContainer:)` to begin the 30-minute recurring sync loop
+- [x] Verify `AppState` is accessible as `@Environment` or singleton — check how it's currently structured and wire it in
+- [x] First sync fires immediately on launch, populating SwiftData with WhoopCycle records
+
+### 13.2: Trigger Sync After Linking in Settings
+> **Depends on:** 13.1 (AppState wiring in place)
+- [x] `SettingsView.connectWhoop()` — after `auth.authorize()` succeeds AND `markWhoopConnected()`, call `AppState.shared.startWhoopSync(modelContainer:)` to kick off first sync immediately
+- [x] If sync is already running (re-link scenario), stop and restart it with fresh auth
+- [x] Show "SYNCING..." indicator in Settings WHOOP section while first sync runs
+
+### 13.3: Feed Sync Status into Dashboard
+> **Depends on:** 13.1
+- [x] Connect `DashboardViewModel.syncStatus` to `AppState.whoopSyncStatus` — either observe directly or relay via `@Environment`
+- [x] Connect `DashboardViewModel.whoopError` to sync error state so `CompactWhoopStrip` can show "BIOMETRIC SIGNAL LOST" on API failures
+- [x] `DashboardViewModel.loadData(from:)` — after sync completes, re-query SwiftData for latest WhoopCycle so the strip updates without requiring a view re-appear
+- [ ] Verify: link in Settings → navigate to Dashboard → strip shows real recovery/sleep/strain/HRV data
+
+### 13.4: Handle Token Expiry (No Refresh Token)
+> **Depends on:** 13.1
+- [x] WHOOP's PKCE flow returns no `refresh_token` — access token expires in 1 hour
+- [x] `WhoopClient` already retries on 401 by calling `authProvider.refreshTokens()` — but refresh will fail (`refreshTokenMissing`)
+- [x] After 401 + failed refresh, update sync status to show "SESSION EXPIRED — Reconnect WHOOP" in dashboard strip and Settings
+- [x] User re-authorizes in Settings → new token → sync resumes
+- [ ] Consider: auto-prompt re-auth when 401 detected (stretch goal, not blocking)
+
+### 13.5: Verify End-to-End Flow
+> **Depends on:** 13.1–13.4
+- [x] Cold launch with stored tokens → sync fires → dashboard shows real WHOOP data
+- [ ] Link WHOOP in Settings → first sync → dashboard updates on navigate back
+- [x] Wait for token expiry (1hr) → sync gracefully degrades → re-auth restores it
+- [x] Unlink in Settings → sync stops → dashboard shows "LINK BIOMETRIC SOURCE"
+- [x] App with no WHOOP credentials → dashboard shows prompt → Settings link → full flow works

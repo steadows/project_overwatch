@@ -49,6 +49,9 @@ actor WhoopSyncManager {
                 let update = await self.performSync()
                 onStatusChange(update)
 
+                // Stop the loop on fatal auth errors — no point retrying with expired tokens
+                if case .sessionExpired = update { break }
+
                 do {
                     try await Task.sleep(for: .seconds(self.syncInterval))
                 } catch {
@@ -82,6 +85,11 @@ actor WhoopSyncManager {
             logger.info("WHOOP sync complete — \(count) cycles updated")
             return .synced(Date(), cyclesUpdated: count)
         } catch {
+            if let clientError = error as? WhoopClient.WhoopClientError,
+               case .sessionExpired = clientError {
+                logger.warning("WHOOP session expired — sync loop will stop, user must re-auth")
+                return .sessionExpired
+            }
             logger.error("WHOOP sync failed: \(error.localizedDescription)")
             return .error(error.localizedDescription)
         }
@@ -121,26 +129,11 @@ actor WhoopSyncManager {
             cycle.fetchedAt = .now
         }
 
-        // Overlay sleep data — match by finding the cycle whose date range contains the sleep end
+        // Overlay sleep data onto matching cycles via cycleId (v2 provides this directly)
         for record in sleep.records where !record.nap {
-            // Sleep records don't have a cycleId directly, so we find the cycle
-            // by matching the sleep end date to cycles. For simplicity, apply to
-            // the most recent cycle if we can't match exactly.
-            if let sleepEnd = DateFormatters.iso8601.date(from: record.end) {
-                let calendar = Calendar.current
-                let dayStart = calendar.startOfDay(for: sleepEnd)
-                let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
-
-                let predicate = #Predicate<WhoopCycle> { cycle in
-                    cycle.date >= dayStart && cycle.date < dayEnd
-                }
-                let descriptor = FetchDescriptor<WhoopCycle>(predicate: predicate)
-
-                if let matchingCycle = try context.fetch(descriptor).first {
-                    matchingCycle.applySleep(record)
-                    matchingCycle.fetchedAt = .now
-                }
-            }
+            let cycle = try findOrCreateCycle(cycleId: record.cycleId, in: context)
+            cycle.applySleep(record)
+            cycle.fetchedAt = .now
         }
 
         try context.save()
@@ -173,5 +166,7 @@ extension WhoopSyncManager {
         case syncing
         case synced(Date, cyclesUpdated: Int)
         case error(String)
+        /// Token expired and refresh failed — stop the loop, user must re-auth.
+        case sessionExpired
     }
 }

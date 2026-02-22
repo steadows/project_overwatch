@@ -70,12 +70,20 @@ protocol OAuthSessionProviding: Sendable {
 final class WebAuthSessionProvider: NSObject, OAuthSessionProviding,
     ASWebAuthenticationPresentationContextProviding, @unchecked Sendable
 {
-    func presentSession(url: URL, callbackScheme: String) async throws -> URL {
+    /// Retained to prevent deallocation while the browser session is active.
+    /// `nonisolated(unsafe)` because it's written on main (start) and cleared
+    /// from the XPC callback thread — both single-writer, non-concurrent.
+    nonisolated(unsafe) private var activeSession: ASWebAuthenticationSession?
+
+    nonisolated func presentSession(url: URL, callbackScheme: String) async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
-            let session = ASWebAuthenticationSession(
-                url: url,
-                callbackURLScheme: callbackScheme
-            ) { callbackURL, error in
+            // The completion handler is defined here — OUTSIDE DispatchQueue.main.async
+            // and marked @Sendable — so it does NOT inherit MainActor isolation.
+            // ASWebAuthenticationSession fires this on a background XPC thread;
+            // if the closure were MainActor-isolated, Swift 6's runtime would trap.
+            let handler: @Sendable (URL?, (any Error)?) -> Void = { [weak self] callbackURL, error in
+                self?.activeSession = nil
+
                 if let error {
                     if (error as NSError).code == ASWebAuthenticationSessionError.canceledLogin.rawValue {
                         continuation.resume(throwing: WhoopAuthError.authorizationCancelled)
@@ -93,10 +101,17 @@ final class WebAuthSessionProvider: NSObject, OAuthSessionProviding,
                 continuation.resume(returning: callbackURL)
             }
 
-            session.presentationContextProvider = self
-            session.prefersEphemeralWebBrowserSession = false
-
-            DispatchQueue.main.async {
+            // ASWebAuthenticationSession must be created and started on the main
+            // thread. The handler above runs on whatever thread the system chooses.
+            DispatchQueue.main.async { [self] in
+                let session = ASWebAuthenticationSession(
+                    url: url,
+                    callbackURLScheme: callbackScheme,
+                    completionHandler: handler
+                )
+                self.activeSession = session
+                session.presentationContextProvider = self
+                session.prefersEphemeralWebBrowserSession = false
                 session.start()
             }
         }
@@ -122,7 +137,7 @@ final class WebAuthSessionProvider: NSObject, OAuthSessionProviding,
 /// Maps the JSON response from WHOOP's `/oauth/oauth2/token` endpoint.
 struct WhoopTokenResponse: Codable, Sendable {
     let accessToken: String
-    let refreshToken: String
+    let refreshToken: String?
     let expiresIn: Int
     let tokenType: String
 
@@ -167,8 +182,8 @@ actor WhoopAuthManager: WhoopAuthProviding {
         /// Default configuration reading client ID and secret from Keychain.
         /// Falls back to empty strings — the manager validates before use.
         static let `default` = Configuration(
-            clientId: KeychainHelper.readString(key: KeychainHelper.Keys.whoopClientId) ?? "",
-            clientSecret: KeychainHelper.readString(key: KeychainHelper.Keys.whoopClientSecret) ?? "",
+            clientId: EnvironmentConfig.whoopClientId ?? "",
+            clientSecret: EnvironmentConfig.whoopClientSecret ?? "",
             redirectURI: "overwatch://whoop/callback",
             scopes: ["read:recovery", "read:cycles", "read:sleep", "read:profile"],
             authorizationURL: "https://api.prod.whoop.com/oauth/oauth2/auth",
@@ -476,6 +491,11 @@ actor WhoopAuthManager: WhoopAuthProviding {
             let tokenResponse = try JSONDecoder().decode(WhoopTokenResponse.self, from: data)
             return tokenResponse
         } catch {
+            #if DEBUG
+            let bodyString = String(data: data, encoding: .utf8) ?? "<unreadable>"
+            print("[WhoopAuth] Token decode failed. Response body:\n\(bodyString)")
+            print("[WhoopAuth] Decode error: \(error)")
+            #endif
             throw WhoopAuthError.tokenResponseMalformed
         }
     }
@@ -487,8 +507,10 @@ actor WhoopAuthManager: WhoopAuthProviding {
         // Store access token.
         KeychainHelper.save(key: KeychainHelper.Keys.whoopAccessToken, string: response.accessToken)
 
-        // Store refresh token.
-        KeychainHelper.save(key: KeychainHelper.Keys.whoopRefreshToken, string: response.refreshToken)
+        // Store refresh token (if provided).
+        if let refreshToken = response.refreshToken {
+            KeychainHelper.save(key: KeychainHelper.Keys.whoopRefreshToken, string: refreshToken)
+        }
 
         // Compute and store the absolute expiry timestamp.
         let expiry = Date().addingTimeInterval(TimeInterval(response.expiresIn))

@@ -24,7 +24,11 @@ final class AppState {
 
     /// Initialize and start WHOOP sync with the given model container.
     /// Call this from the app's root view once the container is available.
+    /// Safe to call multiple times — subsequent calls are no-ops unless sync is stopped first.
     func startWhoopSync(modelContainer: ModelContainer) {
+        // Guard against double-start
+        guard syncManager == nil else { return }
+
         let authManager = WhoopAuthManager()
         let client = WhoopClient(authProvider: authManager)
         let sync = WhoopSyncManager(client: client, modelContainer: modelContainer)
@@ -43,6 +47,9 @@ final class AppState {
                         self.whoopSyncStatus = .synced(date)
                     case .error(let message):
                         self.whoopSyncStatus = .error(message)
+                    case .sessionExpired:
+                        self.whoopSyncStatus = .error("SESSION EXPIRED — Reconnect WHOOP")
+                        self.syncManager = nil
                     }
                 }
             }
@@ -56,5 +63,12 @@ final class AppState {
         }
         syncManager = nil
         whoopSyncStatus = .idle
+    }
+
+    /// Stop the current sync and start a fresh one (e.g., after re-linking in Settings).
+    func restartWhoopSync(modelContainer: ModelContainer) {
+        stopWhoopSync()
+        // stopWhoopSync sets syncManager to nil, so startWhoopSync's guard passes
+        startWhoopSync(modelContainer: modelContainer)
     }
 }

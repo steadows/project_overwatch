@@ -3,6 +3,7 @@ import SwiftData
 import UniformTypeIdentifiers
 
 struct SettingsView: View {
+    @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = SettingsViewModel()
 
@@ -103,6 +104,7 @@ struct SettingsView: View {
                         .tint(OverwatchTheme.accentCyan)
                 } else if viewModel.whoopStatus == .linked {
                     hudButton("DISCONNECT", color: OverwatchTheme.alert) {
+                        appState.stopWhoopSync()
                         viewModel.disconnectWhoop()
                     }
                 } else {
@@ -723,6 +725,8 @@ struct SettingsView: View {
             do {
                 try await auth.authorize()
                 viewModel.markWhoopConnected()
+                // Kick off sync immediately after linking (or restart if re-linking)
+                appState.restartWhoopSync(modelContainer: modelContext.container)
             } catch {
                 viewModel.whoopError = error.localizedDescription
             }
@@ -846,6 +850,7 @@ private struct ExportFileDocument: FileDocument {
         GridBackdrop().ignoresSafeArea()
         SettingsView()
     }
+    .environment(AppState())
     .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, WhoopCycle.self],
                     inMemory: true)
     .frame(width: 800, height: 900)

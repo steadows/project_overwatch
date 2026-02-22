@@ -5,8 +5,9 @@ struct WhoopSleepResponse: Codable, Sendable {
     let nextToken: String?
 
     struct Record: Codable, Sendable {
-        let id: Int
+        let id: String
         let userId: Int
+        let cycleId: Int
         let createdAt: String
         let updatedAt: String
         let start: String
@@ -73,6 +74,7 @@ struct WhoopSleepResponse: Codable, Sendable {
         enum CodingKeys: String, CodingKey {
             case id
             case userId = "user_id"
+            case cycleId = "cycle_id"
             case createdAt = "created_at"
             case updatedAt = "updated_at"
             case start, end

@@ -3,6 +3,7 @@ import SwiftData
 import Charts
 
 struct TacticalDashboardView: View {
+    @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @Environment(\.navigateToSection) private var navigateToSection
     @State private var viewModel = DashboardViewModel()
@@ -34,7 +35,21 @@ struct TacticalDashboardView: View {
         }
         .onAppear {
             viewModel.loadData(from: modelContext)
+            viewModel.syncStatus = appState.whoopSyncStatus
             sectionsVisible = true
+        }
+        .onChange(of: appState.whoopSyncStatus) { _, newStatus in
+            viewModel.syncStatus = newStatus
+            // Reload WHOOP metrics when a sync completes so the strip updates live
+            if case .synced = newStatus {
+                viewModel.loadData(from: modelContext)
+            }
+            // Surface sync errors to the WHOOP strip
+            if case .error(let message) = newStatus {
+                viewModel.whoopError = message
+            } else {
+                viewModel.whoopError = nil
+            }
         }
         .sheet(isPresented: $showingAddHabit) {
             AddHabitSheet { name, emoji in
@@ -105,7 +120,12 @@ struct TacticalDashboardView: View {
         case .syncing: "SYNCING"
         case .synced(let date):
             "SYNCED \(DateFormatters.relative.localizedString(for: date, relativeTo: .now))"
-        case .error: "ERROR"
+        case .error:
+            if let lastSync = viewModel.whoopMetrics.lastSyncedAt {
+                "LAST SYNC: \(DateFormatters.relative.localizedString(for: lastSync, relativeTo: .now).uppercased())"
+            } else {
+                "SIGNAL LOST"
+            }
         }
     }
 
@@ -115,7 +135,7 @@ struct TacticalDashboardView: View {
         VStack(spacing: OverwatchTheme.Spacing.sm) {
             // Section header with summary and add button
             HStack {
-                sectionLabel("TODAY'S OPS")
+                sectionLabel(viewModel.isViewingToday ? "TODAY'S OPS" : "OPS LOG")
 
                 Spacer()
 
@@ -158,11 +178,119 @@ struct TacticalDashboardView: View {
                 .buttonStyle(.plain)
             }
 
+            // Date navigation strip
+            dateNavigationStrip
+
             // Habit toggle buttons
             if viewModel.trackedHabits.isEmpty {
                 emptyHabitsState
             } else {
                 habitToggleGrid
+            }
+        }
+    }
+
+    // MARK: - Date Navigation
+
+    private var dateNavigationStrip: some View {
+        HStack(spacing: OverwatchTheme.Spacing.md) {
+            // Back one day
+            Button {
+                withAnimation(Animations.quick) {
+                    viewModel.navigateDate(by: -1)
+                    viewModel.loadData(from: modelContext)
+                }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.7))
+                    .frame(width: 28, height: 28)
+                    .background(OverwatchTheme.accentCyan.opacity(0.06))
+                    .clipShape(HUDFrameShape(chamferSize: 5))
+                    .overlay(
+                        HUDFrameShape(chamferSize: 5)
+                            .stroke(OverwatchTheme.accentCyan.opacity(0.25), lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
+
+            // Date label
+            Text(viewModel.selectedDateLabel)
+                .font(Typography.hudLabel)
+                .foregroundStyle(
+                    viewModel.isViewingToday
+                        ? OverwatchTheme.accentCyan
+                        : OverwatchTheme.accentPrimary
+                )
+                .tracking(3)
+                .textGlow(
+                    viewModel.isViewingToday
+                        ? OverwatchTheme.accentCyan
+                        : OverwatchTheme.accentPrimary,
+                    radius: 4
+                )
+                .contentTransition(.numericText())
+                .animation(Animations.quick, value: viewModel.selectedDateLabel)
+
+            // Forward one day (disabled if viewing today)
+            Button {
+                withAnimation(Animations.quick) {
+                    viewModel.navigateDate(by: 1)
+                    viewModel.loadData(from: modelContext)
+                }
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(
+                        viewModel.isViewingToday
+                            ? OverwatchTheme.textSecondary.opacity(0.2)
+                            : OverwatchTheme.accentCyan.opacity(0.7)
+                    )
+                    .frame(width: 28, height: 28)
+                    .background(OverwatchTheme.accentCyan.opacity(0.06))
+                    .clipShape(HUDFrameShape(chamferSize: 5))
+                    .overlay(
+                        HUDFrameShape(chamferSize: 5)
+                            .stroke(
+                                viewModel.isViewingToday
+                                    ? OverwatchTheme.textSecondary.opacity(0.1)
+                                    : OverwatchTheme.accentCyan.opacity(0.25),
+                                lineWidth: 1
+                            )
+                    )
+            }
+            .buttonStyle(.plain)
+            .disabled(viewModel.isViewingToday)
+
+            Spacer()
+
+            // TODAY snap-back button (only visible when viewing a past date)
+            if !viewModel.isViewingToday {
+                Button {
+                    withAnimation(Animations.quick) {
+                        viewModel.goToToday()
+                        viewModel.loadData(from: modelContext)
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 9, weight: .medium))
+                        Text("TODAY")
+                            .font(Typography.hudLabel)
+                            .tracking(1)
+                    }
+                    .foregroundStyle(OverwatchTheme.accentCyan)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(OverwatchTheme.accentCyan.opacity(0.08))
+                    .clipShape(HUDFrameShape(chamferSize: 6))
+                    .overlay(
+                        HUDFrameShape(chamferSize: 6)
+                            .stroke(OverwatchTheme.accentCyan.opacity(0.4), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
             }
         }
     }
@@ -202,7 +330,7 @@ struct TacticalDashboardView: View {
     private var emptyHabitsState: some View {
         TacticalCard {
             VStack(spacing: OverwatchTheme.Spacing.md) {
-                Text("NO ACTIVE OPERATIONS")
+                Text("ESTABLISH FIRST OPERATION")
                     .font(Typography.hudLabel)
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.3))
                     .tracking(3)
@@ -217,7 +345,7 @@ struct TacticalDashboardView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "plus.circle")
-                        Text("ADD FIRST OPERATION")
+                        Text("ESTABLISH FIRST OPERATION")
                             .font(Typography.hudLabel)
                             .tracking(1)
                     }
@@ -247,7 +375,14 @@ struct TacticalDashboardView: View {
             CompactWhoopStrip(
                 metrics: viewModel.whoopMetrics,
                 hasData: viewModel.hasWhoopData,
-                isExpanded: $viewModel.isWhoopExpanded
+                errorMessage: viewModel.whoopError,
+                isExpanded: $viewModel.isWhoopExpanded,
+                onRetry: {
+                    viewModel.loadData(from: modelContext)
+                },
+                onNavigateToSettings: {
+                    navigateToSection(.settings)
+                }
             )
         }
     }
@@ -518,6 +653,7 @@ private struct AddHabitSheet: View {
         ScanLineOverlay().ignoresSafeArea()
         TacticalDashboardView()
     }
+    .environment(AppState())
     .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, WhoopCycle.self],
                     inMemory: true)
     .frame(width: 900, height: 800)

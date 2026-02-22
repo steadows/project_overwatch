@@ -16,7 +16,7 @@ struct WhoopCodableTests {
         {
             "records": [{
                 "cycle_id": 12345,
-                "sleep_id": 67890,
+                "sleep_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                 "user_id": 1,
                 "created_at": "2026-02-17T08:00:00.000Z",
                 "updated_at": "2026-02-17T08:00:00.000Z",
@@ -51,8 +51,9 @@ struct WhoopCodableTests {
         let json = """
         {
             "records": [{
-                "id": 67890,
+                "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
                 "user_id": 1,
+                "cycle_id": 12345,
                 "created_at": "2026-02-17T06:00:00.000Z",
                 "updated_at": "2026-02-17T06:00:00.000Z",
                 "start": "2026-02-16T22:30:00.000Z",
@@ -145,7 +146,7 @@ struct WhoopCycleTransformTests {
 
         let json = """
         {
-            "cycle_id": 1, "sleep_id": 2, "user_id": 1,
+            "cycle_id": 1, "sleep_id": "sleep-uuid-002", "user_id": 1,
             "created_at": "2026-02-17T08:00:00.000Z",
             "updated_at": "2026-02-17T08:00:00.000Z",
             "score_state": "SCORED",
@@ -174,7 +175,7 @@ struct WhoopCycleTransformTests {
 
         let json = """
         {
-            "id": 2, "user_id": 1,
+            "id": "sleep-uuid-002", "user_id": 1, "cycle_id": 1,
             "created_at": "2026-02-17T06:00:00.000Z",
             "updated_at": "2026-02-17T06:00:00.000Z",
             "start": "2026-02-16T22:00:00.000Z",

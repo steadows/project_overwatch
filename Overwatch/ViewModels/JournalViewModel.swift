@@ -472,10 +472,23 @@ final class JournalViewModel {
         // Build regression input — only include days with journal data and habits with variance
         let dayCount = calendar.dateComponents([.day], from: startDate, to: endDate).day ?? 30
 
+        // Fetch WHOOP cycles for the month to use sleep/HRV as biometric predictors
+        let whoopDescriptor = FetchDescriptor<WhoopCycle>(sortBy: [SortDescriptor(\.date)])
+        let allCycles = (try? context.fetch(whoopDescriptor)) ?? []
+        let monthCycles = allCycles.filter { $0.date >= startDate && $0.date < endDate }
+        // Build date → cycle lookup (use start-of-day as key)
+        var whoopByDay: [Date: WhoopCycle] = [:]
+        for cycle in monthCycles {
+            whoopByDay[calendar.startOfDay(for: cycle.date)] = cycle
+        }
+
         // Pass 1: collect only days that have journal entries (skip zero-padded gaps)
         var sentimentValues: [Double] = []
         var habitCompletionRows: [[Double]] = []
         var completionCounts = [Int](repeating: 0, count: habits.count)
+        // Track biometric values per day (nil = no WHOOP data that day)
+        var dailySleep: [Double?] = []
+        var dailyHRV: [Double?] = []
 
         for dayOffset in 0..<dayCount {
             guard let dayDate = calendar.date(byAdding: .day, value: dayOffset, to: startDate) else { continue }
@@ -499,6 +512,15 @@ final class JournalViewModel {
                 }
             }
             habitCompletionRows.append(row)
+
+            // Capture biometric values for this day
+            if let cycle = whoopByDay[dayStart] {
+                dailySleep.append(cycle.sleepPerformance / 100.0)  // Normalize to 0–1
+                dailyHRV.append(cycle.hrvRmssdMilli / 100.0)       // Scale to ~0–2 range
+            } else {
+                dailySleep.append(nil)
+                dailyHRV.append(nil)
+            }
         }
 
         let validDays = sentimentValues.count
@@ -519,15 +541,50 @@ final class JournalViewModel {
             return
         }
 
-        let filteredNames = includedIndices.map { habits[$0].name }
-        let filteredEmojis = includedIndices.map { habits[$0].emoji }
-        let filteredRates = includedIndices.map { Double(completionCounts[$0]) / max(1, Double(validDays)) }
+        var filteredNames = includedIndices.map { habits[$0].name }
+        var filteredEmojis = includedIndices.map { habits[$0].emoji }
+        var filteredRates = includedIndices.map { Double(completionCounts[$0]) / max(1, Double(validDays)) }
+
+        // Determine which biometric features have enough data (≥50% of days)
+        let sleepValues = dailySleep.compactMap { $0 }
+        let hrvValues = dailyHRV.compactMap { $0 }
+        let biometricThreshold = validDays / 2
+        let includeSleep = sleepValues.count >= biometricThreshold
+        let includeHRV = hrvValues.count >= biometricThreshold
+
+        // Mean-impute missing biometric values for days without WHOOP data
+        let sleepMean = includeSleep ? sleepValues.reduce(0, +) / Double(sleepValues.count) : 0
+        let hrvMean = includeHRV ? hrvValues.reduce(0, +) / Double(hrvValues.count) : 0
 
         // Build column-major feature matrix for included habits only
-        var featureMatrix = [Double](repeating: 0.0, count: validDays * includedIndices.count)
+        let biometricCols = (includeSleep ? 1 : 0) + (includeHRV ? 1 : 0)
+        let totalCols = includedIndices.count + biometricCols
+        var featureMatrix = [Double](repeating: 0.0, count: validDays * totalCols)
+
+        // Habit columns
         for (newCol, origCol) in includedIndices.enumerated() {
             for row in 0..<validDays {
                 featureMatrix[newCol * validDays + row] = habitCompletionRows[row][origCol]
+            }
+        }
+
+        // Biometric columns (appended after habits)
+        var biometricColIdx = includedIndices.count
+        if includeSleep {
+            filteredNames.append("Sleep Quality")
+            filteredEmojis.append("🌙")
+            filteredRates.append(sleepMean)
+            for row in 0..<validDays {
+                featureMatrix[biometricColIdx * validDays + row] = dailySleep[row] ?? sleepMean
+            }
+            biometricColIdx += 1
+        }
+        if includeHRV {
+            filteredNames.append("Heart Rate Variability")
+            filteredEmojis.append("💓")
+            filteredRates.append(hrvMean)
+            for row in 0..<validDays {
+                featureMatrix[biometricColIdx * validDays + row] = dailyHRV[row] ?? hrvMean
             }
         }
 

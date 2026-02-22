@@ -6,7 +6,7 @@ struct WhoopRecoveryResponse: Codable, Sendable {
 
     struct Record: Codable, Sendable {
         let cycleId: Int
-        let sleepId: Int
+        let sleepId: String
         let userId: Int
         let createdAt: String
         let updatedAt: String

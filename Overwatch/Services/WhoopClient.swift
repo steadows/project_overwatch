@@ -13,7 +13,7 @@ protocol WhoopAuthProviding: Sendable {
 
 // MARK: - WhoopClient
 
-/// HTTP client actor for all WHOOP API v1 endpoints.
+/// HTTP client actor for all WHOOP API v2 endpoints.
 ///
 /// Responsibilities:
 /// - Builds authenticated requests against the WHOOP Developer API
@@ -30,6 +30,7 @@ actor WhoopClient {
 
     enum WhoopClientError: Error, LocalizedError {
         case unauthorized
+        case sessionExpired
         case rateLimited
         case serverError(statusCode: Int)
         case networkError(Error)
@@ -41,6 +42,8 @@ actor WhoopClient {
             switch self {
             case .unauthorized:
                 return "WHOOP authentication failed. Please reconnect your account."
+            case .sessionExpired:
+                return "SESSION EXPIRED — Reconnect WHOOP"
             case .rateLimited:
                 return "WHOOP API rate limit exceeded. Please wait and try again."
             case .serverError(let statusCode):
@@ -107,7 +110,7 @@ actor WhoopClient {
         nextToken: String? = nil
     ) async throws -> WhoopRecoveryResponse {
         try await performRequest(
-            path: "/v1/recovery",
+            path: "/v2/recovery",
             start: start,
             end: end,
             nextToken: nextToken
@@ -126,7 +129,7 @@ actor WhoopClient {
         nextToken: String? = nil
     ) async throws -> WhoopSleepResponse {
         try await performRequest(
-            path: "/v1/activity/sleep",
+            path: "/v2/activity/sleep",
             start: start,
             end: end,
             nextToken: nextToken
@@ -145,7 +148,7 @@ actor WhoopClient {
         nextToken: String? = nil
     ) async throws -> WhoopStrainResponse {
         try await performRequest(
-            path: "/v1/cycle",
+            path: "/v2/cycle",
             start: start,
             end: end,
             nextToken: nextToken
@@ -173,7 +176,13 @@ actor WhoopClient {
             return try await executeWithBackoff(request: request)
         } catch WhoopClientError.unauthorized {
             logger.info("Received 401 — attempting token refresh and retry")
-            try await authProvider.refreshTokens()
+            do {
+                try await authProvider.refreshTokens()
+            } catch {
+                // Refresh failed (likely no refresh token) — session expired
+                logger.warning("Token refresh failed: \(error.localizedDescription)")
+                throw WhoopClientError.sessionExpired
+            }
             let refreshedRequest = try await buildRequest(
                 path: path,
                 start: start,

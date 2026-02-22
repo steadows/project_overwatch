@@ -82,6 +82,11 @@
 		FBF3BDF1041BF9D0FC528011 /* SentimentTrendChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3845B4FA7E854754FB3C2B83 /* SentimentTrendChart.swift */; };
 		FF91BEBACFEA10CFCE2481FE /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ED63C543382778534650C11 /* OnboardingView.swift */; };
 		FF94ABFC8180A44AAA5E6979 /* WhoopSleepResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58868E9C31BCD15B961AF0E /* WhoopSleepResponse.swift */; };
+		D1A2B3C4D5E6F7081234AB01 /* ReportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4D5E6F7081234AB02 /* ReportsViewModel.swift */; };
+		D1A2B3C4D5E6F7081234AB03 /* WarRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4D5E6F7081234AB04 /* WarRoomViewModel.swift */; };
+		D1A2B3C4D5E6F7081234AB05 /* HabitIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4D5E6F7081234AB06 /* HabitIcon.swift */; };
+		D1A2B3C4D5E6F7081234AB07 /* HabitIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4D5E6F7081234AB08 /* HabitIcons.swift */; };
+		E2A3B4C5D6E7F8091234CD01 /* HUDStatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A3B4C5D6E7F8091234CD02 /* HUDStatusBadge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -163,6 +168,7 @@
 		D4009C1C722C5DE7EC54F987 /* OverwatchTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchTheme.swift; sourceTree = "<group>"; };
 		DD5922A1BA228E3CCE8AC742 /* MetricTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricTile.swift; sourceTree = "<group>"; };
 		DD9BF0B64646A8744C672C70 /* HUDProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDProgressBar.swift; sourceTree = "<group>"; };
+		E2A3B4C5D6E7F8091234CD02 /* HUDStatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDStatusBadge.swift; sourceTree = "<group>"; };
 		E44B6452B8B7B194C410CE09 /* NavigationShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationShell.swift; sourceTree = "<group>"; };
 		E5F784AE552D2236B0B9A583 /* HabitsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsViewModel.swift; sourceTree = "<group>"; };
 		EFDD5FFD1958588953C7F613 /* EnvironmentConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentConfig.swift; sourceTree = "<group>"; };
@@ -173,6 +179,10 @@
 		F92258C596710BD37FB499AE /* HabitHeatMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitHeatMapView.swift; sourceTree = "<group>"; };
 		FC4AA737F93F001A27472CD3 /* WhoopAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoopAuthManager.swift; sourceTree = "<group>"; };
 		FE1A95B75F22EEC7A75A2345 /* HUDEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDEffects.swift; sourceTree = "<group>"; };
+		D1A2B3C4D5E6F7081234AB02 /* ReportsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsViewModel.swift; sourceTree = "<group>"; };
+		D1A2B3C4D5E6F7081234AB04 /* WarRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarRoomViewModel.swift; sourceTree = "<group>"; };
+		D1A2B3C4D5E6F7081234AB06 /* HabitIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitIcon.swift; sourceTree = "<group>"; };
+		D1A2B3C4D5E6F7081234AB08 /* HabitIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitIcons.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +236,7 @@
 				1F5A27E5D06DF5E810A94D93 /* AnimationPatterns.swift */,
 				27A80366065F062A710C5BB2 /* Animations.swift */,
 				0BF76266B236312993044564 /* DataStreamTexture.swift */,
+				D1A2B3C4D5E6F7081234AB08 /* HabitIcons.swift */,
 				FE1A95B75F22EEC7A75A2345 /* HUDEffects.swift */,
 				D4009C1C722C5DE7EC54F987 /* OverwatchTheme.swift */,
 				F36B8AD6E08E3B6A9E267FAD /* ParticleScatter.swift */,
@@ -296,8 +307,10 @@
 			children = (
 				165ACC738C194AAF49E33C92 /* ArcGauge.swift */,
 				F92258C596710BD37FB499AE /* HabitHeatMapView.swift */,
+				D1A2B3C4D5E6F7081234AB06 /* HabitIcon.swift */,
 				239D4A6572D3DB45643A4698 /* HabitTrendChartView.swift */,
 				DD9BF0B64646A8744C672C70 /* HUDProgressBar.swift */,
+				E2A3B4C5D6E7F8091234CD02 /* HUDStatusBadge.swift */,
 				8451A512F411B3CD74CD5D43 /* JournalTimelineView.swift */,
 				DD5922A1BA228E3CCE8AC742 /* MetricTile.swift */,
 				5704FDDA0FF35480FAE50550 /* SentimentIndicator.swift */,
@@ -316,7 +329,9 @@
 				E5F784AE552D2236B0B9A583 /* HabitsViewModel.swift */,
 				63793EDC19B80E2FDE3CD4FC /* JournalTimelineViewModel.swift */,
 				84E522582AD7C35D7848DA8F /* JournalViewModel.swift */,
+				D1A2B3C4D5E6F7081234AB02 /* ReportsViewModel.swift */,
 				6578E697E3C44E2FAE90062B /* SettingsViewModel.swift */,
+				D1A2B3C4D5E6F7081234AB04 /* WarRoomViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -480,10 +495,13 @@
 				8B253BBBCF305B4B25063E1E /* GeminiService.swift in Sources */,
 				C6EF1E7653F6ABBFDCDD416B /* HUDEffects.swift in Sources */,
 				C219048FFC448BE7AEA82FAC /* HUDProgressBar.swift in Sources */,
+				E2A3B4C5D6E7F8091234CD01 /* HUDStatusBadge.swift in Sources */,
 				7041330AFA84163E0240C9D8 /* Habit.swift in Sources */,
 				3272F7CF36D481B20C37D744 /* HabitCoefficient.swift in Sources */,
 				C01926889B58ECB230A863B9 /* HabitEntry.swift in Sources */,
 				822FB66DA892D80770DC8E53 /* HabitHeatMapView.swift in Sources */,
+				D1A2B3C4D5E6F7081234AB05 /* HabitIcon.swift in Sources */,
+				D1A2B3C4D5E6F7081234AB07 /* HabitIcons.swift in Sources */,
 				4CD1F93FEA9F02AC61BF6187 /* HabitPanelView.swift in Sources */,
 				0E0298651DDD47C81F0452B0 /* HabitToggleButton.swift in Sources */,
 				0756F64A928CF3CDB5B636CC /* HabitTrendChartView.swift in Sources */,
@@ -507,6 +525,7 @@
 				0C7953E11319A530AA655BB6 /* ParticleScatter.swift in Sources */,
 				75CEDC2B6AECB64893C1C1F9 /* QuickInputView.swift in Sources */,
 				023002557CDA63B070BCB1F2 /* RegressionService.swift in Sources */,
+				D1A2B3C4D5E6F7081234AB01 /* ReportsViewModel.swift in Sources */,
 				0EB8451F32100B9B9320BC53 /* ReportsView.swift in Sources */,
 				A9618CB35A985FA80379511F /* SentimentAnalysisService.swift in Sources */,
 				4B8496038AF8E3EAFAF0CDCB /* SentimentIndicator.swift in Sources */,
@@ -519,6 +538,7 @@
 				69A6A1478EA399924343FA5C /* TacticalCard.swift in Sources */,
 				6736B570946DCAA68C6AEEA9 /* TacticalDashboardView.swift in Sources */,
 				1DCAB98672B7CD01F7E13225 /* Typography.swift in Sources */,
+				D1A2B3C4D5E6F7081234AB03 /* WarRoomViewModel.swift in Sources */,
 				3550A0B44C1425487C15E95B /* WarRoomView.swift in Sources */,
 				5DEEDFEBAE5C0D56EBCD4DE3 /* WeeklyInsight.swift in Sources */,
 				F42DBD126093307D5779CB1D /* WhoopAuthManager.swift in Sources */,

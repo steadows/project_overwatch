@@ -42,6 +42,8 @@ enum NavigationSection: String, CaseIterable, Identifiable {
 
 /// Custom sidebar + detail layout. Full HUD styling — not NavigationSplitView.
 struct NavigationShell: View {
+    @Environment(AppState.self) private var appState
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedSection: NavigationSection = .dashboard
     @State private var isSidebarExpanded = true
     @State private var appeared = false
@@ -59,7 +61,16 @@ struct NavigationShell: View {
             detailView
         }
         .background(OverwatchTheme.background)
-        .onAppear { appeared = true }
+        .onAppear {
+            appeared = true
+            startWhoopSyncIfAuthenticated()
+        }
+    }
+
+    /// Check if WHOOP tokens exist in Keychain and kick off the recurring sync loop.
+    private func startWhoopSyncIfAuthenticated() {
+        guard KeychainHelper.readString(key: KeychainHelper.Keys.whoopAccessToken) != nil else { return }
+        appState.startWhoopSync(modelContainer: modelContext.container)
     }
 
     // MARK: - Sidebar
@@ -326,6 +337,7 @@ private struct SidebarItem: View {
 
 #Preview("Navigation Shell") {
     NavigationShell()
+        .environment(AppState())
         .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, MonthlyAnalysis.self, WhoopCycle.self],
                         inMemory: true)
         .frame(width: 1100, height: 700)
@@ -333,6 +345,7 @@ private struct SidebarItem: View {
 
 #Preview("Sidebar Collapsed") {
     NavigationShell()
+        .environment(AppState())
         .modelContainer(for: [Habit.self, HabitEntry.self, JournalEntry.self, MonthlyAnalysis.self, WhoopCycle.self],
                         inMemory: true)
         .frame(width: 900, height: 600)

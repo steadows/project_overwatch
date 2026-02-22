@@ -351,6 +351,7 @@ struct RootView: View {
     @State private var bootComplete = false
     @State private var showOnboarding = false
     @State private var showApp = false
+    @State private var appState = AppState()
 
     var body: some View {
         ZStack {
@@ -372,6 +373,7 @@ struct RootView: View {
                 .transition(.opacity)
             }
         }
+        .environment(appState)
         .animation(.easeInOut(duration: 0.5), value: bootComplete)
         .animation(.easeInOut(duration: 0.4), value: showOnboarding)
     }

@@ -25,6 +25,13 @@ final class DashboardViewModel {
 
     var whoopMetrics = WhoopMetrics.empty
     var syncStatus: AppState.SyncStatus = .idle
+    var whoopError: String?
+
+    /// True when WHOOP was connected but API returned an error (distinct from "not connected")
+    var hasWhoopError: Bool { whoopError != nil }
+
+    /// True when the Gemini API key is configured
+    var geminiAvailable: Bool { EnvironmentConfig.geminiAPIKey != nil }
 
     // MARK: - Habit Summary
 
@@ -73,6 +80,38 @@ final class DashboardViewModel {
     }
 
     var sentimentPulse = SentimentPulse.empty
+
+    // MARK: - Date Navigation
+
+    /// The date the habit section is showing. Defaults to today.
+    var selectedDate: Date = .now
+
+    /// True when `selectedDate` is the current calendar day.
+    var isViewingToday: Bool {
+        Calendar.current.isDateInToday(selectedDate)
+    }
+
+    /// Display label for the selected date (e.g. "TODAY" or "FEB 18, 2026").
+    var selectedDateLabel: String {
+        if isViewingToday { return "TODAY" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: selectedDate).uppercased()
+    }
+
+    /// Step forward or backward by a number of days.
+    func navigateDate(by days: Int) {
+        guard let newDate = Calendar.current.date(byAdding: .day, value: days, to: selectedDate) else { return }
+        // Don't allow navigating into the future
+        let todayEnd = Calendar.current.startOfDay(for: .now)
+        if newDate > todayEnd { return }
+        selectedDate = newDate
+    }
+
+    /// Snap back to today.
+    func goToToday() {
+        selectedDate = .now
+    }
 
     // MARK: - Dashboard Interaction State
 
@@ -124,28 +163,28 @@ final class DashboardViewModel {
         let totalHabits = (try? context.fetchCount(habitsDescriptor)) ?? 0
 
         let calendar = Calendar.current
-        let todayStart = calendar.startOfDay(for: .now)
-        let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
+        let dayStart = calendar.startOfDay(for: selectedDate)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
 
-        let todayPredicate = #Predicate<HabitEntry> { entry in
-            entry.date >= todayStart && entry.date < todayEnd && entry.completed
+        let dayPredicate = #Predicate<HabitEntry> { entry in
+            entry.date >= dayStart && entry.date < dayEnd && entry.completed
         }
-        let todayDescriptor = FetchDescriptor<HabitEntry>(predicate: todayPredicate)
-        let completedToday = (try? context.fetchCount(todayDescriptor)) ?? 0
+        let dayDescriptor = FetchDescriptor<HabitEntry>(predicate: dayPredicate)
+        let completedOnDay = (try? context.fetchCount(dayDescriptor)) ?? 0
 
         habitSummary = HabitSummary(
             totalHabits: totalHabits,
-            completedToday: completedToday,
+            completedToday: completedOnDay,
             currentStreak: 0
         )
     }
 
     private func loadTrackedHabits(from context: ModelContext) {
         let calendar = Calendar.current
-        let todayStart = calendar.startOfDay(for: .now)
-        let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
-        let weekStart = calendar.date(byAdding: .day, value: -7, to: todayStart)!
-        let monthStart = calendar.date(byAdding: .day, value: -30, to: todayStart)!
+        let dayStart = calendar.startOfDay(for: selectedDate)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+        let weekStart = calendar.date(byAdding: .day, value: -7, to: dayStart)!
+        let monthStart = calendar.date(byAdding: .day, value: -30, to: dayStart)!
 
         let descriptor = FetchDescriptor<Habit>(sortBy: [SortDescriptor(\.sortOrder), SortDescriptor(\.name)])
         guard let habits = try? context.fetch(descriptor) else {
@@ -156,21 +195,21 @@ final class DashboardViewModel {
         trackedHabits = habits.map { habit in
             let entries = habit.entries
 
-            let completedToday = entries.contains { entry in
-                entry.date >= todayStart && entry.date < todayEnd && entry.completed
+            let completedOnDay = entries.contains { entry in
+                entry.date >= dayStart && entry.date < dayEnd && entry.completed
             }
 
-            // Count unique completed days in the last 7 days
+            // Count unique completed days in the 7 days ending on selectedDate
             let weeklyDays = Set(
                 entries
-                    .filter { $0.date >= weekStart && $0.completed }
+                    .filter { $0.date >= weekStart && $0.date < dayEnd && $0.completed }
                     .map { calendar.startOfDay(for: $0.date) }
             ).count
 
-            // Count unique completed days in the last 30 days
+            // Count unique completed days in the 30 days ending on selectedDate
             let monthlyDays = Set(
                 entries
-                    .filter { $0.date >= monthStart && $0.completed }
+                    .filter { $0.date >= monthStart && $0.date < dayEnd && $0.completed }
                     .map { calendar.startOfDay(for: $0.date) }
             ).count
 
@@ -182,7 +221,7 @@ final class DashboardViewModel {
                 id: habit.id,
                 name: habit.name,
                 emoji: habit.emoji,
-                completedToday: completedToday,
+                completedToday: completedOnDay,
                 weeklyRate: min(weeklyTarget > 0 ? Double(weeklyDays) / weeklyTarget : 0, 1.0),
                 monthlyRate: min(monthlyTarget > 0 ? Double(monthlyDays) / monthlyTarget : 0, 1.0)
             )
@@ -267,25 +306,27 @@ final class DashboardViewModel {
         loadData(from: context)
     }
 
-    /// Toggle today's completion for a habit.
+    /// Toggle completion for a habit on the selected date.
     func toggleHabitCompletion(_ habitID: UUID, in context: ModelContext) {
         let calendar = Calendar.current
-        let todayStart = calendar.startOfDay(for: .now)
-        let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
+        let dayStart = calendar.startOfDay(for: selectedDate)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
 
         let descriptor = FetchDescriptor<Habit>()
         guard let habits = try? context.fetch(descriptor),
               let habit = habits.first(where: { $0.id == habitID }) else { return }
 
-        // Delete ALL completed entries for today (not just the first)
-        let todayEntries = habit.entries.filter {
-            $0.date >= todayStart && $0.date < todayEnd && $0.completed
+        // Delete ALL completed entries for the selected day (not just the first)
+        let dayEntries = habit.entries.filter {
+            $0.date >= dayStart && $0.date < dayEnd && $0.completed
         }
 
-        if !todayEntries.isEmpty {
-            todayEntries.forEach { context.delete($0) }
+        if !dayEntries.isEmpty {
+            dayEntries.forEach { context.delete($0) }
         } else {
-            let entry = HabitEntry(date: .now, completed: true)
+            // Place entry at noon on the selected day so it sorts well
+            let entryDate = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: selectedDate) ?? selectedDate
+            let entry = HabitEntry(date: entryDate, completed: true)
             entry.habit = habit
             context.insert(entry)
         }
@@ -295,7 +336,7 @@ final class DashboardViewModel {
         loadData(from: context)
     }
 
-    /// Toggle today's completion with optional value and notes.
+    /// Confirm a habit entry with optional value and notes on the selected date.
     func confirmHabitEntry(
         _ habitID: UUID,
         value: Double?,
@@ -303,20 +344,21 @@ final class DashboardViewModel {
         in context: ModelContext
     ) {
         let calendar = Calendar.current
-        let todayStart = calendar.startOfDay(for: .now)
-        let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
+        let dayStart = calendar.startOfDay(for: selectedDate)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
 
         let descriptor = FetchDescriptor<Habit>()
         guard let habits = try? context.fetch(descriptor),
               let habit = habits.first(where: { $0.id == habitID }) else { return }
 
-        // Remove ALL existing today entries before creating the confirmed one
+        // Remove ALL existing entries for the selected day before creating the confirmed one
         habit.entries
-            .filter { $0.date >= todayStart && $0.date < todayEnd && $0.completed }
+            .filter { $0.date >= dayStart && $0.date < dayEnd && $0.completed }
             .forEach { context.delete($0) }
 
-        // Create new entry with value and notes
-        let entry = HabitEntry(date: .now, completed: true)
+        // Place entry at noon on the selected day
+        let entryDate = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: selectedDate) ?? selectedDate
+        let entry = HabitEntry(date: entryDate, completed: true)
         entry.value = value
         entry.notes = notes
         entry.habit = habit

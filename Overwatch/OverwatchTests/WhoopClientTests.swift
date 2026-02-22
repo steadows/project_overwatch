@@ -109,7 +109,7 @@ struct WhoopClientEndpointTests {
         let json = """
         {
             "records": [{
-                "cycle_id": 100, "sleep_id": 200, "user_id": 1,
+                "cycle_id": 100, "sleep_id": "sleep-uuid-200", "user_id": 1,
                 "created_at": "2026-02-17T08:00:00.000Z",
                 "updated_at": "2026-02-17T08:00:00.000Z",
                 "score_state": "SCORED",
@@ -137,7 +137,7 @@ struct WhoopClientEndpointTests {
         let json = """
         {
             "records": [{
-                "id": 200, "user_id": 1,
+                "id": "sleep-uuid-200", "user_id": 1, "cycle_id": 100,
                 "created_at": "2026-02-17T06:00:00.000Z",
                 "updated_at": "2026-02-17T06:00:00.000Z",
                 "start": "2026-02-16T22:00:00.000Z",
