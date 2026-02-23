@@ -53,6 +53,13 @@ struct SettingsView: View {
         ) { result in
             handleExportResult(result, label: "CSV")
         }
+        .onChange(of: appState.whoopSyncStatus) { _, newStatus in
+            if case .synced(let date) = newStatus {
+                viewModel.lastSyncDisplay = DateFormatters.relative.localizedString(
+                    for: date, relativeTo: .now
+                ).uppercased()
+            }
+        }
     }
 
     // MARK: - Connections
@@ -89,7 +96,7 @@ struct SettingsView: View {
                             .frame(width: 6, height: 6)
                             .shadow(color: whoopStatusColor.opacity(0.6), radius: 3)
 
-                        Text(viewModel.whoopStatus == .linked ? "LINKED" : "DISCONNECTED")
+                        Text(whoopStatusLabel)
                             .font(Typography.hudLabel)
                             .foregroundStyle(whoopStatusColor)
                             .tracking(1.5)
@@ -103,9 +110,17 @@ struct SettingsView: View {
                         .controlSize(.small)
                         .tint(OverwatchTheme.accentCyan)
                 } else if viewModel.whoopStatus == .linked {
-                    hudButton("DISCONNECT", color: OverwatchTheme.alert) {
-                        appState.stopWhoopSync()
-                        viewModel.disconnectWhoop()
+                    if case .error(let msg) = appState.whoopSyncStatus, msg.contains("SESSION EXPIRED") {
+                        hudButton("RECONNECT", color: OverwatchTheme.accentPrimary) {
+                            appState.stopWhoopSync()
+                            viewModel.disconnectWhoop()
+                            connectWhoop()
+                        }
+                    } else {
+                        hudButton("DISCONNECT", color: OverwatchTheme.alert) {
+                            appState.stopWhoopSync()
+                            viewModel.disconnectWhoop()
+                        }
                     }
                 } else {
                     hudButton("CONNECT WHOOP", color: OverwatchTheme.accentCyan) {
@@ -691,7 +706,26 @@ struct SettingsView: View {
     }
 
     private var whoopStatusColor: Color {
-        viewModel.whoopStatus == .linked ? OverwatchTheme.accentSecondary : OverwatchTheme.alert
+        if viewModel.whoopStatus == .linked {
+            if case .error = appState.whoopSyncStatus {
+                return OverwatchTheme.accentPrimary // Amber — linked but sync error
+            }
+            return OverwatchTheme.accentSecondary
+        }
+        return OverwatchTheme.alert
+    }
+
+    private var whoopStatusLabel: String {
+        if viewModel.whoopStatus == .linked {
+            if case .error(let msg) = appState.whoopSyncStatus {
+                return msg.contains("SESSION EXPIRED") ? "SESSION EXPIRED" : "LINKED"
+            }
+            if case .syncing = appState.whoopSyncStatus {
+                return "SYNCING..."
+            }
+            return "LINKED"
+        }
+        return "DISCONNECTED"
     }
 
     private var geminiStatusColor: Color {
@@ -723,11 +757,16 @@ struct SettingsView: View {
             viewModel.whoopError = nil
             let auth = WhoopAuthManager()
             do {
+                print("[WHOOP] Starting OAuth flow...")
                 try await auth.authorize()
+                print("[WHOOP] OAuth succeeded — tokens stored")
                 viewModel.markWhoopConnected()
-                // Kick off sync immediately after linking (or restart if re-linking)
-                appState.restartWhoopSync(modelContainer: modelContext.container)
+                // Pass the same auth manager to sync — its in-memory tokens are guaranteed valid.
+                // Creating a new WhoopAuthManager would read from Keychain, which may fail silently.
+                appState.restartWhoopSync(modelContainer: modelContext.container, authProvider: auth)
+                print("[WHOOP] Sync restart triggered (reusing auth)")
             } catch {
+                print("[WHOOP] OAuth FAILED: \(error)")
                 viewModel.whoopError = error.localizedDescription
             }
             viewModel.isConnectingWhoop = false

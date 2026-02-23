@@ -71,11 +71,15 @@ actor WhoopSyncManager {
     func performSync() async -> SyncUpdate {
         logger.info("Starting WHOOP sync")
 
+        // Always request at least the last 7 days so today's in-progress cycle is included.
+        let end = Date.now
+        let start = Calendar.current.date(byAdding: .day, value: -7, to: end) ?? end
+
         do {
             // Fetch all three endpoints. Run in parallel for speed.
-            async let recoveryResult = client.fetchRecovery()
-            async let sleepResult = client.fetchSleep()
-            async let strainResult = client.fetchStrain()
+            async let recoveryResult = client.fetchRecovery(start: start, end: end)
+            async let sleepResult = client.fetchSleep(start: start, end: end)
+            async let strainResult = client.fetchStrain(start: start, end: end)
 
             let (recovery, sleep, strain) = try await (recoveryResult, sleepResult, strainResult)
 

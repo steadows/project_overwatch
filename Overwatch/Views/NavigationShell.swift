@@ -65,6 +65,10 @@ struct NavigationShell: View {
             appeared = true
             startWhoopSyncIfAuthenticated()
         }
+        .onChange(of: selectedSection) { _, _ in
+            // If sync died overnight (session expired, error), restart it when the user navigates
+            appState.ensureSyncRunning(modelContainer: modelContext.container)
+        }
     }
 
     /// Check if WHOOP tokens exist in Keychain and kick off the recurring sync loop.

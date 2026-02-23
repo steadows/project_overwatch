@@ -505,17 +505,20 @@ actor WhoopAuthManager: WhoopAuthProviding {
     /// Persist tokens to Keychain and update the in-memory cache.
     private func storeTokens(_ response: WhoopTokenResponse) {
         // Store access token.
-        KeychainHelper.save(key: KeychainHelper.Keys.whoopAccessToken, string: response.accessToken)
+        let accessSaved = KeychainHelper.save(key: KeychainHelper.Keys.whoopAccessToken, string: response.accessToken)
+        print("[WHOOP] Keychain save access token: \(accessSaved ? "OK" : "FAILED")")
 
         // Store refresh token (if provided).
         if let refreshToken = response.refreshToken {
-            KeychainHelper.save(key: KeychainHelper.Keys.whoopRefreshToken, string: refreshToken)
+            let refreshSaved = KeychainHelper.save(key: KeychainHelper.Keys.whoopRefreshToken, string: refreshToken)
+            print("[WHOOP] Keychain save refresh token: \(refreshSaved ? "OK" : "FAILED")")
         }
 
         // Compute and store the absolute expiry timestamp.
         let expiry = Date().addingTimeInterval(TimeInterval(response.expiresIn))
         let expiryString = String(expiry.timeIntervalSince1970)
-        KeychainHelper.save(key: KeychainHelper.Keys.whoopTokenExpiry, string: expiryString)
+        let expirySaved = KeychainHelper.save(key: KeychainHelper.Keys.whoopTokenExpiry, string: expiryString)
+        print("[WHOOP] Keychain save expiry: \(expirySaved ? "OK" : "FAILED")")
 
         // Update in-memory cache.
         cachedAccessToken = response.accessToken

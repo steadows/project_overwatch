@@ -37,6 +37,8 @@ struct TacticalDashboardView: View {
             viewModel.loadData(from: modelContext)
             viewModel.syncStatus = appState.whoopSyncStatus
             sectionsVisible = true
+            // If sync died (session expired overnight), restart it
+            appState.ensureSyncRunning(modelContainer: modelContext.container)
         }
         .onChange(of: appState.whoopSyncStatus) { _, newStatus in
             viewModel.syncStatus = newStatus
