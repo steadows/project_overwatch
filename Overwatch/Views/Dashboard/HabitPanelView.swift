@@ -34,6 +34,7 @@ struct HabitPanelView: View {
         HStack {
             HStack(spacing: OverwatchTheme.Spacing.xs) {
                 Image(systemName: "list.bullet.rectangle.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(OverwatchTheme.accentCyan)
                     .textGlow(OverwatchTheme.accentCyan, radius: 4)
                 Text("ACTIVE OPERATIONS")
@@ -56,7 +57,8 @@ struct HabitPanelView: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "plus")
-                        .font(.system(size: 10, weight: .medium))
+                        .symbolRenderingMode(.hierarchical)
+                        .font(Typography.hudLabel)
                     Text("ADD")
                         .font(Typography.hudLabel)
                         .tracking(1)
@@ -130,6 +132,7 @@ struct HabitPanelView: View {
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "plus.circle")
+                        .symbolRenderingMode(.hierarchical)
                     Text("ADD FIRST HABIT")
                         .font(Typography.hudLabel)
                         .tracking(1)
@@ -158,7 +161,7 @@ private struct HabitRow: View {
         HStack(spacing: 0) {
             // Emoji
             Text(habit.emoji.isEmpty ? "●" : habit.emoji)
-                .font(.system(size: 14))
+                .font(Typography.metricSmall)
                 .frame(width: 28)
 
             // Name

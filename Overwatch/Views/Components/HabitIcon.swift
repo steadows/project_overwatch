@@ -12,6 +12,7 @@ struct HabitIcon: View {
     var body: some View {
         if !iconName.isEmpty {
             Image(systemName: iconName)
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: size, weight: .medium))
                 .foregroundStyle(color)
                 .shadow(color: color.opacity(0.4), radius: 4)
@@ -19,6 +20,7 @@ struct HabitIcon: View {
             Text(emoji).font(.system(size: size))
         } else {
             Image(systemName: "circle.fill")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: size * 0.5))
                 .foregroundStyle(color.opacity(0.5))
         }

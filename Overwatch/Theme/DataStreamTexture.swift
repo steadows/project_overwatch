@@ -16,7 +16,7 @@ struct DataStreamTexture: View {
     @State private var lastSize: CGSize = .zero
 
     var body: some View {
-        TimelineView(.animation) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 12.0)) { timeline in
             Canvas { context, size in
                 if columns.isEmpty { return }
 

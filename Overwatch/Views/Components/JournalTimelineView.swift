@@ -91,7 +91,8 @@ struct JournalTimelineView: View {
                     } label: {
                         HStack(spacing: 3) {
                             Image(systemName: "xmark")
-                                .font(.system(size: 8, weight: .medium))
+                                .symbolRenderingMode(.hierarchical)
+                                .font(Typography.hudLabel)
                             Text("CLEAR")
                                 .font(Typography.hudLabel)
                                 .tracking(1)
@@ -253,7 +254,8 @@ struct JournalTimelineView: View {
     private var emptyState: some View {
         VStack(spacing: OverwatchTheme.Spacing.lg) {
             Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 36, weight: .thin))
+                .symbolRenderingMode(.hierarchical)
+                .font(Typography.largeTitle)
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
                 .shadow(color: OverwatchTheme.accentCyan.opacity(0.1), radius: 8)
 
@@ -363,7 +365,7 @@ private struct TimelineEntryRow: View {
         HStack(spacing: OverwatchTheme.Spacing.md) {
             // Emoji
             Text(entry.habitEmoji.isEmpty ? "●" : entry.habitEmoji)
-                .font(.system(size: 16))
+                .font(Typography.subtitle)
                 .frame(width: 22)
 
             // Info
@@ -418,13 +420,15 @@ private struct TimelineEntryRow: View {
             // Status indicator
             if entry.completed {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 9, weight: .medium))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.hudLabel)
                     .foregroundStyle(OverwatchTheme.accentSecondary.opacity(0.6))
             }
 
             // Expand chevron
             Image(systemName: "chevron.right")
-                .font(.system(size: 8, weight: .light))
+                .symbolRenderingMode(.hierarchical)
+                .font(Typography.hudLabel)
                 .foregroundStyle(OverwatchTheme.textSecondary.opacity(isHovered ? 0.5 : 0.2))
                 .rotationEffect(.degrees(isExpanded ? 90 : 0))
                 .animation(Animations.quick, value: isExpanded)
@@ -553,7 +557,8 @@ private struct FilterChip: View {
             HStack(spacing: 4) {
                 if let icon {
                     Image(systemName: icon)
-                        .font(.system(size: 8))
+                        .symbolRenderingMode(.hierarchical)
+                        .font(Typography.hudLabel)
                 }
                 Text(label)
                     .font(Typography.hudLabel)

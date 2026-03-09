@@ -71,6 +71,15 @@ actor WhoopSyncManager {
     func performSync() async -> SyncUpdate {
         logger.info("Starting WHOOP sync")
 
+        // Pre-flight: verify we have a token before spawning 3 parallel requests.
+        // Avoids triple "Failed to get access token" log spam when not connected.
+        do {
+            _ = try await client.preflight()
+        } catch {
+            logger.warning("WHOOP not authorized — skipping sync")
+            return .sessionExpired
+        }
+
         // Always request at least the last 7 days so today's in-progress cycle is included.
         let end = Date.now
         let start = Calendar.current.date(byAdding: .day, value: -7, to: end) ?? end

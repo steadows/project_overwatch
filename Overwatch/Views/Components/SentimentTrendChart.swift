@@ -196,7 +196,8 @@ struct SentimentTrendChart: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: "checkmark.circle")
-                    .font(.system(size: 10, weight: .medium))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.hudLabel)
                 Text("HABITS")
                     .font(Typography.hudLabel)
                     .tracking(1)
@@ -290,7 +291,8 @@ struct SentimentTrendChart: View {
                 weekOffset = min(weekOffset + 1, maxOffset)
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 10, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.hudLabel)
                     .foregroundStyle(
                         weekOffset < maxOffset
                             ? OverwatchTheme.accentCyan
@@ -311,7 +313,8 @@ struct SentimentTrendChart: View {
                 weekOffset = max(weekOffset - 1, 0)
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.hudLabel)
                     .foregroundStyle(
                         weekOffset > 0
                             ? OverwatchTheme.accentCyan
@@ -472,7 +475,8 @@ struct SentimentTrendChart: View {
     private var emptyState: some View {
         VStack(spacing: OverwatchTheme.Spacing.sm) {
             Image(systemName: "chart.xyaxis.line")
-                .font(.system(size: 28, weight: .thin))
+                .symbolRenderingMode(.hierarchical)
+                .font(Typography.title)
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 
             Text("INSUFFICIENT DATA")

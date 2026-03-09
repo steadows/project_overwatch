@@ -214,7 +214,7 @@ struct HabitHeatMapView: View {
             // No data for this cell (outside date range)
             return Color.clear
         case 0:
-            return Color(red: 0.11, green: 0.11, blue: 0.12) // #1C1C1E
+            return OverwatchTheme.surfaceEmpty
         case 0.01..<0.34:
             return OverwatchTheme.accentCyan.opacity(0.2)
         case 0.34..<0.67:
@@ -282,7 +282,7 @@ struct HabitHeatMapView: View {
                 .foregroundStyle(OverwatchTheme.textSecondary)
 
             HStack(spacing: 3) {
-                legendCell(color: Color(red: 0.11, green: 0.11, blue: 0.12))
+                legendCell(color: OverwatchTheme.surfaceEmpty)
                 legendCell(color: OverwatchTheme.accentCyan.opacity(0.2))
                 legendCell(color: OverwatchTheme.accentCyan.opacity(0.5))
                 legendCell(color: OverwatchTheme.accentCyan.opacity(0.8))

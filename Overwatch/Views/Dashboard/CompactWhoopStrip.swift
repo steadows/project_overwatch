@@ -84,7 +84,8 @@ struct CompactWhoopStrip: View {
 
                 // Expand indicator
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .medium))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.hudLabel)
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.4))
                     .rotationEffect(.degrees(isExpanded ? 180 : 0))
                     .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isExpanded)
@@ -106,7 +107,7 @@ struct CompactWhoopStrip: View {
     private func miniMetric(icon: String, label: String, value: String, color: Color) -> some View {
         HStack(spacing: OverwatchTheme.Spacing.xs) {
             Image(systemName: icon)
-                .font(.system(size: 10, weight: .medium))
+                .font(Typography.hudLabel)
                 .foregroundStyle(color)
                 .symbolRenderingMode(.hierarchical)
 

@@ -162,7 +162,8 @@ struct TacticalDashboardView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "plus")
-                            .font(.system(size: 10, weight: .medium))
+                            .symbolRenderingMode(.hierarchical)
+                            .font(Typography.hudLabel)
                         Text("ADD")
                             .font(Typography.hudLabel)
                             .tracking(1)
@@ -204,7 +205,8 @@ struct TacticalDashboardView: View {
                 }
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 11, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.caption)
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.7))
                     .frame(width: 28, height: 28)
                     .background(OverwatchTheme.accentCyan.opacity(0.06))
@@ -242,7 +244,8 @@ struct TacticalDashboardView: View {
                 }
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.caption)
                     .foregroundStyle(
                         viewModel.isViewingToday
                             ? OverwatchTheme.textSecondary.opacity(0.2)
@@ -276,7 +279,8 @@ struct TacticalDashboardView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 9, weight: .medium))
+                            .symbolRenderingMode(.hierarchical)
+                            .font(Typography.hudLabel)
                         Text("TODAY")
                             .font(Typography.hudLabel)
                             .tracking(1)
@@ -347,6 +351,7 @@ struct TacticalDashboardView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "plus.circle")
+                            .symbolRenderingMode(.hierarchical)
                         Text("ESTABLISH FIRST OPERATION")
                             .font(Typography.hudLabel)
                             .tracking(1)
@@ -444,7 +449,8 @@ struct TacticalDashboardView: View {
                                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
                                 .tracking(1)
                             Image(systemName: "arrow.right")
-                                .font(.system(size: 9, weight: .medium))
+                                .symbolRenderingMode(.hierarchical)
+                                .font(Typography.hudLabel)
                                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.4))
                         }
                     }

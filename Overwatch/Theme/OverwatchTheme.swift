@@ -47,6 +47,26 @@ enum OverwatchTheme {
     /// Scan line color — visible cyan
     static let scanLine = accentCyan.opacity(0.08)
 
+    // MARK: - Extended Palette (Charts, Accent Choices)
+
+    /// Deep violet — chart palette, accent option
+    static let accentPurple = Color(red: 0.69, green: 0.32, blue: 1.0)
+
+    /// Chart palette extra — lavender
+    static let chartLavender = Color(red: 0.6, green: 0.4, blue: 1.0)
+
+    /// Chart palette extra — rose
+    static let chartRose = Color(red: 1.0, green: 0.5, blue: 0.6)
+
+    /// Chart palette extra — seafoam
+    static let chartSeafoam = Color(red: 0.4, green: 0.8, blue: 0.6)
+
+    /// Sleep chart — deep sleep (SWS) blue
+    static let chartDeepSleep = Color(red: 0.3, green: 0.3, blue: 0.8)
+
+    /// Empty cell background — heat maps, data grids
+    static let surfaceEmpty = Color(red: 0.11, green: 0.11, blue: 0.12)
+
     // MARK: - Performance Thresholds
 
     /// Returns the appropriate color for a 0-100 performance score

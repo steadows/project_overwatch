@@ -9,6 +9,7 @@ struct WarRoomView: View {
     @Environment(\.navigateToSection) private var navigateToSection
     @State private var viewModel = WarRoomViewModel()
     @State private var dividerRatio: CGFloat = 0.4
+    @State private var sectionsVisible = false
 
     var body: some View {
         GeometryReader { geo in
@@ -16,6 +17,7 @@ struct WarRoomView: View {
                 // Left pane — AI Briefing
                 briefingPane
                     .frame(width: geo.size.width * dividerRatio)
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0)
 
                 // Resizable divider
                 resizableDivider(totalWidth: geo.size.width)
@@ -23,9 +25,13 @@ struct WarRoomView: View {
                 // Right pane — Charts
                 chartsPane
                     .frame(maxWidth: .infinity)
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.15)
             }
         }
-        .onAppear { viewModel.loadData(from: context) }
+        .onAppear {
+            viewModel.loadData(from: context)
+            sectionsVisible = true
+        }
         .onChange(of: viewModel.selectedDateRange) {
             withAnimation(Animations.standard) {
                 viewModel.loadData(from: context)
@@ -142,6 +148,7 @@ struct WarRoomView: View {
 
                     HStack(spacing: OverwatchTheme.Spacing.sm) {
                         Image(systemName: "bolt.fill")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 16))
                             .foregroundStyle(OverwatchTheme.accentPrimary)
                             .shadow(color: OverwatchTheme.accentPrimary.opacity(0.6), radius: 8)
@@ -170,6 +177,7 @@ struct WarRoomView: View {
                         ForEach(Array(insight.recommendations.enumerated()), id: \.offset) { index, rec in
                             HStack(alignment: .top, spacing: OverwatchTheme.Spacing.sm) {
                                 Image(systemName: "diamond.fill")
+                                    .symbolRenderingMode(.hierarchical)
                                     .font(.system(size: 5))
                                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
                                     .padding(.top, 5)
@@ -195,6 +203,7 @@ struct WarRoomView: View {
         TacticalCard {
             VStack(spacing: OverwatchTheme.Spacing.lg) {
                 Image(systemName: "antenna.radiowaves.left.and.right")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 32, weight: .thin))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 
@@ -225,6 +234,7 @@ struct WarRoomView: View {
                         .tint(OverwatchTheme.accentPrimary)
                 } else {
                     Image(systemName: "arrow.clockwise")
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 10, weight: .medium))
                 }
                 Text(viewModel.isRefreshing ? (viewModel.refreshProgress ?? "REFRESHING...") : "REFRESH ANALYSIS")
@@ -301,6 +311,7 @@ struct WarRoomView: View {
         TacticalCard {
             VStack(spacing: OverwatchTheme.Spacing.lg) {
                 Image(systemName: "antenna.radiowaves.left.and.right")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 32, weight: .thin))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 
@@ -320,6 +331,7 @@ struct WarRoomView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "link")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 10, weight: .medium))
                         Text("LINK BIOMETRIC SOURCE")
                             .font(Typography.hudLabel)
@@ -357,6 +369,7 @@ struct WarRoomView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: chartType.icon)
+                                    .symbolRenderingMode(.hierarchical)
                                     .font(.system(size: 9, weight: .medium))
                                 Text(chartType.rawValue)
                                     .font(Typography.hudLabel)
@@ -553,9 +566,9 @@ struct WarRoomView: View {
             OverwatchTheme.accentCyan,
             OverwatchTheme.accentPrimary,
             OverwatchTheme.accentSecondary,
-            Color(red: 0.6, green: 0.4, blue: 1.0),
-            Color(red: 1.0, green: 0.5, blue: 0.6),
-            Color(red: 0.4, green: 0.8, blue: 0.6),
+            OverwatchTheme.chartLavender,
+            OverwatchTheme.chartRose,
+            OverwatchTheme.chartSeafoam,
         ]
     }
 
@@ -597,7 +610,7 @@ struct WarRoomView: View {
                 yEnd: .value("SWS End", point.swsHours),
                 width: .ratio(0.6)
             )
-            .foregroundStyle(Color(red: 0.3, green: 0.3, blue: 0.8).opacity(0.6))
+            .foregroundStyle(OverwatchTheme.chartDeepSleep.opacity(0.6))
 
             // REM — stacked on top of SWS
             BarMark(
@@ -633,7 +646,7 @@ struct WarRoomView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 4) {
                 RoundedRectangle(cornerRadius: 1)
-                    .fill(Color(red: 0.3, green: 0.3, blue: 0.8).opacity(0.5))
+                    .fill(OverwatchTheme.chartDeepSleep.opacity(0.5))
                     .frame(width: 12, height: 6)
                 Text("SWS")
                     .font(Typography.metricTiny)
@@ -790,6 +803,7 @@ struct WarRoomView: View {
         TacticalCard {
             VStack(spacing: OverwatchTheme.Spacing.lg) {
                 Image(systemName: "chart.xyaxis.line")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 32, weight: .thin))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 

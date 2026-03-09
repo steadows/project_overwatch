@@ -130,6 +130,7 @@ struct HabitsView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "plus")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 10, weight: .medium))
                         Text("NEW OP")
                             .font(Typography.hudLabel)
@@ -264,6 +265,7 @@ struct HabitsView: View {
         } label: {
             HStack(spacing: OverwatchTheme.Spacing.sm) {
                 Image(systemName: "chevron.right")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 9, weight: .light))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
                     .rotationEffect(.degrees(journalExpanded ? 90 : 0))
@@ -295,6 +297,7 @@ struct HabitsView: View {
         TacticalCard {
             VStack(spacing: OverwatchTheme.Spacing.lg) {
                 Image(systemName: "target")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 48, weight: .thin))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.2))
                     .shadow(color: OverwatchTheme.accentCyan.opacity(0.15), radius: 12)
@@ -314,6 +317,7 @@ struct HabitsView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "plus.circle")
+                            .symbolRenderingMode(.hierarchical)
                         Text("ESTABLISH FIRST OPERATION")
                             .font(Typography.hudLabel)
                             .tracking(1.5)
@@ -413,6 +417,7 @@ private struct HabitListRow: View {
             HStack(spacing: OverwatchTheme.Spacing.md) {
                 // Drag handle
                 Image(systemName: "line.3.horizontal")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 10))
                     .foregroundStyle(OverwatchTheme.textSecondary.opacity(isHovered ? 0.5 : 0.2))
 
@@ -444,6 +449,7 @@ private struct HabitListRow: View {
                 if habit.currentStreak > 0 {
                     HStack(spacing: 3) {
                         Image(systemName: "flame.fill")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 9))
                             .foregroundStyle(OverwatchTheme.accentPrimary)
                         Text("\(habit.currentStreak)")
@@ -491,12 +497,14 @@ private struct HabitListRow: View {
                 onEdit()
             } label: {
                 Label("Edit Operation", systemImage: "pencil")
+                    .symbolRenderingMode(.hierarchical)
             }
             Divider()
             Button(role: .destructive) {
                 onDelete()
             } label: {
                 Label("Decommission", systemImage: "trash")
+                    .symbolRenderingMode(.hierarchical)
             }
         }
     }
@@ -650,6 +658,7 @@ private struct HabitDetailPanel: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "pencil")
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 10, weight: .medium))
                     Text("EDIT OP")
                         .font(Typography.hudLabel)
@@ -681,6 +690,7 @@ private struct HabitDetailPanel: View {
 
         return HStack(spacing: OverwatchTheme.Spacing.md) {
             Image(systemName: "flame.fill")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 20, weight: .medium))
                 .foregroundStyle(OverwatchTheme.accentPrimary)
                 .textGlow(OverwatchTheme.accentPrimary, radius: 8)
@@ -800,6 +810,7 @@ private struct HabitDetailPanel: View {
     private var heatMapEmptyState: some View {
         VStack(spacing: OverwatchTheme.Spacing.sm) {
             Image(systemName: "square.grid.3x3")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 28, weight: .thin))
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 
@@ -822,6 +833,7 @@ private struct HabitDetailPanel: View {
     private var emptySelection: some View {
         VStack(spacing: OverwatchTheme.Spacing.lg) {
             Image(systemName: "target")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 42, weight: .thin))
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
                 .shadow(color: OverwatchTheme.accentCyan.opacity(0.1), radius: 8)
@@ -854,6 +866,7 @@ private struct HabitDetailPanel: View {
 
         return HStack(spacing: OverwatchTheme.Spacing.sm) {
             Image(systemName: status.icon)
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(status.color)
                 .textGlow(status.color, radius: 4)
@@ -1133,6 +1146,7 @@ private struct HabitFormSheet: View {
                         if targetFrequency > 1 { targetFrequency -= 1 }
                     } label: {
                         Image(systemName: "minus")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(OverwatchTheme.accentCyan)
                             .frame(width: 24, height: 24)
@@ -1152,6 +1166,7 @@ private struct HabitFormSheet: View {
                         if targetFrequency < 6 { targetFrequency += 1 }
                     } label: {
                         Image(systemName: "plus")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(OverwatchTheme.accentCyan)
                             .frame(width: 24, height: 24)

@@ -48,7 +48,8 @@ struct SentimentBadge: View {
                         ? "arrow.up.right"
                         : (delta < -0.05 ? "arrow.down.right" : "arrow.right")
                 )
-                .font(.system(size: 8, weight: .semibold))
+                .symbolRenderingMode(.hierarchical)
+                .font(Typography.hudLabel)
                 .foregroundStyle(
                     delta > 0.05
                         ? OverwatchTheme.accentSecondary

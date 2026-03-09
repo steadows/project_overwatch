@@ -162,6 +162,7 @@ struct NavigationShell: View {
         } label: {
             HStack(spacing: OverwatchTheme.Spacing.sm) {
                 Image(systemName: "sidebar.left")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(OverwatchTheme.textSecondary)
 
@@ -192,11 +193,15 @@ struct NavigationShell: View {
 
     private var detailView: some View {
         ZStack {
-            // Background layers owned by shell
-            OverwatchTheme.background.ignoresSafeArea()
-            GridBackdrop().ignoresSafeArea()
-            DataStreamTexture(opacity: 0.03, scrollSpeed: 8).ignoresSafeArea()
-            ScanLineOverlay().ignoresSafeArea()
+            // Background layers owned by shell — flattened to single Metal texture
+            ZStack {
+                OverwatchTheme.background
+                GridBackdrop()
+                DataStreamTexture(opacity: 0.03, scrollSpeed: 8)
+                ScanLineOverlay()
+            }
+            .drawingGroup()
+            .ignoresSafeArea()
 
             // Content — section transition per spec
             detailContent(for: selectedSection)

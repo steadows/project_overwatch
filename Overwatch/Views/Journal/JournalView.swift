@@ -100,6 +100,7 @@ struct JournalView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "plus")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 10, weight: .medium))
                         Text("NEW ENTRY")
                             .font(Typography.hudLabel)
@@ -164,6 +165,7 @@ struct JournalView: View {
             // Search field
             HStack(spacing: OverwatchTheme.Spacing.xs) {
                 Image(systemName: "magnifyingglass")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 11, weight: .light))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.4))
 
@@ -285,6 +287,7 @@ struct JournalView: View {
     private var globalMonthPicker: some View {
         HStack(spacing: OverwatchTheme.Spacing.sm) {
             Image(systemName: "calendar")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
 
@@ -326,6 +329,7 @@ struct JournalView: View {
                 }
             } label: {
                 Image(systemName: "chevron.left")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundStyle(
                         viewModel.canSelectPreviousMonth
@@ -355,6 +359,7 @@ struct JournalView: View {
                                 && !viewModel.isRangeMode
                             {
                                 Image(systemName: "checkmark")
+                                    .symbolRenderingMode(.hierarchical)
                             }
                         }
                     }
@@ -366,6 +371,7 @@ struct JournalView: View {
                         .tracking(1.5)
 
                     Image(systemName: "chevron.down")
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 7, weight: .semibold))
                 }
                 .foregroundStyle(
@@ -399,6 +405,7 @@ struct JournalView: View {
                 }
             } label: {
                 Image(systemName: "chevron.right")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundStyle(
                         viewModel.canSelectNextMonth
@@ -483,6 +490,7 @@ struct JournalView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 10, weight: .medium))
                         Text("SAVE")
                             .font(Typography.hudLabel)
@@ -581,6 +589,7 @@ struct JournalView: View {
                                 }
                             } label: {
                                 Image(systemName: "xmark")
+                                    .symbolRenderingMode(.hierarchical)
                                     .font(.system(size: 7, weight: .semibold))
                             }
                             .buttonStyle(.plain)
@@ -662,6 +671,7 @@ struct JournalView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "pencil")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 10, weight: .medium))
                         Text("EDIT")
                             .font(Typography.hudLabel)
@@ -714,6 +724,7 @@ struct JournalView: View {
     private var emptySelection: some View {
         VStack(spacing: OverwatchTheme.Spacing.lg) {
             Image(systemName: "doc.text")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 42, weight: .thin))
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
                 .shadow(color: OverwatchTheme.accentCyan.opacity(0.1), radius: 8)
@@ -736,6 +747,7 @@ struct JournalView: View {
         TacticalCard {
             VStack(spacing: OverwatchTheme.Spacing.lg) {
                 Image(systemName: "book.pages")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 48, weight: .thin))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.2))
                     .shadow(
@@ -762,6 +774,7 @@ struct JournalView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "plus.circle")
+                            .symbolRenderingMode(.hierarchical)
                         Text("CREATE FIRST ENTRY")
                             .font(Typography.hudLabel)
                             .tracking(1.5)
@@ -790,6 +803,7 @@ struct JournalView: View {
     private var filterEmptyState: some View {
         VStack(spacing: OverwatchTheme.Spacing.lg) {
             Image(systemName: "doc.text.magnifyingglass")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 36, weight: .thin))
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 
@@ -933,6 +947,7 @@ private struct JournalEntryRow: View {
                 onDelete()
             } label: {
                 Label("Purge Entry", systemImage: "trash")
+                    .symbolRenderingMode(.hierarchical)
             }
         }
     }

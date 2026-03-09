@@ -39,7 +39,7 @@ struct MetricTile: View {
                     Image(systemName: icon)
                         .symbolRenderingMode(.hierarchical)
                         .foregroundStyle(color)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(Typography.metricSmall)
                         .textGlow(color, radius: 4)
 
                     Text(label)
@@ -60,7 +60,8 @@ struct MetricTile: View {
 
                     if let trend {
                         Image(systemName: trend.icon)
-                            .font(.system(size: 12, weight: .semibold))
+                            .symbolRenderingMode(.hierarchical)
+                            .font(Typography.caption)
                             .foregroundStyle(trend.color)
                             .textGlow(trend.color, radius: 4)
                     }

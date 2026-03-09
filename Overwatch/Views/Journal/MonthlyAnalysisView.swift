@@ -81,6 +81,7 @@ struct MonthlyAnalysisView: View {
                     }
 
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.4))
                 }
@@ -102,6 +103,7 @@ struct MonthlyAnalysisView: View {
         Button(action: onGenerate) {
             HStack(spacing: 4) {
                 Image(systemName: analysis != nil ? "arrow.clockwise" : "cpu")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 10, weight: .medium))
                 Text(analysis != nil ? "REGENERATE" : "GENERATE")
                     .font(Typography.hudLabel)
@@ -138,6 +140,7 @@ struct MonthlyAnalysisView: View {
         VStack(alignment: .leading, spacing: OverwatchTheme.Spacing.sm) {
             HStack(spacing: 6) {
                 Image(systemName: "text.alignleft")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
                 Text("ANALYSIS")
@@ -217,6 +220,7 @@ struct MonthlyAnalysisView: View {
         VStack(alignment: .leading, spacing: OverwatchTheme.Spacing.sm) {
             HStack(spacing: 6) {
                 Image(systemName: "chart.bar.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.5))
                 Text("HABIT IMPACT")
@@ -366,6 +370,7 @@ struct MonthlyAnalysisView: View {
     private func errorState(_ message: String) -> some View {
         VStack(spacing: OverwatchTheme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 28, weight: .thin))
                 .foregroundStyle(OverwatchTheme.alert.opacity(0.4))
 
@@ -389,6 +394,7 @@ struct MonthlyAnalysisView: View {
     private var selectMonthPrompt: some View {
         VStack(spacing: OverwatchTheme.Spacing.md) {
             Image(systemName: "calendar.badge.clock")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 28, weight: .thin))
                 .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.15))
 
@@ -412,6 +418,7 @@ struct MonthlyAnalysisView: View {
     private var readyToGenerateState: some View {
         VStack(spacing: OverwatchTheme.Spacing.md) {
             Image(systemName: "cpu")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 28, weight: .thin))
                 .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.25))
 
@@ -431,6 +438,7 @@ struct MonthlyAnalysisView: View {
             Button(action: onGenerate) {
                 HStack(spacing: 6) {
                     Image(systemName: "cpu")
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 11, weight: .medium))
                     Text("GENERATE ANALYSIS")
                         .font(Typography.hudLabel)
@@ -457,6 +465,7 @@ struct MonthlyAnalysisView: View {
     private var insufficientDataState: some View {
         VStack(spacing: OverwatchTheme.Spacing.md) {
             Image(systemName: "chart.bar.doc.horizontal")
+                .symbolRenderingMode(.hierarchical)
                 .font(.system(size: 28, weight: .thin))
                 .foregroundStyle(OverwatchTheme.accentPrimary.opacity(0.15))
 

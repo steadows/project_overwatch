@@ -68,7 +68,8 @@ struct ArcGauge: View {
     private var labelRow: some View {
         HStack(spacing: OverwatchTheme.Spacing.xs) {
             Image(systemName: icon)
-                .font(.system(size: 11, weight: .medium))
+                .symbolRenderingMode(.hierarchical)
+                .font(Typography.caption)
                 .foregroundStyle(color)
                 .textGlow(color, radius: 4)
 

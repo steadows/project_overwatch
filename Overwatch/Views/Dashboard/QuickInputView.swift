@@ -130,8 +130,9 @@ struct QuickInputView: View {
         case .success(let message):
             HStack(spacing: OverwatchTheme.Spacing.xs) {
                 Image(systemName: "checkmark.circle.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(OverwatchTheme.accentSecondary)
-                    .font(.system(size: 11))
+                    .font(Typography.caption)
                 Text(message)
                     .font(Typography.hudLabel)
                     .foregroundStyle(OverwatchTheme.accentSecondary)
@@ -143,8 +144,9 @@ struct QuickInputView: View {
         case .error(let message):
             HStack(spacing: OverwatchTheme.Spacing.xs) {
                 Image(systemName: "exclamationmark.triangle.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(OverwatchTheme.alert)
-                    .font(.system(size: 11))
+                    .font(Typography.caption)
                 Text(message)
                     .font(Typography.hudLabel)
                     .foregroundStyle(OverwatchTheme.alert)

@@ -1,31 +1,33 @@
 import Foundation
-import Security
 
-/// Lightweight Keychain wrapper for storing OAuth tokens and API keys securely.
-/// Uses kSecClassGenericPassword items with a service prefix for namespacing.
+/// Secure-ish storage for OAuth tokens and API keys.
+///
+/// Uses a JSON file in Application Support instead of Keychain.
+/// This avoids macOS Keychain authorization prompts that break with
+/// ad-hoc ("Sign to Run Locally") code signing.
+///
+/// Same API as the original Keychain-based implementation — callers don't need to change.
+///
+/// TODO: Switch back to real Keychain when the app ships with a proper signing identity.
 enum KeychainHelper {
 
-    private static let service = "com.overwatch.app"
+    private static let storeName = "com.overwatch.app"
+
+    /// Path: ~/Library/Application Support/com.overwatch.app/secure_store.json
+    private static var storeURL: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let dir = appSupport.appendingPathComponent(storeName, isDirectory: true)
+        return dir.appendingPathComponent("secure_store.json")
+    }
 
     // MARK: - Save
 
-    /// Saves data to the Keychain. Overwrites if the key already exists.
+    /// Saves data for the given key. Overwrites if the key already exists.
     @discardableResult
     static func save(key: String, data: Data) -> Bool {
-        // Delete any existing item first
-        delete(key: key)
-
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
-            kSecUseDataProtectionKeychain as String: true,
-        ]
-
-        let status = SecItemAdd(query as CFDictionary, nil)
-        return status == errSecSuccess
+        var store = loadStore()
+        store[key] = data.base64EncodedString()
+        return writeStore(store)
     }
 
     /// Convenience: save a string value
@@ -37,22 +39,11 @@ enum KeychainHelper {
 
     // MARK: - Read
 
-    /// Reads raw data from the Keychain for the given key.
+    /// Reads raw data for the given key.
     static func read(key: String) -> Data? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-            kSecUseDataProtectionKeychain as String: true,
-        ]
-
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-
-        guard status == errSecSuccess else { return nil }
-        return result as? Data
+        let store = loadStore()
+        guard let base64 = store[key] else { return nil }
+        return Data(base64Encoded: base64)
     }
 
     /// Convenience: read a string value
@@ -63,23 +54,17 @@ enum KeychainHelper {
 
     // MARK: - Delete
 
-    /// Deletes the item for the given key from the Keychain.
+    /// Deletes the value for the given key.
     @discardableResult
     static func delete(key: String) -> Bool {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecUseDataProtectionKeychain as String: true,
-        ]
-
-        let status = SecItemDelete(query as CFDictionary)
-        return status == errSecSuccess || status == errSecItemNotFound
+        var store = loadStore()
+        store.removeValue(forKey: key)
+        return writeStore(store)
     }
 
     // MARK: - Keys
 
-    /// Well-known Keychain keys used across the app
+    /// Well-known keys used across the app
     enum Keys {
         static let whoopAccessToken = "whoop_access_token"
         static let whoopRefreshToken = "whoop_refresh_token"
@@ -87,5 +72,33 @@ enum KeychainHelper {
         static let whoopClientId = "whoop_client_id"
         static let whoopClientSecret = "whoop_client_secret"
         static let geminiAPIKey = "gemini_api_key"
+    }
+
+    // MARK: - Private
+
+    private static func loadStore() -> [String: String] {
+        guard let data = try? Data(contentsOf: storeURL),
+              let dict = try? JSONDecoder().decode([String: String].self, from: data)
+        else { return [:] }
+        return dict
+    }
+
+    private static func writeStore(_ store: [String: String]) -> Bool {
+        do {
+            let dir = storeURL.deletingLastPathComponent()
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            let data = try JSONEncoder().encode(store)
+            try data.write(to: storeURL, options: .atomic)
+
+            // Restrict file permissions to owner only (rw-------)
+            try FileManager.default.setAttributes(
+                [.posixPermissions: 0o600],
+                ofItemAtPath: storeURL.path
+            )
+            return true
+        } catch {
+            print("[SecureStore] Write FAILED: \(error.localizedDescription)")
+            return false
+        }
     }
 }

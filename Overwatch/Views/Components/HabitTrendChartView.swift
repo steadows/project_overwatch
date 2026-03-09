@@ -113,7 +113,8 @@ struct HabitTrendChartView: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: "heart.text.square")
-                    .font(.system(size: 10, weight: .medium))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.hudLabel)
                 Text("RECOVERY")
                     .font(Typography.hudLabel)
                     .tracking(1)
@@ -339,7 +340,8 @@ struct HabitTrendChartView: View {
     private var emptyState: some View {
         VStack(spacing: OverwatchTheme.Spacing.sm) {
             Image(systemName: "chart.xyaxis.line")
-                .font(.system(size: 28, weight: .thin))
+                .symbolRenderingMode(.hierarchical)
+                .font(Typography.title)
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 
             Text("INSUFFICIENT DATA")

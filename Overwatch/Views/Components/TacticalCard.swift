@@ -39,8 +39,8 @@ struct TacticalCard<Content: View>: View {
                 .clipShape(frameShape)
                 .allowsHitTesting(false)
             }
-            // Scan lines clipped to frame — drifting for alive feel
-            .overlay(ScanLineOverlay(drifting: true).clipShape(frameShape))
+            // Scan lines clipped to frame — static texture (drift provided by shell overlay)
+            .overlay(ScanLineOverlay(drifting: false).clipShape(frameShape))
             // Clip content to chamfered shape
             .clipShape(frameShape)
             // Wireframe trace — border draws itself on appear

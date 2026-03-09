@@ -31,7 +31,8 @@ struct HUDStatusBadge: View {
     var body: some View {
         HStack(spacing: OverwatchTheme.Spacing.md) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .light))
+                .symbolRenderingMode(.hierarchical)
+                .font(Typography.metricSmall)
                 .foregroundStyle(color.opacity(0.7))
                 .textGlow(color, radius: 4)
 

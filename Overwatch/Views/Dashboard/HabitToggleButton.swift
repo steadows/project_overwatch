@@ -33,7 +33,7 @@ struct HabitToggleButton: View {
         HStack(spacing: OverwatchTheme.Spacing.md) {
             // Emoji
             Text(habit.emoji.isEmpty ? "●" : habit.emoji)
-                .font(.system(size: 24))
+                .font(Typography.title)
                 .frame(width: 36)
 
             // Name + status
@@ -62,7 +62,8 @@ struct HabitToggleButton: View {
             // Expand chevron
             Button(action: onExpand) {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .medium))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.hudLabel)
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.4))
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
                     .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isExpanded)
@@ -128,7 +129,8 @@ struct HabitToggleButton: View {
 
             if isComplete {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .bold))
+                    .symbolRenderingMode(.hierarchical)
+                    .font(Typography.caption)
                     .foregroundStyle(OverwatchTheme.accentSecondary)
                     .scaleEffect(checkmarkScale)
                     .textGlow(OverwatchTheme.accentSecondary, radius: 6)

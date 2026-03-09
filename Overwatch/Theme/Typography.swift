@@ -16,6 +16,9 @@ enum Typography {
     /// Hero title — "OVERWATCH". Futura Medium, wide tracked.
     static let largeTitle = Font.custom("Futura-Medium", size: 34)
 
+    /// Cinematic title — boot sequence, full-screen hero moments. Larger than largeTitle.
+    static let heroTitle = Font.custom("Futura-Medium", size: 48)
+
     /// View title — page names, major headers. Avenir Next Ultra Light for projected feel.
     static let title = Font.custom("AvenirNext-UltraLight", size: 22)
 

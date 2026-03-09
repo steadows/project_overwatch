@@ -1231,30 +1231,30 @@ Current flow (Phase 6.5 onward):
 >
 > By this point, all named animation patterns from 4.1.5 should already be applied in their respective phases. This phase is a **consistency check** — verifying everything matches the Visual Design Specification, fixing any gaps, and tuning parameters.
 
-- [ ] **Consistency audit against Visual Design Spec:**
-  - [ ] All views use `OverwatchTheme` color tokens (no hardcoded color literals anywhere)
-  - [ ] All text uses `Typography` styles (no ad-hoc `.font()` calls)
-  - [ ] All cards use `TacticalCard` with `HUDFrameShape` (no `RoundedRectangle` panels)
-  - [ ] SF Symbols use `.hierarchical` rendering mode throughout
-  - [ ] Scan line overlay applied to: every `TacticalCard`, sidebar background, full-screen backdrop
-  - [ ] Dual-layer glow applied to all interactive elements per spec (tight inner + wide bloom)
-- [ ] **Verify named animation patterns are applied everywhere:**
-  - [ ] **Materialize** used for: all panel/card appearances, boot sequence, new data elements
-  - [ ] **Dissolve** used for: all panel removals, view exits, boot→app transition
-  - [ ] **Slide-Reveal / Slide-Retract** used for: habit toggle expand/collapse, WHOOP strip expand, report card detail
-  - [ ] **Glow Pulse** used for: all confirmations (toggle, submit, sync complete, button press)
-  - [ ] **Particle Scatter** used for: habit completion, streak milestones, onboarding "YOU ARE OPERATIONAL"
-  - [ ] **Data Count** used for: all numeric value changes (WHOOP metrics, completion %, streak counters)
-  - [ ] **Stagger** used for: dashboard entrance, list items, chart data points, onboarding steps
-  - [ ] **Section Transition** used for: every sidebar navigation change
-- [ ] **Ambient motion running:**
-  - [ ] Scan line drift (0.5pt/sec upward) on major panels
-  - [ ] Glow breathing (±5%, 2-3s cycle) on selected/active elements
-  - [ ] Status indicator pulse (1.5s cycle) on sync badge
-  - [ ] Cursor blink (0.8s cycle) on quick input field
-  - [ ] Data Stream Texture (War Room background only, 10pt/sec downward scroll)
-- [ ] **Performance check:** all ambient animations using `Canvas`/`TimelineView`, not spawning per-element `withAnimation` blocks
-- [ ] App icon design: dark background, minimal geometric shape (hexagon or shield), cyan accent, holographic/tactical feel
+- [x] **Consistency audit against Visual Design Spec:**
+  - [x] All views use `OverwatchTheme` color tokens (no hardcoded color literals anywhere)
+  - [x] All text uses `Typography` styles (no ad-hoc `.font()` calls)
+  - [x] All cards use `TacticalCard` with `HUDFrameShape` (no `RoundedRectangle` panels)
+  - [x] SF Symbols use `.hierarchical` rendering mode throughout
+  - [x] Scan line overlay applied to: every `TacticalCard`, sidebar background, full-screen backdrop
+  - [x] Dual-layer glow applied to all interactive elements per spec (tight inner + wide bloom)
+- [x] **Verify named animation patterns are applied everywhere:**
+  - [x] **Materialize** used for: all panel/card appearances, boot sequence, new data elements
+  - [x] **Dissolve** used for: all panel removals, view exits, boot→app transition
+  - [x] **Slide-Reveal / Slide-Retract** used for: habit toggle expand/collapse, WHOOP strip expand, report card detail
+  - [x] **Glow Pulse** used for: all confirmations (toggle, submit, sync complete, button press)
+  - [x] **Particle Scatter** used for: habit completion, streak milestones, onboarding "YOU ARE OPERATIONAL"
+  - [x] **Data Count** used for: all numeric value changes (WHOOP metrics, completion %, streak counters)
+  - [x] **Stagger** used for: dashboard entrance, list items, chart data points, onboarding steps
+  - [x] **Section Transition** used for: every sidebar navigation change
+- [x] **Ambient motion running:**
+  - [x] Scan line drift (0.5pt/sec upward) on major panels
+  - [x] Glow breathing (±5%, 2-3s cycle) on selected/active elements
+  - [x] Status indicator pulse (1.5s cycle) on sync badge
+  - [x] Cursor blink (0.8s cycle) on quick input field
+  - [x] Data Stream Texture (War Room background only, 10pt/sec downward scroll)
+- [x] **Performance check:** all ambient animations using `Canvas`/`TimelineView`, not spawning per-element `withAnimation` blocks
+- [x] App icon design: dark background, minimal geometric shape (hexagon or shield), cyan accent, holographic/tactical feel
 
 ---
 

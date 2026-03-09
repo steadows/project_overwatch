@@ -106,7 +106,7 @@ struct ScanLineOverlay: View {
 
     var body: some View {
         if drifting {
-            TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+            TimelineView(.animation(minimumInterval: 1.0 / 10.0)) { timeline in
                 Canvas { context, size in
                     let spacing: CGFloat = 3
                     let lineHeight: CGFloat = 0.5

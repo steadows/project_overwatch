@@ -6,6 +6,7 @@ struct SettingsView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = SettingsViewModel()
+    @State private var sectionsVisible = false
 
     @State private var exportJSONData: Data?
     @State private var exportCSVData: Data?
@@ -21,13 +22,20 @@ struct SettingsView: View {
         ScrollView {
             VStack(spacing: OverwatchTheme.Spacing.xl) {
                 stubHeader("SETTINGS", subtitle: "SYSTEM CONFIGURATION")
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0)
 
                 connectionsSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.06)
                 reportsSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.12)
                 habitsSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.18)
                 notificationsSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.24)
                 dataSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.30)
                 appearanceSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.36)
 
                 #if DEBUG
                 debugSection
@@ -53,6 +61,7 @@ struct SettingsView: View {
         ) { result in
             handleExportResult(result, label: "CSV")
         }
+        .onAppear { sectionsVisible = true }
         .onChange(of: appState.whoopSyncStatus) { _, newStatus in
             if case .synced(let date) = newStatus {
                 viewModel.lastSyncDisplay = DateFormatters.relative.localizedString(
@@ -80,6 +89,7 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: OverwatchTheme.Spacing.md) {
             HStack(spacing: OverwatchTheme.Spacing.md) {
                 Image(systemName: "heart.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 20, weight: .light))
                     .foregroundStyle(whoopStatusColor)
                     .textGlow(whoopStatusColor, radius: 6)
@@ -150,6 +160,7 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: OverwatchTheme.Spacing.md) {
             HStack(spacing: OverwatchTheme.Spacing.md) {
                 Image(systemName: "brain")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 20, weight: .light))
                     .foregroundStyle(geminiStatusColor)
                     .textGlow(geminiStatusColor, radius: 6)
@@ -187,6 +198,7 @@ struct SettingsView: View {
             if viewModel.geminiKeySource == .none {
                 HStack(spacing: OverwatchTheme.Spacing.sm) {
                     Image(systemName: "info.circle")
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 11, weight: .light))
                         .foregroundStyle(OverwatchTheme.textSecondary)
                     Text("Add GEMINI_API_KEY to .env file in project root, then rebuild.")
@@ -219,6 +231,7 @@ struct SettingsView: View {
         case .success:
             HStack(spacing: 4) {
                 Image(systemName: "checkmark.circle.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 12))
                     .foregroundStyle(OverwatchTheme.accentSecondary)
                 Text("VERIFIED")
@@ -230,6 +243,7 @@ struct SettingsView: View {
         case .failed(let msg):
             HStack(spacing: 4) {
                 Image(systemName: "xmark.circle.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 12))
                     .foregroundStyle(OverwatchTheme.alert)
                 Text(msg.uppercased())
@@ -344,6 +358,7 @@ struct SettingsView: View {
                         }
                     } label: {
                         Image(systemName: "xmark")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 8, weight: .medium))
                             .foregroundStyle(OverwatchTheme.textSecondary)
                     }
@@ -455,6 +470,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: OverwatchTheme.Spacing.md) {
                     HStack(spacing: OverwatchTheme.Spacing.sm) {
                         Image(systemName: "exclamationmark.triangle.fill")
+                            .symbolRenderingMode(.hierarchical)
                             .foregroundStyle(OverwatchTheme.alert)
                         Text("DANGER ZONE")
                             .font(Typography.hudLabel)
@@ -550,7 +566,7 @@ struct SettingsView: View {
                     .frame(width: 28, height: 28)
                     .overlay(
                         Circle()
-                            .stroke(isSelected ? Color.white : color.opacity(0.4), lineWidth: isSelected ? 2 : 1)
+                            .stroke(isSelected ? OverwatchTheme.textPrimary : color.opacity(0.4), lineWidth: isSelected ? 2 : 1)
                     )
                     .shadow(color: isSelected ? color.opacity(0.6) : .clear, radius: 8)
                     .shadow(color: isSelected ? color.opacity(0.3) : .clear, radius: 16)
@@ -675,6 +691,7 @@ struct SettingsView: View {
             HStack(spacing: OverwatchTheme.Spacing.xs) {
                 if let icon {
                     Image(systemName: icon)
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 10, weight: .medium))
                 }
                 Text(title)
@@ -746,8 +763,8 @@ struct SettingsView: View {
         case .green: OverwatchTheme.accentSecondary
         case .amber: OverwatchTheme.accentPrimary
         case .red: OverwatchTheme.alert
-        case .purple: Color(red: 0.69, green: 0.32, blue: 1.0)
-        case .white: Color.white
+        case .purple: OverwatchTheme.accentPurple
+        case .white: OverwatchTheme.textPrimary
         }
     }
 
@@ -757,16 +774,11 @@ struct SettingsView: View {
             viewModel.whoopError = nil
             let auth = WhoopAuthManager()
             do {
-                print("[WHOOP] Starting OAuth flow...")
                 try await auth.authorize()
-                print("[WHOOP] OAuth succeeded — tokens stored")
                 viewModel.markWhoopConnected()
                 // Pass the same auth manager to sync — its in-memory tokens are guaranteed valid.
-                // Creating a new WhoopAuthManager would read from Keychain, which may fail silently.
                 appState.restartWhoopSync(modelContainer: modelContext.container, authProvider: auth)
-                print("[WHOOP] Sync restart triggered (reusing auth)")
             } catch {
-                print("[WHOOP] OAuth FAILED: \(error)")
                 viewModel.whoopError = error.localizedDescription
             }
             viewModel.isConnectingWhoop = false

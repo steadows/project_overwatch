@@ -130,7 +130,7 @@ struct BootSequenceView: View {
 
     private var cursorBlock: some View {
         Text("_")
-            .font(.system(size: 16, weight: .light, design: .monospaced))
+            .font(Typography.commandPrompt)
             .foregroundStyle(OverwatchTheme.accentCyan)
             .opacity(cursorVisible ? 1 : 0)
             .onAppear { startCursorBlink() }
@@ -158,7 +158,7 @@ struct BootSequenceView: View {
 
     private func bootTextLine(_ text: String, index: Int) -> some View {
         Text(text)
-            .font(.system(size: 13, weight: .light, design: .monospaced))
+            .font(Typography.commandLine)
             .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.8))
             .tracking(1.5)
             .opacity(visibleLines > index ? 1 : 0)
@@ -169,18 +169,18 @@ struct BootSequenceView: View {
     private func subsystemLine(label: String, status: String, isOnline: Bool, index: Int) -> some View {
         HStack(spacing: 0) {
             Text(label)
-                .font(.system(size: 13, weight: .light, design: .monospaced))
+                .font(Typography.commandLine)
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.8))
                 .tracking(1.5)
 
             Text(String(repeating: ".", count: 20 - label.count))
-                .font(.system(size: 13, weight: .ultraLight, design: .monospaced))
+                .font(Typography.commandLine)
                 .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.3))
 
             Text(" ")
 
             Text(status)
-                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                .font(Typography.commandPrompt)
                 .foregroundStyle(isOnline ? OverwatchTheme.accentSecondary : OverwatchTheme.accentCyan.opacity(0.3))
                 .textGlow(isOnline ? OverwatchTheme.accentSecondary : .clear, radius: 6)
                 .tracking(2)
@@ -196,7 +196,7 @@ struct BootSequenceView: View {
     private var logoBlock: some View {
         VStack(spacing: 8) {
             Text("OVERWATCH")
-                .font(.custom("Futura-Medium", size: 48))
+                .font(Typography.heroTitle)
                 .foregroundStyle(OverwatchTheme.accentCyan)
                 .tracking(12)
                 .opacity(logoVisible ? 1 : 0)
@@ -205,7 +205,7 @@ struct BootSequenceView: View {
                 .shadow(color: OverwatchTheme.accentCyan.opacity(0.2), radius: logoGlowRadius * 2.5)
 
             Text("TACTICAL PERFORMANCE INTELLIGENCE")
-                .font(.system(size: 10, weight: .ultraLight, design: .default))
+                .font(Typography.hudLabel)
                 .foregroundStyle(OverwatchTheme.textSecondary)
                 .tracking(5)
                 .opacity(logoVisible ? 1 : 0)

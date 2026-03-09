@@ -98,6 +98,12 @@ actor WhoopClient {
 
     // MARK: - Public API
 
+    /// Quick check that we have valid auth before spawning expensive parallel requests.
+    /// Throws if no token is available (saves 3x redundant failures).
+    func preflight() async throws {
+        _ = try await authProvider.validAccessToken()
+    }
+
     /// Fetch recovery data from WHOOP.
     /// - Parameters:
     ///   - start: Optional start date for the query range.

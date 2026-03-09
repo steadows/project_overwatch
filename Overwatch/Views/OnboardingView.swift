@@ -167,6 +167,7 @@ private struct ConnectWhoopStep: View {
                     case .connected:
                         HStack(spacing: OverwatchTheme.Spacing.sm) {
                             Image(systemName: "checkmark.circle.fill")
+                                .symbolRenderingMode(.hierarchical)
                                 .foregroundStyle(OverwatchTheme.accentSecondary)
                             Text("WHOOP LINKED — Biometric data will sync automatically")
                                 .font(Typography.caption)

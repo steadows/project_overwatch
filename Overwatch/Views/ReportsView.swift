@@ -6,17 +6,24 @@ import SwiftData
 struct ReportsView: View {
     @Environment(\.modelContext) private var context
     @State private var viewModel = ReportsViewModel()
+    @State private var sectionsVisible = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: OverwatchTheme.Spacing.xl) {
                 headerSection
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0)
                 generationBanner
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.1)
                 reportsList
+                    .materializeEffect(isVisible: sectionsVisible, delay: 0.2)
             }
             .padding(OverwatchTheme.Spacing.xl)
         }
-        .onAppear { viewModel.loadReports(from: context) }
+        .onAppear {
+            viewModel.loadReports(from: context)
+            sectionsVisible = true
+        }
     }
 
     // MARK: - Header
@@ -57,6 +64,7 @@ struct ReportsView: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: "plus.diamond")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 11, weight: .medium))
                 Text("GENERATE REPORT")
                     .font(Typography.hudLabel)
@@ -151,6 +159,7 @@ struct ReportsView: View {
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(systemName: "bolt.fill")
+                                        .symbolRenderingMode(.hierarchical)
                                         .font(.system(size: 9))
                                     Text("COMPILE")
                                         .font(Typography.hudLabel)
@@ -200,6 +209,7 @@ struct ReportsView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "xmark")
+                                .symbolRenderingMode(.hierarchical)
                                 .font(.system(size: 8, weight: .bold))
                             Text("ABORT")
                                 .font(Typography.hudLabel)
@@ -277,6 +287,7 @@ struct ReportsView: View {
         TacticalCard {
             VStack(spacing: OverwatchTheme.Spacing.lg) {
                 Image(systemName: "doc.text.magnifyingglass")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 36, weight: .thin))
                     .foregroundStyle(OverwatchTheme.accentCyan.opacity(0.15))
 
@@ -346,6 +357,7 @@ private struct ReportCardView: View {
                     // Force multiplier badge
                     HStack(spacing: 4) {
                         Image(systemName: "bolt.fill")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 8))
                         Text(report.forceMultiplierHabit.uppercased())
                             .font(Typography.hudLabel)
@@ -366,6 +378,7 @@ private struct ReportCardView: View {
                         HStack(spacing: 4) {
                             if let arrow = report.sentimentTrendArrow {
                                 Image(systemName: arrow)
+                                    .symbolRenderingMode(.hierarchical)
                                     .font(.system(size: 8, weight: .bold))
                             }
                             Text(sentimentLabel(avgSentiment))
@@ -423,6 +436,7 @@ private struct ReportCardView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "trash")
+                            .symbolRenderingMode(.hierarchical)
                             .font(.system(size: 9, weight: .medium))
                         Text("DELETE BRIEFING")
                             .font(Typography.hudLabel)
@@ -460,6 +474,7 @@ private struct ReportCardView: View {
 
             HStack(spacing: OverwatchTheme.Spacing.sm) {
                 Image(systemName: "bolt.fill")
+                    .symbolRenderingMode(.hierarchical)
                     .font(.system(size: 14))
                     .foregroundStyle(OverwatchTheme.accentPrimary)
                     .shadow(color: OverwatchTheme.accentPrimary.opacity(0.6), radius: 6)
@@ -509,6 +524,7 @@ private struct ReportCardView: View {
 
                     // Direction arrow
                     Image(systemName: coeff.direction == .positive ? "arrow.up" : coeff.direction == .negative ? "arrow.down" : "arrow.right")
+                        .symbolRenderingMode(.hierarchical)
                         .font(.system(size: 9, weight: .bold))
                         .foregroundStyle(directionColor(coeff.direction))
 
@@ -546,6 +562,7 @@ private struct ReportCardView: View {
                         HStack(spacing: 4) {
                             if let arrow = report.sentimentTrendArrow {
                                 Image(systemName: arrow)
+                                    .symbolRenderingMode(.hierarchical)
                                     .font(.system(size: 12, weight: .medium))
                             }
                             Text(trend.uppercased())
