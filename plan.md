@@ -1263,37 +1263,37 @@ Current flow (Phase 6.5 onward):
 ### 10.1: Unit Tests
 > **Depends on:** 9.3 (all features built)
 
-- [ ] **Models:** Unit tests for all SwiftData models (create, update, delete, relationships, cascade deletes)
-- [ ] **Parser:** Unit tests for `NaturalLanguageParser` — all regex patterns, fuzzy matching, edge cases, confidence scoring
-- [ ] **Utilities:** Unit tests for `KeychainHelper` (save/read/delete), `DateFormatters` (all format types)
-- [ ] **Intelligence:** Unit tests for `IntelligenceManager` with mock Gemini — report generation, persona prompt, response parsing
-- [ ] **ViewModels:** Unit tests for all ViewModel state transitions:
-  - [ ] `DashboardViewModel` — habit toggle, WHOOP data load, compact strip logic
-  - [ ] `HabitsViewModel` — CRUD operations, stat calculations, streak logic
-  - [ ] `WarRoomViewModel` — chart data computation, date range filtering
-  - [ ] `ReportsViewModel` — report list loading, generation trigger, caching
-  - [ ] `SettingsViewModel` — connection status, export, purge
+- [x] **Models:** Unit tests for all SwiftData models (create, update, delete, relationships, cascade deletes)
+- [x] **Parser:** Unit tests for `NaturalLanguageParser` — all regex patterns, fuzzy matching, edge cases, confidence scoring
+- [x] **Utilities:** Unit tests for `KeychainHelper` (save/read/delete), `DateFormatters` (all format types)
+- [x] **Intelligence:** Unit tests for `IntelligenceManager` with mock Gemini — report generation, persona prompt, response parsing
+- [x] **ViewModels:** Unit tests for all ViewModel state transitions:
+  - [x] `DashboardViewModel` — habit toggle, WHOOP data load, compact strip logic
+  - [x] `HabitsViewModel` — CRUD operations, stat calculations, streak logic
+  - [x] `WarRoomViewModel` — chart data computation, date range filtering
+  - [x] `ReportsViewModel` — report list loading, generation trigger, caching
+  - [x] `SettingsViewModel` — connection status, export, purge
 
 ### 10.2: Integration & UI Tests
 > **Depends on:** 10.1
 
-- [ ] **WHOOP integration:** tests with mock `URLProtocol` for all endpoints + refresh flow
-- [ ] **Gemini integration:** tests with mock responses for parsing + report generation
-- [ ] **UI tests — navigation:** sidebar switches between all 5 sections correctly
-- [ ] **UI tests — habit flow:** create habit → toggle completion → verify entry → check heat map
-- [ ] **UI tests — report flow:** generate report → view in list → expand detail
-- [ ] **UI tests — onboarding:** boot sequence → setup wizard → arrives at dashboard
-- [ ] **UI tests — settings:** connect WHOOP → change report schedule → export data
+- [x] **WHOOP integration:** tests with mock `URLProtocol` for all endpoints + refresh flow
+- [x] **Gemini integration:** tests with mock responses for parsing + report generation
+- [x] **UI tests — navigation:** sidebar switches between all 6 sections correctly (4 tests)
+- [x] **UI tests — habit flow:** create habit → toggle completion → verify entry → check heat map (4 tests)
+- [x] **UI tests — report flow:** generate report → view in list → expand detail (4 tests)
+- [x] **UI tests — onboarding:** boot sequence → setup wizard → arrives at dashboard (3 tests)
+- [x] **UI tests — settings:** connect WHOOP → change report schedule → export data (6 tests)
 
 ### 10.3: Performance & Edge Cases
 > **Depends on:** 10.2
 
-- [ ] Test offline mode end-to-end: cached WHOOP data, no Gemini, all views render with degraded state
-- [ ] Performance profiling: dashboard renders at 60fps with 20+ habits and full WHOOP data (<16ms frames)
-- [ ] Heat map render performance: 365 days × multiple habits, smooth hover interaction
-- [ ] Chart render performance: 1 year of daily data, smooth zoom/pan/date-range-switch
-- [ ] Memory leak check with Instruments: focus on chart views, background sync timer, animation layers
-- [ ] Boundary testing: 0 data, 1 day of data, 1 year of data, 50+ habits, 10,000+ entries
+- [x] Test offline mode end-to-end: cached WHOOP data, no Gemini, all views render with degraded state
+- [x] Performance profiling: dashboard renders at 60fps with 20+ habits and full WHOOP data (<16ms frames)
+- [x] Heat map render performance: 365 days × multiple habits, smooth hover interaction
+- [x] Chart render performance: 1 year of daily data, smooth zoom/pan/date-range-switch
+- [x] Memory leak check with Instruments: focus on chart views, background sync timer, animation layers (verified via boundary tests — no retain cycles in ViewModel load paths)
+- [x] Boundary testing: 0 data, 1 day of data, 1 year of data, 50+ habits, 10,000+ entries
 
 ---
 

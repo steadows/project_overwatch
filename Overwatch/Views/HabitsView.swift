@@ -147,6 +147,7 @@ struct HabitsView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("habits_new_op")
             }
 
             HUDDivider(color: OverwatchTheme.accentCyan)
@@ -1034,6 +1035,7 @@ private struct HabitFormSheet: View {
                     // Form fields
                     VStack(spacing: OverwatchTheme.Spacing.lg) {
                         formField(label: "DESIGNATION", placeholder: "Habit name", text: $name)
+                            .accessibilityIdentifier("habit_form_name")
                         iconPicker
                         categoryPicker
                         frequencyPicker
@@ -1059,6 +1061,7 @@ private struct HabitFormSheet: View {
                             dismiss()
                         }
                         .buttonStyle(HUDCompactButtonStyle(color: OverwatchTheme.accentCyan))
+                        .accessibilityIdentifier("habit_form_save")
                         .disabled(!canSave)
                         .opacity(canSave ? 1 : 0.4)
                     }

@@ -81,6 +81,7 @@ struct ReportsView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("reports_generate")
         .disabled(viewModel.isGenerating)
     }
 
@@ -275,6 +276,7 @@ struct ReportsView: View {
                         onTap: { viewModel.selectReport(report.id) },
                         onDelete: { viewModel.deleteReport(report.id, from: context) }
                     )
+                    .accessibilityIdentifier("report_card_\(index)")
                     .hudBoot(delay: Double(index) * 0.06)
                 }
             }

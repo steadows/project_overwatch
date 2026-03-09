@@ -105,6 +105,7 @@ private struct WelcomeStep: View {
 
                 // CTA
                 HUDButton(label: "BEGIN SETUP", action: onNext)
+                    .accessibilityIdentifier("onboarding_begin_setup")
             }
             .padding(.vertical, OverwatchTheme.Spacing.xl)
         }
@@ -199,6 +200,7 @@ private struct ConnectWhoopStep: View {
                             .tracking(1.5)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("onboarding_skip")
                 }
             }
             .padding(.vertical, OverwatchTheme.Spacing.xl)
@@ -271,6 +273,7 @@ private struct AddHabitsStep: View {
                         createSelectedHabits()
                         onNext()
                     }
+                    .accessibilityIdentifier("onboarding_habits_continue")
                 }
             }
             .padding(.vertical, OverwatchTheme.Spacing.xl)
@@ -310,6 +313,7 @@ private struct OperationalStep: View {
                 .textGlow(OverwatchTheme.accentSecondary, radius: titleVisible ? 32 : 8)
                 .opacity(titleVisible ? 1 : 0)
                 .scaleEffect(titleVisible ? 1.0 : 0.9)
+                .accessibilityIdentifier("onboarding_operational")
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.5)) {
@@ -367,6 +371,7 @@ private struct HabitChip: View {
             .clipShape(HUDFrameShape(chamferSize: 6))
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("habit_chip_\(name.lowercased().replacingOccurrences(of: " ", with: "_"))")
         .glowPulseEffect(trigger: pulseActive, color: OverwatchTheme.accentCyan)
         .animation(Animations.quick, value: isSelected)
     }

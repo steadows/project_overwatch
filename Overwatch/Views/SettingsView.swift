@@ -136,6 +136,7 @@ struct SettingsView: View {
                     hudButton("CONNECT WHOOP", color: OverwatchTheme.accentCyan) {
                         connectWhoop()
                     }
+                    .accessibilityIdentifier("settings_connect_whoop")
                 }
             }
 
@@ -264,6 +265,7 @@ struct SettingsView: View {
 
                 settingRow("AUTO-GENERATE") {
                     hudToggle(isOn: $viewModel.autoGenerateReports)
+                        .accessibilityIdentifier("settings_auto_generate_toggle")
                 }
 
                 if viewModel.autoGenerateReports {
@@ -425,6 +427,7 @@ struct SettingsView: View {
                         exportJSONData = viewModel.buildAllDataJSON(from: modelContext)
                         if exportJSONData != nil { showJSONExport = true }
                     }
+                    .accessibilityIdentifier("settings_export_json")
 
                     Text("JSON")
                         .font(Typography.hudLabel)
@@ -437,6 +440,7 @@ struct SettingsView: View {
                         exportCSVData = viewModel.buildHabitsCSV(from: modelContext)
                         if exportCSVData != nil { showCSVExport = true }
                     }
+                    .accessibilityIdentifier("settings_export_csv")
 
                     Text("CSV")
                         .font(Typography.hudLabel)

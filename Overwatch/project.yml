@@ -28,9 +28,11 @@ schemes:
       targets:
         Overwatch: all
         OverwatchTests: [test]
+        OverwatchUITests: [test]
     test:
       targets:
         - OverwatchTests
+        - OverwatchUITests
 
 targets:
   Overwatch:
@@ -89,3 +91,18 @@ targets:
         GENERATE_INFOPLIST_FILE: true
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/Overwatch.app/Contents/MacOS/Overwatch
         BUNDLE_LOADER: $(TEST_HOST)
+
+  OverwatchUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: OverwatchUITests
+    dependencies:
+      - target: Overwatch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.overwatch.app.uitests
+        PRODUCT_NAME: OverwatchUITests
+        PRODUCT_MODULE_NAME: OverwatchUITests
+        GENERATE_INFOPLIST_FILE: true
+        TEST_TARGET_NAME: Overwatch

@@ -206,6 +206,7 @@ struct NavigationShell: View {
             // Content — section transition per spec
             detailContent(for: selectedSection)
                 .id(selectedSection)
+                .accessibilityIdentifier("detail_\(selectedSection.rawValue.lowercased().replacingOccurrences(of: " ", with: "_"))")
                 .transition(
                     .asymmetric(
                         insertion: .opacity.combined(with: .scale(scale: 0.98)),
@@ -257,6 +258,7 @@ private struct SidebarItem: View {
             HStack(spacing: OverwatchTheme.Spacing.md) {
                 // Left accent bar (selected only) — pulses gently
                 RoundedRectangle(cornerRadius: 1)
+
                     .fill(isSelected ? OverwatchTheme.accentCyan : .clear)
                     .frame(width: 2, height: 24)
                     .shadow(
@@ -295,6 +297,7 @@ private struct SidebarItem: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("sidebar_\(section.rawValue.lowercased().replacingOccurrences(of: " ", with: "_"))")
         .onHover { hovering in
             withAnimation(.easeOut(duration: 0.15)) {
                 isHovered = hovering

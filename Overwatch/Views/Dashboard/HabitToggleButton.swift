@@ -99,6 +99,7 @@ struct HabitToggleButton: View {
             color: OverwatchTheme.accentSecondary
         )
         .contentShape(HUDFrameShape(chamferSize: 10))
+        .accessibilityIdentifier("habit_toggle_\(habit.name.lowercased().replacingOccurrences(of: " ", with: "_"))")
         .onTapGesture {
             let wasComplete = isComplete
             onToggle()

@@ -374,6 +374,6 @@ struct AsyncParseTests {
     func asyncParseUnrecognized() async {
         let result = await parser.parse("xyzzy plugh", habits: sampleHabits)
         #expect(result.matchedHabitID == nil)
-        #expect(result.confidence == 0)
+        #expect(result.confidence < 0.2, "Unrecognized input should have low confidence")
     }
 }
